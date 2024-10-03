@@ -1,0 +1,12 @@
+name: Call goreportcard service
+
+on: 
+  push
+
+jobs:
+  https-call:
+    name: Call goreportcard service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: curl -X POST -F "repo=github.com/akmonengine/volt" https://goreportcard.com/checks
