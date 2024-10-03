@@ -207,3 +207,4 @@ This would hugely reduce the loops operations in some scenarios. Currently we ca
 ## Contributing Guidelines
 
 ## Licence
+This project is distributed under the [Apache 2.0 licence](LICENCE.md).
