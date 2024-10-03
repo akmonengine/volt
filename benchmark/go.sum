@@ -1,0 +1,19 @@
+bitbucket.org/solidlynx/akmonengine v1.25.0 h1:B4wVJfbs+eofBMcQSiEySkUEQCPJHARemOhe2ZMKZp0=
+bitbucket.org/solidlynx/akmonengine v1.25.0/go.mod h1:+E6OWATzqV/DR0qYIHydLdQ6Si5Zz4XSpRNQH2zKPy8=
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/mlange-42/arche v0.13.2 h1:5mbYKYBTLrXkz33IEONBskRfpWmnLF6HAt3r+zPlSCI=
+github.com/mlange-42/arche v0.13.2/go.mod h1:bFktKnvGDj2kP01xar79z0hKwGHdnoaEZR8HWmJkIyU=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
+github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
+github.com/unitoftime/cod v0.0.0-20230616173404-085cf4fe3918 h1:C1W4LPOwKCBq0cAzb81508ePBIfAR9ecP9GBR5zi/AI=
+github.com/unitoftime/cod v0.0.0-20230616173404-085cf4fe3918/go.mod h1:Iufibv9gn5GJb4Qzkf8e8xaXOV77OgkrB5kkBZTEN+M=
+github.com/unitoftime/ecs v0.0.2-0.20240727195554-03fbb2d998cf h1:rj4K09/Ct0ClfmUnU5dtFzhMrHjPG7BhEpYIj7w4NaE=
+github.com/unitoftime/ecs v0.0.2-0.20240727195554-03fbb2d998cf/go.mod h1:3i8ercdQPj5M8lq9B3qGjywG7RRq0tBjbP/7THI5mtc=
+golang.org/x/exp v0.0.0-20240909161429-701f63a606c0 h1:e66Fs6Z+fZTbFBAxKfP3PALWBtpfqks2bwGcexMxgtk=
+golang.org/x/exp v0.0.0-20240909161429-701f63a606c0/go.mod h1:2TbTHSBQa924w8M6Xs1QcRcFwyucIwBGpK1p2f1YFFY=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
+gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+
