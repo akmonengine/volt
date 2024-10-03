@@ -2,7 +2,8 @@ package volt
 
 import (
 	"fmt"
-	"golang.org/x/exp/maps"
+	"maps"
+	"slices"
 )
 
 func getStorage[T ComponentInterface](world *World) *ComponentsStorage[T] {
@@ -55,7 +56,7 @@ func (c *ComponentsStorage[T]) getType() ComponentId {
 }
 
 func (c *ComponentsStorage[T]) getArchetypes() []ArchetypeId {
-	return maps.Keys(c.archetypesComponentsEntities)
+	return slices.Collect(maps.Keys(c.archetypesComponentsEntities))
 }
 
 func (c *ComponentsStorage[T]) hasArchetype(archetypeId ArchetypeId) bool {

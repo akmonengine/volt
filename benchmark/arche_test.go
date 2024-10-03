@@ -3,7 +3,7 @@ package benchmark
 import (
 	"github.com/mlange-42/arche/ecs"
 	"github.com/mlange-42/arche/generic"
-	"golang.org/x/exp/rand"
+	"math/rand/v2"
 	"testing"
 )
 

@@ -2,7 +2,7 @@ package benchmark
 
 import (
 	uecs "github.com/unitoftime/ecs"
-	"golang.org/x/exp/rand"
+	"math/rand/v2"
 	"testing"
 )
 

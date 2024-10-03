@@ -2,7 +2,7 @@ package benchmark
 
 import (
 	"github.com/akmonengine/volt"
-	"golang.org/x/exp/rand"
+	"math/rand/v2"
 	"strconv"
 	"testing"
 )
