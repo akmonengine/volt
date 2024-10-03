@@ -1,5 +1,8 @@
 # Volt
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/akmonengine/volt)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/akmonengine/volt)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/akmonengine/volt)
 
 
 Volt is an ECS(entity-component-system) oriented for games development with Go.
