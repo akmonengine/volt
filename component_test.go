@@ -14,6 +14,10 @@ type testTransform struct {
 	x, y, z int
 }
 
+type testTransformConfiguration struct {
+	x, y, z int
+}
+
 func (t testTransform) GetComponentId() ComponentId {
 	return testTransformId
 }

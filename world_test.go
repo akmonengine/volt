@@ -7,6 +7,19 @@ import (
 
 const TEST_ENTITY_NUMBER = 10000
 
+func TestCreateWorld(t *testing.T) {
+	initialCapacity := 16
+	world := CreateWorld(initialCapacity)
+	if world == nil {
+		t.Errorf("CreateWorld() returned nil value")
+
+		return
+	}
+	if len(world.archetypes) != 1 || world.archetypes[0].Id != 0 {
+		t.Errorf("CreateWorld() did not generate default archetype")
+	}
+}
+
 func TestWorld_CreateEntity(t *testing.T) {
 	entities := make([]EntityId, TEST_ENTITY_NUMBER)
 	world := CreateWorld(1024)
@@ -25,6 +38,31 @@ func TestWorld_CreateEntity(t *testing.T) {
 		if !ok {
 			t.Errorf("Entity %d was not created properly", entities[i])
 		}
+	}
+}
+
+func TestCreateEntityWithComponents2(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testTransform](world, &ComponentConfig[testTransform]{ID: testTransformId})
+	RegisterComponent[testTag](world, &ComponentConfig[testTag]{ID: testTagId})
+
+	entityId := CreateEntityWithComponents2(world, "entity1", testTransform{}, testTag{})
+
+	if entityId == 0 {
+		t.Errorf("CreateEntityWithComponents2() did not return valid entityId")
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component, err := world.GetComponent(entityId, testTransformId); component == nil {
+		t.Errorf("Could not find component testTransform for entityId %d", entityId)
+		t.Errorf(err.Error())
+	}
+	if component := GetComponent[testTag](world, entityId); component == nil {
+		t.Errorf("Could not find component testTag for entityId %d", entityId)
 	}
 }
 
