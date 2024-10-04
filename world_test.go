@@ -43,10 +43,10 @@ func TestWorld_CreateEntity(t *testing.T) {
 
 func TestCreateEntityWithComponents2(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testTransform](world, &ComponentConfig[testTransform]{ID: testTransformId})
-	RegisterComponent[testTag](world, &ComponentConfig[testTag]{ID: testTagId})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
 
-	entityId := CreateEntityWithComponents2(world, "entity1", testTransform{}, testTag{})
+	entityId := CreateEntityWithComponents2(world, "entity1", testComponent1{}, testComponent2{})
 
 	if entityId == 0 {
 		t.Errorf("CreateEntityWithComponents2() did not return valid entityId")
@@ -57,12 +57,12 @@ func TestCreateEntityWithComponents2(t *testing.T) {
 	if _, ok := world.Entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
-	if component, err := world.GetComponent(entityId, testTransformId); component == nil {
-		t.Errorf("Could not find component testTransform for entityId %d", entityId)
+	if component, err := world.GetComponent(entityId, testComponent1Id); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
 		t.Errorf(err.Error())
 	}
-	if component := GetComponent[testTag](world, entityId); component == nil {
-		t.Errorf("Could not find component testTag for entityId %d", entityId)
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
 	}
 }
 
