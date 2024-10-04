@@ -107,7 +107,7 @@ func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name str
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents2(world, entityId, a, b)
 
@@ -119,7 +119,7 @@ func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name 
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents3(world, entityId, a, b, c)
 
@@ -131,7 +131,7 @@ func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, na
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents4(world, entityId, a, b, c, d)
 
@@ -143,7 +143,7 @@ func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World,
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents5(world, entityId, a, b, c, d, e)
 
@@ -155,7 +155,7 @@ func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *Wor
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents6(world, entityId, a, b, c, d, e, f)
 
@@ -167,7 +167,7 @@ func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents7(world, entityId, a, b, c, d, e, f, g)
 
@@ -179,7 +179,7 @@ func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](worl
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{name: entityName}
+	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
 	AddComponents8(world, entityId, a, b, c, d, e, f, g, h)
 

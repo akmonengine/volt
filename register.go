@@ -51,6 +51,7 @@ func RegisterComponent[T ComponentInterface](world *World, config ComponentConfi
 
 	config.setComponent(t)
 	world.ComponentsRegistry[t.GetComponentId()] = config
+	getStorage[T](world)
 }
 
 func (world *World) getConfigByComponentId(componentId ComponentId) (ComponentConfigInterface, error) {
