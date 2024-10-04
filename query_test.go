@@ -8,34 +8,34 @@ import (
 
 func TestCreateQuery1(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testTransform](world, &ComponentConfig[testTransform]{ID: testTransformId})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
 
-	query := CreateQuery1[testTransform](world, []OptionalComponent{})
+	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
 
 	if len(query.componentsIds) != 1 {
 		t.Errorf("query should have 1 component")
 	}
-	if query.componentsIds[0] != testTransformId {
-		t.Errorf("query should contain ComponentId %d", testTransformId)
+	if query.componentsIds[0] != testComponent1Id {
+		t.Errorf("query should contain ComponentId %d", testComponent1Id)
 	}
 }
 
 func TestQuery1_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testTransform](world, &ComponentConfig[testTransform]{ID: testTransformId})
-	RegisterComponent[testTag](world, &ComponentConfig[testTag]{ID: testTagId})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
 		if i%2 == 0 {
-			AddComponent[testTransform](world, entityId, testTransform{})
+			AddComponent[testComponent1](world, entityId, testComponent1{})
 		} else {
-			AddComponents2[testTransform, testTag](world, entityId, testTransform{}, testTag{})
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
 		}
 	}
 
-	query := CreateQuery1[testTransform](world, []OptionalComponent{})
+	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
 	archetypes := query.filter()
 	if len(archetypes) != 2 {
 		t.Errorf("query should have 2 archetypes")
@@ -44,15 +44,15 @@ func TestQuery1_filter(t *testing.T) {
 
 func TestQuery1_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testTransform](world, &ComponentConfig[testTransform]{ID: testTransformId})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testTransform](world, entityId, testTransform{})
+		AddComponent[testComponent1](world, entityId, testComponent1{})
 	}
 
-	query := CreateQuery1[testTransform](world, []OptionalComponent{})
+	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
 	if query.Count() != TEST_ENTITY_NUMBER {
 		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
 	}
@@ -61,16 +61,687 @@ func TestQuery1_Count(t *testing.T) {
 func TestQuery1_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testTransform](world, &ComponentConfig[testTransform]{ID: testTransformId})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponent[testTransform](world, entityId, testTransform{})
+		AddComponent[testComponent1](world, entityId, testComponent1{})
 	}
 
-	query := CreateQuery1[testTransform](world, []OptionalComponent{})
+	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery2(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+
+	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 2 {
+		t.Errorf("query should have 2 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) {
+		t.Errorf("query should contain ComponentIds %d and %d", testComponent1Id, testComponent2Id)
+	}
+}
+
+func TestQuery2_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 3 {
+		case 0:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 1:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 2 {
+		t.Errorf("query should have 2 archetypes")
+	}
+}
+
+func TestQuery2_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+	}
+
+	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
+	if query.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery2_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+	}
+
+	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery3(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+
+	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 3 {
+		t.Errorf("query should have 3 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) || !slices.Contains(query.componentsIds, testComponent3Id) {
+		t.Errorf("query should contain ComponentIds %d, %d and %d", testComponent1Id, testComponent2Id, testComponent3Id)
+	}
+}
+
+func TestQuery3_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 4 {
+		case 0:
+			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		case 1:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 2:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 2 {
+		t.Errorf("query should have 2 archetypes")
+	}
+}
+
+func TestQuery3_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+	}
+
+	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
+	count := query.Count()
+	if count != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery3_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+	}
+
+	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery4(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+
+	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 4 {
+		t.Errorf("query should have 4 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) || !slices.Contains(query.componentsIds, testComponent3Id) || !slices.Contains(query.componentsIds, testComponent4Id) {
+		t.Errorf("query should contain ComponentIds %d, %d, %d and %d", testComponent1Id, testComponent2Id, testComponent3Id, testComponent4Id)
+	}
+}
+
+func TestQuery4_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 5 {
+		case 0:
+			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		case 1:
+			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		case 2:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 3:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 2 {
+		t.Errorf("query should have 2 archetypes")
+	}
+}
+
+func TestQuery4_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+	}
+
+	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
+	if query.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery4_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+	}
+
+	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery5(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+
+	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 5 {
+		t.Errorf("query should have 5 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) || !slices.Contains(query.componentsIds, testComponent3Id) || !slices.Contains(query.componentsIds, testComponent4Id) || !slices.Contains(query.componentsIds, testComponent5Id) {
+		t.Errorf("query should contain ComponentIds %d, %d, %d, %d and %d", testComponent1Id, testComponent2Id, testComponent3Id, testComponent4Id, testComponent5Id)
+	}
+}
+
+func TestQuery5_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 6 {
+		case 0:
+			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		case 1:
+			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		case 2:
+			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		case 3:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 4:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 2 {
+		t.Errorf("query should have 2 archetypes")
+	}
+}
+
+func TestQuery5_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+	}
+
+	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
+	if query.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery5_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+	}
+
+	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery6(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+
+	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 6 {
+		t.Errorf("query should have 6 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) || !slices.Contains(query.componentsIds, testComponent3Id) || !slices.Contains(query.componentsIds, testComponent4Id) || !slices.Contains(query.componentsIds, testComponent5Id) || !slices.Contains(query.componentsIds, testComponent6Id) {
+		t.Errorf("query should contain ComponentIds %d, %d, %d, %d, %d and %d", testComponent1Id, testComponent2Id, testComponent3Id, testComponent4Id, testComponent5Id, testComponent6Id)
+	}
+}
+
+func TestQuery6_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 7 {
+		case 0:
+			AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		case 1:
+			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		case 2:
+			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		case 3:
+			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		case 4:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 5:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 2 {
+		t.Errorf("query should have 2 archetypes")
+	}
+}
+
+func TestQuery6_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+	}
+
+	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
+	if query.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery6_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+	}
+
+	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery7(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+
+	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 7 {
+		t.Errorf("query should have 7 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) || !slices.Contains(query.componentsIds, testComponent3Id) || !slices.Contains(query.componentsIds, testComponent4Id) || !slices.Contains(query.componentsIds, testComponent5Id) || !slices.Contains(query.componentsIds, testComponent6Id) || !slices.Contains(query.componentsIds, testComponent7Id) {
+		t.Errorf("query should contain ComponentIds %d, %d, %d, %d, %d, %d and %d", testComponent1Id, testComponent2Id, testComponent3Id, testComponent4Id, testComponent5Id, testComponent6Id, testComponent7Id)
+	}
+}
+
+func TestQuery7_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 8 {
+		case 0:
+			AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		case 1:
+			AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		case 2:
+			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		case 3:
+			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		case 4:
+			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		case 5:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 6:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 2 {
+		t.Errorf("query should have 2 archetypes")
+	}
+}
+
+func TestQuery7_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+	}
+
+	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
+	if query.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery7_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+	}
+
+	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
+	for result := range query.Foreach(nil) {
+		if !slices.Contains(entities, result.EntityId) {
+			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
+		}
+	}
+}
+
+func TestCreateQuery8(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+
+	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
+
+	if len(query.componentsIds) != 8 {
+		t.Errorf("query should have 8 components")
+	}
+	if !slices.Contains(query.componentsIds, testComponent1Id) || !slices.Contains(query.componentsIds, testComponent2Id) || !slices.Contains(query.componentsIds, testComponent3Id) || !slices.Contains(query.componentsIds, testComponent4Id) || !slices.Contains(query.componentsIds, testComponent5Id) || !slices.Contains(query.componentsIds, testComponent6Id) || !slices.Contains(query.componentsIds, testComponent7Id) || !slices.Contains(query.componentsIds, testComponent8Id) {
+		t.Errorf("query should contain ComponentIds %d, %d, %d, %d, %d, %d, %d and %d", testComponent1Id, testComponent2Id, testComponent3Id, testComponent4Id, testComponent5Id, testComponent6Id, testComponent7Id, testComponent8Id)
+	}
+}
+
+func TestQuery8_filter(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+
+		switch i % 9 {
+		case 0, 1:
+			AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		case 2:
+			AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		case 3:
+			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		case 4:
+			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		case 5:
+			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		case 6:
+			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		case 7:
+			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		default:
+			AddComponent[testComponent1](world, entityId, testComponent1{})
+		}
+	}
+
+	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
+	archetypes := query.filter()
+	if len(archetypes) != 1 {
+		t.Errorf("query should have 1 archetypes")
+	}
+}
+
+func TestQuery8_Count(t *testing.T) {
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+	}
+
+	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
+	if query.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("query should count %d entities", TEST_ENTITY_NUMBER)
+	}
+}
+
+func TestQuery8_Foreach(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity(fmt.Sprint(i))
+		entities = append(entities, entityId)
+
+		AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+	}
+
+	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
+
 	for result := range query.Foreach(nil) {
 		if !slices.Contains(entities, result.EntityId) {
 			t.Errorf("query should return EntityId %d in Foreach iterator", result.EntityId)
