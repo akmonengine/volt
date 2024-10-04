@@ -1,0 +1,12 @@
+name: Golangci-lint
+
+on: 
+  push
+
+jobs:
+  test:
+    name: Run Golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Golangci-lint
+        uses: golangci/golangci-lint-action@v6.1.1
