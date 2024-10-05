@@ -250,9 +250,9 @@ func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) erro
 
 	// Remove from the previous archetype
 	s := getStorage[T](world)
-	removeComponent(world, s, entityRecord, componentId)
+	err := removeComponent(world, s, entityRecord, componentId)
 
-	return nil
+	return err
 }
 
 // Useful when generics are not available, but slower than the generic method
@@ -269,12 +269,15 @@ func (world *World) RemoveComponent(entityId EntityId, componentId ComponentId) 
 		return err
 	}
 
-	removeComponent(world, s, entityRecord, componentId)
+	err = removeComponent(world, s, entityRecord, componentId)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func removeComponent(world *World, s storage, entityRecord EntityRecord, componentId ComponentId) {
+func removeComponent(world *World, s storage, entityRecord EntityRecord, componentId ComponentId) error {
 	world.componentRemovedFn(entityRecord.Id, componentId)
 
 	oldArchetype := &world.archetypes[entityRecord.archetypeId]
@@ -290,7 +293,12 @@ func removeComponent(world *World, s storage, entityRecord EntityRecord, compone
 	archetype := world.getArchetypeForComponentsIds(componentsIds...)
 	moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
 
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (world *World) HasComponents(entityId EntityId, componentsIds ...ComponentId) bool {
@@ -349,13 +357,19 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityId Enti
 
 	// If the entity has no component, simply add it the archetype
 	if entityRecord, ok := world.Entities[entityId]; !ok {
-		world.setArchetype(entityRecord, archetype)
+		err := world.setArchetype(entityRecord, archetype)
+		if err != nil {
+			return err
+		}
 		setComponent(world, archetype.Id, component)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
 		if archetype.Id != oldArchetype.Id {
 			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
-			world.setArchetype(entityRecord, archetype)
+			err := world.setArchetype(entityRecord, archetype)
+			if err != nil {
+				return err
+			}
 		}
 
 		setComponent(world, archetype.Id, component)
@@ -375,7 +389,10 @@ func addComponentsToArchetype2[A, B ComponentInterface](world *World, entityReco
 
 	setComponent(world, archetype.Id, componentA)
 	setComponent(world, archetype.Id, componentB)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -393,7 +410,10 @@ func addComponentsToArchetype3[A, B, C ComponentInterface](world *World, entityR
 	setComponent(world, archetype.Id, componentA)
 	setComponent(world, archetype.Id, componentB)
 	setComponent(world, archetype.Id, componentC)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -413,7 +433,10 @@ func addComponentsToArchetype4[A, B, C, D ComponentInterface](world *World, enti
 	setComponent(world, archetype.Id, componentB)
 	setComponent(world, archetype.Id, componentC)
 	setComponent(world, archetype.Id, componentD)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -435,7 +458,10 @@ func addComponentsToArchetype5[A, B, C, D, E ComponentInterface](world *World, e
 	setComponent(world, archetype.Id, componentC)
 	setComponent(world, archetype.Id, componentD)
 	setComponent(world, archetype.Id, componentE)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -459,7 +485,10 @@ func addComponentsToArchetype6[A, B, C, D, E, F ComponentInterface](world *World
 	setComponent(world, archetype.Id, componentD)
 	setComponent(world, archetype.Id, componentE)
 	setComponent(world, archetype.Id, componentF)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -485,7 +514,10 @@ func addComponentsToArchetype7[A, B, C, D, E, F, G ComponentInterface](world *Wo
 	setComponent(world, archetype.Id, componentE)
 	setComponent(world, archetype.Id, componentF)
 	setComponent(world, archetype.Id, componentG)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -513,7 +545,10 @@ func addComponentsToArchetype8[A, B, C, D, E, F, G, H ComponentInterface](world 
 	setComponent(world, archetype.Id, componentF)
 	setComponent(world, archetype.Id, componentG)
 	setComponent(world, archetype.Id, componentH)
-	world.setArchetype(entityRecord, archetype)
+	err := world.setArchetype(entityRecord, archetype)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

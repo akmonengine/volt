@@ -123,8 +123,15 @@ func TestGetComponent(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
-		AddComponent(world, entities[i], testComponent1{})
-		AddComponent(world, entities[i], testComponent2{})
+		err := AddComponent(world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+
+		err = AddComponent(world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	for _, entityId := range entities {
@@ -145,8 +152,15 @@ func TestRemoveComponent(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
-		AddComponent(world, entities[i], testComponent1{testComponent{x: i, y: i, z: i}})
-		AddComponent(world, entities[i], testComponent2{testComponent{x: i, y: i, z: i}})
+		err := AddComponent(world, entities[i], testComponent1{testComponent{x: i, y: i, z: i}})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+
+		err = AddComponent(world, entities[i], testComponent2{testComponent{x: i, y: i, z: i}})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	// Remove the component only on odd entities. Otherwise we empty the archetype, it would not prove the indices in storage are perfectly handled
