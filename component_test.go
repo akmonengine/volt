@@ -42,7 +42,6 @@ func (t testComponent2) GetComponentId() ComponentId {
 }
 
 type testComponent3 struct {
-	testComponent
 }
 
 func (t testComponent3) GetComponentId() ComponentId {
@@ -50,7 +49,6 @@ func (t testComponent3) GetComponentId() ComponentId {
 }
 
 type testComponent4 struct {
-	testComponent
 }
 
 func (t testComponent4) GetComponentId() ComponentId {
@@ -58,7 +56,6 @@ func (t testComponent4) GetComponentId() ComponentId {
 }
 
 type testComponent5 struct {
-	testComponent
 }
 
 func (t testComponent5) GetComponentId() ComponentId {
@@ -66,7 +63,6 @@ func (t testComponent5) GetComponentId() ComponentId {
 }
 
 type testComponent6 struct {
-	testComponent
 }
 
 func (t testComponent6) GetComponentId() ComponentId {
@@ -74,7 +70,6 @@ func (t testComponent6) GetComponentId() ComponentId {
 }
 
 type testComponent7 struct {
-	testComponent
 }
 
 func (t testComponent7) GetComponentId() ComponentId {
@@ -82,19 +77,10 @@ func (t testComponent7) GetComponentId() ComponentId {
 }
 
 type testComponent8 struct {
-	testComponent
 }
 
 func (t testComponent8) GetComponentId() ComponentId {
 	return testComponent8Id
-}
-
-type testComponent9 struct {
-	testComponent
-}
-
-func (t testComponent9) GetComponentId() ComponentId {
-	return testComponent9Id
 }
 
 func TestAddComponent(t *testing.T) {

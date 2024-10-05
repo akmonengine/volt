@@ -31,11 +31,6 @@ type EntityName [64]byte
 type EntitiesNames map[EntityName]EntityId
 type Entities map[EntityId]EntityRecord
 
-type EntityComponentKey struct {
-	entityId    EntityId
-	componentId ComponentId
-}
-
 type World struct {
 	ComponentsRegistry ComponentsRegister
 	entitiesNames      EntitiesNames
