@@ -46,10 +46,10 @@ func TestCreateEntityWithComponents2(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
 
-	entityId := CreateEntityWithComponents2(world, "entity1", testComponent1{}, testComponent2{})
+	entityId, err := CreateEntityWithComponents2(world, "entity1", testComponent1{}, testComponent2{})
 
-	if entityId == 0 {
-		t.Errorf("CreateEntityWithComponents2() did not return valid entityId")
+	if err != nil {
+		t.Errorf("%s", err.Error())
 	}
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
