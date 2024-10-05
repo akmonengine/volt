@@ -112,6 +112,18 @@ func TestAddComponent(t *testing.T) {
 }
 
 func TestConfigureComponent(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {
+		conf := configuration.(testComponent1Configuration)
+		testTransformComponent := component.(*testComponent1)
+
+		testTransformComponent.x = conf.x
+	}})
+
+	component := ConfigureComponent[testComponent1](world, testComponent1Configuration{testComponent{x: 1.0}})
+	if component.x != 1.0 {
+		t.Errorf("component was not correctly configured")
+	}
 }
 
 func TestGetComponent(t *testing.T) {

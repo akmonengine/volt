@@ -57,12 +57,239 @@ func TestCreateEntityWithComponents2(t *testing.T) {
 	if _, ok := world.Entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
-	if component, err := world.GetComponent(entityId, testComponent1Id); component == nil {
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
 		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
-		t.Errorf("%s", err.Error())
 	}
 	if component := GetComponent[testComponent2](world, entityId); component == nil {
 		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+}
+
+func TestCreateEntityWithComponents3(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+
+	entityId, err := CreateEntityWithComponents3(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{})
+
+	if err != nil {
+		t.Errorf("%s", err.Error())
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent3](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent3 for entityId %d", entityId)
+	}
+}
+
+func TestCreateEntityWithComponents4(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+
+	entityId, err := CreateEntityWithComponents4(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+
+	if err != nil {
+		t.Errorf("%s", err.Error())
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent3](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent3 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent4](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent4 for entityId %d", entityId)
+	}
+}
+
+func TestCreateEntityWithComponents5(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+
+	entityId, err := CreateEntityWithComponents5(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+
+	if err != nil {
+		t.Errorf("%s", err.Error())
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent3](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent3 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent4](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent4 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent5](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent5 for entityId %d", entityId)
+	}
+}
+
+func TestCreateEntityWithComponents6(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+
+	entityId, err := CreateEntityWithComponents6(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+
+	if err != nil {
+		t.Errorf("%s", err.Error())
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent3](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent3 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent4](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent4 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent5](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent5 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent6](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent6 for entityId %d", entityId)
+	}
+}
+
+func TestCreateEntityWithComponents7(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+
+	entityId, err := CreateEntityWithComponents7(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+
+	if err != nil {
+		t.Errorf("%s", err.Error())
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent3](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent3 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent4](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent4 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent5](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent5 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent6](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent6 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent7](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent7 for entityId %d", entityId)
+	}
+}
+
+func TestCreateEntityWithComponents8(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+
+	entityId, err := CreateEntityWithComponents8(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+
+	if err != nil {
+		t.Errorf("%s", err.Error())
+	}
+	if id := world.SearchEntity("entity1"); id == 0 {
+		t.Errorf("Could not find entityName %s", "entity1")
+	}
+	if _, ok := world.Entities[entityId]; !ok {
+		t.Errorf("Could not find entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent1](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent2](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent3](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent3 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent4](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent4 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent5](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent5 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent6](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent6 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent7](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent7 for entityId %d", entityId)
+	}
+	if component := GetComponent[testComponent8](world, entityId); component == nil {
+		t.Errorf("Could not find component testComponent8 for entityId %d", entityId)
 	}
 }
 
