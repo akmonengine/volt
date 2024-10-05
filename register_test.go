@@ -13,7 +13,7 @@ func TestComponentConfig_addComponent(t *testing.T) {
 	err := componentRegistry.addComponent(world, entityId, testComponent1Configuration{})
 
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("%s", err.Error())
 	}
 	component := GetComponent[testComponent1](world, entityId)
 	if component == nil {
@@ -40,7 +40,7 @@ func TestComponentConfig_builderFn(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("%s", err.Error())
 	}
 	component := GetComponent[testComponent1](world, entityId)
 

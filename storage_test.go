@@ -24,7 +24,7 @@ func TestWorld_getStorageForComponentId(t *testing.T) {
 
 	s, err := world.getStorageForComponentId(testComponent1Id)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("%s", err.Error())
 	}
 	if s == nil {
 		t.Errorf("getStorageForComponentId() did not find storage for %d", testComponent1Id)

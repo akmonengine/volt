@@ -21,7 +21,7 @@ func (world *World) getComponentsIds(components ...ComponentInterface) []Compone
 
 func ConfigureComponent[T ComponentInterface](world *World, conf any) T {
 	var t T
-	componentRegistry, _ := world.ComponentsRegistry[t.GetComponentId()]
+	componentRegistry := world.ComponentsRegistry[t.GetComponentId()]
 
 	componentRegistry.builderFn(&t, conf)
 

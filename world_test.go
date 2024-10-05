@@ -59,7 +59,7 @@ func TestCreateEntityWithComponents2(t *testing.T) {
 	}
 	if component, err := world.GetComponent(entityId, testComponent1Id); component == nil {
 		t.Errorf("Could not find component testComponent1 for entityId %d", entityId)
-		t.Errorf(err.Error())
+		t.Errorf("%s", err.Error())
 	}
 	if component := GetComponent[testComponent2](world, entityId); component == nil {
 		t.Errorf("Could not find component testComponent2 for entityId %d", entityId)
