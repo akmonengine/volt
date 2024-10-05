@@ -31,11 +31,6 @@ type EntityName [64]byte
 type EntitiesNames map[EntityName]EntityId
 type Entities map[EntityId]EntityRecord
 
-type EntityComponentKey struct {
-	entityId    EntityId
-	componentId ComponentId
-}
-
 type World struct {
 	ComponentsRegistry ComponentsRegister
 	entitiesNames      EntitiesNames
@@ -102,88 +97,109 @@ func (world *World) CreateEntity(name string) EntityId {
 	return entityId
 }
 
-func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name string, a A, b B) EntityId {
+func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name string, a A, b B) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents2(world, entityId, a, b)
+	err := AddComponents2(world, entityId, a, b)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
-func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name string, a A, b B, c C) EntityId {
+func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name string, a A, b B, c C) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents3(world, entityId, a, b, c)
+	err := AddComponents3(world, entityId, a, b, c)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
-func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, name string, a A, b B, c C, d D) EntityId {
+func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, name string, a A, b B, c C, d D) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents4(world, entityId, a, b, c, d)
+	err := AddComponents4(world, entityId, a, b, c, d)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
-func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World, name string, a A, b B, c C, d D, e E) EntityId {
+func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World, name string, a A, b B, c C, d D, e E) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents5(world, entityId, a, b, c, d, e)
+	err := AddComponents5(world, entityId, a, b, c, d, e)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
-func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F) EntityId {
+func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents6(world, entityId, a, b, c, d, e, f)
+	err := AddComponents6(world, entityId, a, b, c, d, e, f)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
-func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F, g G) EntityId {
+func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F, g G) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents7(world, entityId, a, b, c, d, e, f, g)
+	err := AddComponents7(world, entityId, a, b, c, d, e, f, g)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
-func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F, g G, h H) EntityId {
+func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F, g G, h H) (EntityId, error) {
 	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
 	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
 
-	AddComponents8(world, entityId, a, b, c, d, e, f, g, h)
+	err := AddComponents8(world, entityId, a, b, c, d, e, f, g, h)
+	if err != nil {
+		return 0, err
+	}
 
-	return entityId
+	return entityId, nil
 }
 
 func (world *World) PublishEntity(entityId EntityId) {

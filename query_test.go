@@ -29,9 +29,15 @@ func TestQuery1_filter(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
 		if i%2 == 0 {
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+			err := AddComponent[testComponent1](world, entityId, testComponent1{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		} else {
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+			err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -49,7 +55,10 @@ func TestQuery1_Count(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entityId, testComponent1{})
+		err := AddComponent[testComponent1](world, entityId, testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
@@ -67,7 +76,10 @@ func TestQuery1_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponent[testComponent1](world, entityId, testComponent1{})
+		err := AddComponent[testComponent1](world, entityId, testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
@@ -102,13 +114,16 @@ func TestQuery2_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 3 {
-		case 0:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 1:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		if i%2 == 0 {
+			err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
+		} else {
+			err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -126,7 +141,10 @@ func TestQuery2_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
@@ -145,7 +163,10 @@ func TestQuery2_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
@@ -182,15 +203,16 @@ func TestQuery3_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 4 {
-		case 0:
-			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
-		case 1:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 2:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		if i%2 == 0 {
+			err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
+		} else {
+			err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -209,7 +231,10 @@ func TestQuery3_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
@@ -230,7 +255,10 @@ func TestQuery3_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
@@ -269,17 +297,16 @@ func TestQuery4_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 5 {
-		case 0:
-			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
-		case 1:
-			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
-		case 2:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 3:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		if i%2 == 0 {
+			err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
+		} else {
+			err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -299,7 +326,10 @@ func TestQuery4_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
@@ -320,7 +350,10 @@ func TestQuery4_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
@@ -361,19 +394,16 @@ func TestQuery5_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 6 {
-		case 0:
-			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
-		case 1:
-			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
-		case 2:
-			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
-		case 3:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 4:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		if i%2 == 0 {
+			err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
+		} else {
+			err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -394,7 +424,10 @@ func TestQuery5_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
@@ -416,7 +449,10 @@ func TestQuery5_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
@@ -459,21 +495,16 @@ func TestQuery6_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 7 {
-		case 0:
-			AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
-		case 1:
-			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
-		case 2:
-			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
-		case 3:
-			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
-		case 4:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 5:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		if i%2 == 0 {
+			err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
+		} else {
+			err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -495,7 +526,10 @@ func TestQuery6_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
@@ -518,7 +552,10 @@ func TestQuery6_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
@@ -563,23 +600,16 @@ func TestQuery7_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 8 {
-		case 0:
-			AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
-		case 1:
-			AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
-		case 2:
-			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
-		case 3:
-			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
-		case 4:
-			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
-		case 5:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 6:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		if i%2 == 0 {
+			err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
+		} else {
+			err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+			if err != nil {
+				t.Errorf("%s", err.Error())
+			}
 		}
 	}
 
@@ -602,7 +632,10 @@ func TestQuery7_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
@@ -626,7 +659,10 @@ func TestQuery7_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
@@ -672,30 +708,16 @@ func TestQuery8_filter(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 
-		switch i % 9 {
-		case 0, 1:
-			AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
-		case 2:
-			AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
-		case 3:
-			AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
-		case 4:
-			AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
-		case 5:
-			AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
-		case 6:
-			AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
-		case 7:
-			AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
-		default:
-			AddComponent[testComponent1](world, entityId, testComponent1{})
+		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
 		}
 	}
 
 	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
 	archetypes := query.filter()
 	if len(archetypes) != 1 {
-		t.Errorf("query should have 1 archetypes")
+		t.Errorf("query should have 1 archetype")
 	}
 }
 
@@ -712,7 +734,10 @@ func TestQuery8_Count(t *testing.T) {
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
-		AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
@@ -737,7 +762,10 @@ func TestQuery8_Foreach(t *testing.T) {
 		entityId := world.CreateEntity(fmt.Sprint(i))
 		entities = append(entities, entityId)
 
-		AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})

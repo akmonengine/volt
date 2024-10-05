@@ -25,14 +25,12 @@ func (world *World) getArchetype(entityRecord EntityRecord) *Archetype {
 	return &world.archetypes[archetypeId]
 }
 
-func (world *World) setArchetype(entityRecord EntityRecord, archetype *Archetype) error {
+func (world *World) setArchetype(entityRecord EntityRecord, archetype *Archetype) {
 	archetype.entities = append(archetype.entities, entityRecord.Id)
 
 	entityRecord.key = len(archetype.entities) - 1
 	entityRecord.archetypeId = archetype.Id
 	world.Entities[entityRecord.Id] = entityRecord
-
-	return nil
 }
 
 func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *Archetype {
