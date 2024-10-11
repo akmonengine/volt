@@ -165,8 +165,8 @@ In the benchmark folder, this module is compared to both of them.
 
 - Go - v1.23.1
 - Volt - v1.0.0
-- Arche - v0.13.2
-- UECS - v0.0.2-0.20240727195554-03fbb2d998cf
+- [Arche - v0.13.2](https://github.com/mlange-42/arche)
+- [UECS - v0.0.2-0.20240727195554-03fbb2d998cf](https://github.com/unitoftime/ecs)
 
 The given results were produced by a ryzen 7 5800x, with 100.000 entities:
 
