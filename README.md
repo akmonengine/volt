@@ -164,27 +164,27 @@ Few ECS tools exist for Go. Arche and unitoftime/ecs are probably the most looke
 In the benchmark folder, this module is compared to both of them.
 
 - Go - v1.23.1
-- Volt - v1.0.0
+- Volt - v1.1.0
 - [Arche - v0.13.2](https://github.com/mlange-42/arche)
 - [UECS - v0.0.2-0.20240727195554-03fbb2d998cf](https://github.com/unitoftime/ecs)
 
 The given results were produced by a ryzen 7 5800x, with 100.000 entities:
 
-| Benchmark feature (entities count)                                | Time/Operation | Bytes/Operation  | Allocations/Operation |
-|-------------------------------------------------------------------|----------------|------------------|-----------------------|
-| BenchmarkCreateEntityVolt (100000)                                | 28019814 ns/op | 27509201 B/op    | 203267 allocs/op      |
-| BenchmarkCreateEntityArche (100000)                               | 13090540 ns/op | 43679965 B/op    | 1631 allocs/op        |
-| BenchmarkCreateEntityUECS (100000)                                | 33813923 ns/op | 49120107 B/op    | 200148 allocs/op      |
-| BenchmarkIterateVolt (100000)                                     | 327920 ns/op   | 128 B/op         | 5 allocs/op           |
-| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 130565 ns/op   | 3092 B/op        | 90 allocs/op          |
-| BenchmarkIterateArche (100000)                                    | 302350 ns/op   | 354 B/op         | 4 allocs/op           |
-| BenchmarkIterateUECS (100000)                                     | 234814 ns/op   | 152 B/op         | 4 allocs/op           |
-| BenchmarkAddVolt (100000)                                         | 27868065 ns/op | 4750176 B/op     | 300002 allocs/op      |
-| BenchmarkAddArche (100000)                                        | 6204147 ns/op  | 3329050 B/op     | 200000 allocs/op      |
-| BenchmarkAddUECS (100000)                                         | 71806194 ns/op | 16643870 B/op    | 500010 allocs/op      |
-| BenchmarkRemoveVolt (100000)                                      | 19352594 ns/op | 200000 B/op      | 100000 allocs/op      |
-| BenchmarkRemoveArche (100000)                                     | 6796755 ns/op  | 3300006 B/op     | 200000 allocs/op      |
-| BenchmarkRemoveUECS (100000)                                      | 76231994 ns/op | 17092955 B/op    | 600002 allocs/op      |
+| Benchmark feature (entities count)                                | Time/Operation  | Bytes/Operation | Allocations/Operation |
+|-------------------------------------------------------------------|-----------------|-----------------|-----------------------|
+| BenchmarkCreateEntityVolt (100000)                                | 28019814 ns/op  | 27509201 B/op   | 203267 allocs/op      |
+| BenchmarkCreateEntityArche (100000)                               | 13090540 ns/op  | 43679965 B/op   | 1631 allocs/op        |
+| BenchmarkCreateEntityUECS (100000)                                | 33813923 ns/op  | 49120107 B/op   | 200148 allocs/op      |
+| BenchmarkIterateVolt (100000)                                     | 327920 ns/op    | 128 B/op        | 5 allocs/op           |
+| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 95396 ns/op     | 3274 B/op       | 93 allocs/op          |
+| BenchmarkIterateArche (100000)                                    | 302350 ns/op    | 354 B/op        | 4 allocs/op           |
+| BenchmarkIterateUECS (100000)                                     | 234814 ns/op    | 152 B/op        | 4 allocs/op           |
+| BenchmarkAddVolt (100000)                                         | 27868065 ns/op  | 4750176 B/op    | 300002 allocs/op      |
+| BenchmarkAddArche (100000)                                        | 6204147 ns/op   | 3329050 B/op    | 200000 allocs/op      |
+| BenchmarkAddUECS (100000)                                         | 71806194 ns/op  | 16643870 B/op   | 500010 allocs/op      |
+| BenchmarkRemoveVolt (100000)                                      | 19352594 ns/op  | 200000 B/op     | 100000 allocs/op      |
+| BenchmarkRemoveArche (100000)                                     | 6796755 ns/op   | 3300006 B/op    | 200000 allocs/op      |
+| BenchmarkRemoveUECS (100000)                                      | 76231994 ns/op  | 17092955 B/op   | 600002 allocs/op      |
 
 These results show a few things:
 - Arche is the fastest tool for writes operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.

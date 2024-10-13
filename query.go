@@ -2,6 +2,7 @@ package volt
 
 import (
 	"iter"
+	"math"
 	"slices"
 )
 
@@ -104,7 +105,8 @@ func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult1[A]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult1[A]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -254,7 +256,8 @@ func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResu
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult2[A, B]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult2[A, B]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -427,7 +430,8 @@ func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryR
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult3[A, B, C]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult3[A, B, C]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -620,7 +624,8 @@ func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(Que
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult4[A, B, C, D]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult4[A, B, C, D]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -828,7 +833,8 @@ func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult5[A, B, C, D, E]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult5[A, B, C, D, E]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -1054,7 +1060,8 @@ func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn fu
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult6[A, B, C, D, E, F]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult6[A, B, C, D, E, F]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -1298,7 +1305,8 @@ func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult7[A, B, C, D, E, F, G]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult7[A, B, C, D, E, F, G]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
@@ -1559,7 +1567,8 @@ func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filte
 		panic("chunk size must be greater than zero")
 	}
 
-	channel := make(chan iter.Seq[QueryResult8[A, B, C, D, E, F, G, H]])
+	channelsCount := math.Ceil(float64(query.Count()) / float64(chunkSize))
+	channel := make(chan iter.Seq[QueryResult8[A, B, C, D, E, F, G, H]], int(channelsCount))
 
 	go func() {
 		defer close(channel)
