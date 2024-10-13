@@ -6,7 +6,7 @@ import (
 
 func Test_getStorage(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	s1 := getStorage[testComponent1](world)
 	if s1 == nil {
@@ -20,7 +20,7 @@ func Test_getStorage(t *testing.T) {
 
 func TestWorld_getStorageForComponentId(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	s, err := world.getStorageForComponentId(testComponent1Id)
 	if err != nil {

@@ -11,24 +11,25 @@ type ComponentConfigInterface interface {
 	addComponent(world *World, entityId EntityId, configuration any) error
 }
 type ComponentConfig[T ComponentInterface] struct {
-	ID        ComponentId
+	id        ComponentId
 	BuilderFn ComponentBuilder
 	component T
 }
 
 func (componentConfig *ComponentConfig[T]) getComponentId() ComponentId {
-	return componentConfig.ID
+	return componentConfig.id
 }
 
 func (componentConfig *ComponentConfig[T]) setComponent(component any) {
 	componentConfig.component = component.(T)
+	componentConfig.id = component.(T).GetComponentId()
 }
 
 func (componentConfig *ComponentConfig[T]) addComponent(world *World, entityId EntityId, configuration any) error {
 	var t T
 	componentConfig.builderFn(&t, configuration)
 
-	archetype := world.getNextArchetype(entityId, componentConfig.ID)
+	archetype := world.getNextArchetype(entityId, componentConfig.id)
 	err := addComponentsToArchetype1[T](world, entityId, archetype, t)
 
 	return err

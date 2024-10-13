@@ -87,8 +87,8 @@ func TestAddComponent(t *testing.T) {
 	entities := make([]EntityId, TEST_ENTITY_NUMBER)
 	world := CreateWorld(1024)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {}})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id, BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
@@ -113,7 +113,7 @@ func TestAddComponent(t *testing.T) {
 
 func TestConfigureComponent(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {
 		conf := configuration.(testComponent1Configuration)
 		testTransformComponent := component.(*testComponent1)
 
@@ -130,8 +130,8 @@ func TestGetComponent(t *testing.T) {
 	entities := make([]EntityId, TEST_ENTITY_NUMBER)
 	world := CreateWorld(1024)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {}})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id, BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
@@ -159,8 +159,8 @@ func TestRemoveComponent(t *testing.T) {
 	entities := make([]EntityId, TEST_ENTITY_NUMBER)
 	world := CreateWorld(1024)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {}})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id, BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))

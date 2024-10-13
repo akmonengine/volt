@@ -70,7 +70,7 @@ type transformConfiguration struct {
 ```
 - Register the component for the world to use it. The BuilderFn is optional, it allows to initialize and customize the component at its creation.
 ```go 
-volt.RegisterComponent[transformComponent](world, &ComponentConfig[transformComponent]{ID: transformId, BuilderFn: func(component any, configuration any) {
+volt.RegisterComponent[transformComponent](world, &ComponentConfig[transformComponent]{BuilderFn: func(component any, configuration any) {
     conf := configuration.(*transformConfiguration)
     transformComponent := component.(*transformComponent)
 	transformComponent.x = conf.x

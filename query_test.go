@@ -8,7 +8,7 @@ import (
 
 func TestCreateQuery1(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	query := CreateQuery1[testComponent1](world, []OptionalComponent{})
 
@@ -22,8 +22,8 @@ func TestCreateQuery1(t *testing.T) {
 
 func TestQuery1_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -50,7 +50,7 @@ func TestQuery1_filter(t *testing.T) {
 
 func TestQuery1_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -70,7 +70,7 @@ func TestQuery1_Count(t *testing.T) {
 func TestQuery1_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -102,7 +102,7 @@ func TestQuery1_Foreach(t *testing.T) {
 func TestQuery1_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -138,8 +138,8 @@ func TestQuery1_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery2(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	query := CreateQuery2[testComponent1, testComponent2](world, []OptionalComponent{})
 
@@ -153,9 +153,9 @@ func TestCreateQuery2(t *testing.T) {
 
 func TestQuery2_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -182,8 +182,8 @@ func TestQuery2_filter(t *testing.T) {
 
 func TestQuery2_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -202,8 +202,8 @@ func TestQuery2_Count(t *testing.T) {
 func TestQuery2_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -235,8 +235,8 @@ func TestQuery2_Foreach(t *testing.T) {
 func TestQuery2_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -272,9 +272,9 @@ func TestQuery2_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery3(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, []OptionalComponent{})
 
@@ -288,10 +288,10 @@ func TestCreateQuery3(t *testing.T) {
 
 func TestQuery3_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -318,9 +318,9 @@ func TestQuery3_filter(t *testing.T) {
 
 func TestQuery3_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -340,9 +340,9 @@ func TestQuery3_Count(t *testing.T) {
 func TestQuery3_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -374,9 +374,9 @@ func TestQuery3_Foreach(t *testing.T) {
 func TestQuery3_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -412,10 +412,10 @@ func TestQuery3_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery4(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, []OptionalComponent{})
 
@@ -429,11 +429,11 @@ func TestCreateQuery4(t *testing.T) {
 
 func TestQuery4_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -460,10 +460,10 @@ func TestQuery4_filter(t *testing.T) {
 
 func TestQuery4_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -482,10 +482,10 @@ func TestQuery4_Count(t *testing.T) {
 func TestQuery4_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -517,10 +517,10 @@ func TestQuery4_Foreach(t *testing.T) {
 func TestQuery4_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -556,11 +556,11 @@ func TestQuery4_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery5(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, []OptionalComponent{})
 
@@ -574,12 +574,12 @@ func TestCreateQuery5(t *testing.T) {
 
 func TestQuery5_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -606,11 +606,11 @@ func TestQuery5_filter(t *testing.T) {
 
 func TestQuery5_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -629,11 +629,11 @@ func TestQuery5_Count(t *testing.T) {
 func TestQuery5_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -665,11 +665,11 @@ func TestQuery5_Foreach(t *testing.T) {
 func TestQuery5_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -705,12 +705,12 @@ func TestQuery5_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery6(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, []OptionalComponent{})
 
@@ -724,13 +724,13 @@ func TestCreateQuery6(t *testing.T) {
 
 func TestQuery6_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -757,12 +757,12 @@ func TestQuery6_filter(t *testing.T) {
 
 func TestQuery6_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -781,12 +781,12 @@ func TestQuery6_Count(t *testing.T) {
 func TestQuery6_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -818,12 +818,12 @@ func TestQuery6_Foreach(t *testing.T) {
 func TestQuery6_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -859,13 +859,13 @@ func TestQuery6_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery7(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, []OptionalComponent{})
 
@@ -879,14 +879,14 @@ func TestCreateQuery7(t *testing.T) {
 
 func TestQuery7_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -913,13 +913,13 @@ func TestQuery7_filter(t *testing.T) {
 
 func TestQuery7_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -939,13 +939,13 @@ func TestQuery7_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -978,13 +978,13 @@ func TestQuery7_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -1020,14 +1020,14 @@ func TestQuery7_ForeachChannel(t *testing.T) {
 
 func TestCreateQuery8(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, []OptionalComponent{})
 
@@ -1041,14 +1041,14 @@ func TestCreateQuery8(t *testing.T) {
 
 func TestQuery8_filter(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -1068,14 +1068,14 @@ func TestQuery8_filter(t *testing.T) {
 
 func TestQuery8_Count(t *testing.T) {
 	world := CreateWorld(TEST_ENTITY_NUMBER)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -1095,14 +1095,14 @@ func TestQuery8_Foreach(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
@@ -1134,14 +1134,14 @@ func TestQuery8_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
 
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entityId := world.CreateEntity(fmt.Sprint(i))
