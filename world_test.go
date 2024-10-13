@@ -43,8 +43,8 @@ func TestWorld_CreateEntity(t *testing.T) {
 
 func TestCreateEntityWithComponents2(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	entityId, err := CreateEntityWithComponents2(world, "entity1", testComponent1{}, testComponent2{})
 
@@ -67,9 +67,9 @@ func TestCreateEntityWithComponents2(t *testing.T) {
 
 func TestCreateEntityWithComponents3(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	entityId, err := CreateEntityWithComponents3(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{})
 
@@ -95,10 +95,10 @@ func TestCreateEntityWithComponents3(t *testing.T) {
 
 func TestCreateEntityWithComponents4(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	entityId, err := CreateEntityWithComponents4(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
 
@@ -127,11 +127,11 @@ func TestCreateEntityWithComponents4(t *testing.T) {
 
 func TestCreateEntityWithComponents5(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	entityId, err := CreateEntityWithComponents5(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
 
@@ -163,12 +163,12 @@ func TestCreateEntityWithComponents5(t *testing.T) {
 
 func TestCreateEntityWithComponents6(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	entityId, err := CreateEntityWithComponents6(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
 
@@ -203,13 +203,13 @@ func TestCreateEntityWithComponents6(t *testing.T) {
 
 func TestCreateEntityWithComponents7(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	entityId, err := CreateEntityWithComponents7(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
 
@@ -247,14 +247,14 @@ func TestCreateEntityWithComponents7(t *testing.T) {
 
 func TestCreateEntityWithComponents8(t *testing.T) {
 	world := CreateWorld(1024)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id})
-	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{ID: testComponent2Id})
-	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{ID: testComponent3Id})
-	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{ID: testComponent4Id})
-	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{ID: testComponent5Id})
-	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{ID: testComponent6Id})
-	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{ID: testComponent7Id})
-	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{ID: testComponent8Id})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	entityId, err := CreateEntityWithComponents8(world, "entity1", testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
 
