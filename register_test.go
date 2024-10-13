@@ -6,7 +6,7 @@ import (
 
 func TestComponentConfig_addComponent(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {}})
 
 	entityId := world.CreateEntity("entity")
 	componentRegistry, _ := world.getConfigByComponentId(testComponent1Id)
@@ -24,7 +24,7 @@ func TestComponentConfig_addComponent(t *testing.T) {
 
 func TestComponentConfig_builderFn(t *testing.T) {
 	world := CreateWorld(16)
-	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{ID: testComponent1Id, BuilderFn: func(component any, configuration any) {
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {
 		conf := configuration.(testComponent1Configuration)
 		testTransformComponent := component.(*testComponent1)
 
