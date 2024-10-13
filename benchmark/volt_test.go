@@ -10,8 +10,8 @@ import (
 func BenchmarkCreateEntityVolt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		world := volt.CreateWorld(ENTITIES_COUNT)
-		volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{ID: testTransformId})
-		volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{ID: testTagId})
+		volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+		volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 		for j := range ENTITIES_COUNT {
 			volt.CreateEntityWithComponents2(world, strconv.Itoa(j),
@@ -32,8 +32,8 @@ func BenchmarkIterateVolt(b *testing.B) {
 	b.StopTimer()
 
 	world := volt.CreateWorld(ENTITIES_COUNT)
-	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{ID: testTransformId})
-	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{ID: testTagId})
+	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	for i := 0; i < ENTITIES_COUNT; i++ {
 		id := world.CreateEntity(strconv.Itoa(i))
@@ -56,8 +56,8 @@ func BenchmarkIterateConcurrentlyVolt(b *testing.B) {
 	b.StopTimer()
 
 	world := volt.CreateWorld(ENTITIES_COUNT)
-	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{ID: testTransformId})
-	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{ID: testTagId})
+	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	for i := 0; i < ENTITIES_COUNT; i++ {
 		id := world.CreateEntity(strconv.Itoa(i))
@@ -86,8 +86,8 @@ func BenchmarkAddVolt(b *testing.B) {
 	b.StopTimer()
 
 	world := volt.CreateWorld(ENTITIES_COUNT)
-	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{ID: testTransformId})
-	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{ID: testTagId})
+	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	entities := make([]volt.EntityId, 0, ENTITIES_COUNT)
 	for j := range ENTITIES_COUNT {
@@ -115,8 +115,8 @@ func BenchmarkRemoveVolt(b *testing.B) {
 	b.StopTimer()
 
 	world := volt.CreateWorld(ENTITIES_COUNT)
-	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{ID: testTransformId})
-	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{ID: testTagId})
+	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	entities := make([]volt.EntityId, 0, ENTITIES_COUNT)
 	for j := range ENTITIES_COUNT {
