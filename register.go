@@ -10,6 +10,10 @@ type ComponentConfigInterface interface {
 	setComponent(component any)
 	addComponent(world *World, entityId EntityId, configuration any) error
 }
+
+// Configuration for a component T.
+//
+// BuilderFn defines the function called to set a new component.
 type ComponentConfig[T ComponentInterface] struct {
 	id        ComponentId
 	BuilderFn ComponentBuilder
@@ -42,8 +46,15 @@ func (componentConfig *ComponentConfig[T]) builderFn(component any, configuratio
 }
 
 type ComponentsRegister map[ComponentId]ComponentConfigInterface
+
+// ComponentBuilder is the function called to set the properties of a given component.
+//
+// A type assertion is required on component and configuration parameters.
 type ComponentBuilder func(component any, configuration any)
 
+// RegisterComponent adds a component T to the registry of the given World.
+//
+// Once the component is registered, it can be added to an entity.
 func RegisterComponent[T ComponentInterface](world *World, config ComponentConfigInterface) {
 	var t T
 	if world.ComponentsRegistry == nil {

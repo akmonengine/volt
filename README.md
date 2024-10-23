@@ -14,15 +14,15 @@ There is many ways to write an ECS, and Volt is based on the Archetype paradigm.
 
 ## Knowledge
 ### Entity
-An entity is the end object in a game (a cube, a character, a collision detector...). It is only defined by
-its identifier called entityId. This identifier is randomly generated, its type uint64 avoiding to generate twice the same id.
+An entity is the end object in a game (e.g. a character). It is only defined by
+its identifier called EntityId. This identifier is randomly generated, its type uint64 avoiding to generate twice the same id.
 It is also required to set a name for each entity, only used to easily retrieve them when required.
 
 Looking at the benchmark, a scene can handle between 100.000 to 1.000.000 depending on your machine and the complexity of the project.
 But of course, the lower the better, as it will allow the project to run on slower computers.
 
 ### Component
-What makes an entity functional is the combination of it(s) Component(s).
+An entity is composed from 1 to N Component(s).
 It is a structure of properties, and should not contain any logic by itself (meaning no functions).
 The Components are manipulated by Systems.
 
@@ -35,7 +35,7 @@ For example: the audio could be managed by a system, or the graphics managed by 
 Volt does not directly implements Systems, but allows you to create Queries that you can use in your own specific tools.
 
 ### Query
-A Query is a search for the set of entities that possess (at minimum) the list of ComponentId provided.
+A Query is a search tool for the set of entities that possess (at least) the list of ComponentId provided.
 It is then possible to iterate over the result of this search within a System, in order to manipulate the Components.
 
 ### Archetype
@@ -99,7 +99,7 @@ if err != nil {
 world.RemoveEntity(entityId)
 ```
 ## Searching for an entity
-- Knowing an entity by its name only allows to search its identifier:
+- Knowing an entity by its name, you can get its identifier:
 ```go
 entityId := world.SearchEntity("entityName")
 ```
