@@ -5,6 +5,9 @@ import (
 	"slices"
 )
 
+// ComponentInterface is the interface for all the Components.
+//
+// It wraps the GetComponentId method, that returns a Component identifier.
 type ComponentInterface interface {
 	GetComponentId() ComponentId
 }
@@ -19,6 +22,9 @@ func (world *World) getComponentsIds(components ...ComponentInterface) []Compone
 	return componentsIds
 }
 
+// ConfigureComponent configures a Component of type T using the build function related to it.
+//
+// The parameter conf contains all the data required for the configuration.
 func ConfigureComponent[T ComponentInterface](world *World, conf any) T {
 	var t T
 	componentRegistry := world.ComponentsRegistry[t.GetComponentId()]
@@ -28,6 +34,9 @@ func ConfigureComponent[T ComponentInterface](world *World, conf any) T {
 	return t
 }
 
+// AddComponent adds the component T to the existing EntityId.
+//
+// It returns an error if the entity already has the component, or if an internal error occurs.
 func AddComponent[T ComponentInterface](world *World, entityId EntityId, component T) error {
 	componentId := component.GetComponentId()
 	if world.HasComponents(entityId, componentId) {
@@ -45,6 +54,14 @@ func AddComponent[T ComponentInterface](world *World, entityId EntityId, compone
 	return nil
 }
 
+// AddComponents2 adds the components A, B to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a A, b B) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId())
 
@@ -67,6 +84,14 @@ func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a 
 	return nil
 }
 
+// AddComponents3 adds the components A, B, C to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId, a A, b B, c C) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId())
 
@@ -90,6 +115,14 @@ func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId,
 	return nil
 }
 
+// AddComponents4 adds the components A, B, C, D to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId())
 
@@ -114,6 +147,14 @@ func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId Entity
 	return nil
 }
 
+// AddComponents5 adds the components A, B, C, D, E to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId())
 
@@ -139,6 +180,14 @@ func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId Ent
 	return nil
 }
 
+// AddComponents6 adds the components A, B, C, D, E, F to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId())
 
@@ -165,6 +214,14 @@ func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId 
 	return nil
 }
 
+// AddComponents7 adds the components A, B, C, D, E, F, G to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F, g G) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId())
 
@@ -192,6 +249,14 @@ func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 	return nil
 }
 
+// AddComponents8 adds the components A, B, C, D, E, F, G, H to the existing EntityId.
+//
+// It returns an error if the:
+//   - the entity does not exist
+//   - the entity has one of the component
+//   - an internal error occurs
+//
+// This solution is faster than an atomic solution.
 func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F, g G, h H) error {
 	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId())
 
@@ -220,6 +285,13 @@ func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, ent
 	return nil
 }
 
+// AddComponent adds the component with ComponentId to the EntityId.
+//
+// This non-generic version is adapted for when generics are not available, though might be slower.
+// It returns an error if:
+//   - the entity already has the componentId
+//   - the componentId is not registered in the World
+//   - an internal error occurs
 func (world *World) AddComponent(entityId EntityId, componentId ComponentId, conf any) error {
 	if world.HasComponents(entityId, componentId) {
 		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
@@ -239,6 +311,9 @@ func (world *World) AddComponent(entityId EntityId, componentId ComponentId, con
 	return nil
 }
 
+// RemoveComponent removes the component to EntityId.
+//
+// It returns an error if the EntityId does not have the component.
 func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) error {
 	var t T
 	componentId := t.GetComponentId()
@@ -255,7 +330,12 @@ func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) erro
 	return nil
 }
 
-// Useful when generics are not available, but slower than the generic method
+// RemoveComponent removes the component with ComponentId from the EntityId.
+//
+// This non-generic version is adapted for when generics are not available, though might be slower.
+// It returns an error if:
+//   - the entity does not have the component
+//   - the ComponentId is not registered in the World
 func (world *World) RemoveComponent(entityId EntityId, componentId ComponentId) error {
 	entityRecord := world.Entities[entityId]
 
@@ -293,6 +373,9 @@ func removeComponent(world *World, s storage, entityRecord EntityRecord, compone
 	world.setArchetype(entityRecord, archetype)
 }
 
+// HasComponents returns whether the entity has the given variadic list of ComponentId.
+//
+// It returns false if at least one ComponentId is not owned.
 func (world *World) HasComponents(entityId EntityId, componentsIds ...ComponentId) bool {
 	entityRecord, ok := world.Entities[entityId]
 	if !ok {
@@ -313,6 +396,9 @@ func (world *World) hasComponents(entityRecord EntityRecord, componentsIds ...Co
 	return true
 }
 
+// GetComponent returns a pointer to the component T owned by the entity.
+//
+// If the entity does not have the component, it returns nil
 func GetComponent[T ComponentInterface](world *World, entityId EntityId) *T {
 	s := getStorage[T](world)
 	entityRecord := world.Entities[entityId]
@@ -324,7 +410,13 @@ func GetComponent[T ComponentInterface](world *World, entityId EntityId) *T {
 	return &s.archetypesComponentsEntities[entityRecord.archetypeId][entityRecord.key]
 }
 
-// Useful when generics are not available, but slower than the generic method
+// GetComponent returns the component with ComponentId for EntityId.
+//
+// This non-generic version is adapted for when generics are not available,
+// though might be slower and requires a type assertion.
+// It returns an error if:
+//   - the ComponentId is not registered in the World
+//   - the entity does not have the component
 func (world *World) GetComponent(entityId EntityId, componentId ComponentId) (any, error) {
 	entityRecord := world.Entities[entityId]
 	s, err := world.getStorageForComponentId(componentId)

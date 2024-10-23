@@ -6,22 +6,28 @@ import (
 	"slices"
 )
 
+// Optional ComponentId for Queries.
 type OptionalComponent ComponentId
 
+// Query for 1 component type.
 type Query1[A ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query1.
 type QueryResult1[A ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
 }
+
 type QueryResultChunk1[A ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 }
 
+// CreateQuery1 returns a new Query1, with component A.
 func CreateQuery1[A ComponentInterface](world *World, optionalComponents []OptionalComponent) Query1[A] {
 	var a A
 	return Query1[A]{
@@ -48,6 +54,7 @@ func (query *Query1[A]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query1.
 func (query *Query1[A]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -59,6 +66,7 @@ func (query *Query1[A]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query1.
 func (query *Query1[A]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 	archetypes := query.filter()
@@ -70,6 +78,8 @@ func (query *Query1[A]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult1 for all the entities with component A
+// to which filterFn function returns true.
 func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[QueryResult1[A]] {
 	return func(yield func(QueryResult1[A]) bool) {
 		storageA := getStorage[A](query.World)
@@ -100,6 +110,10 @@ func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[Qu
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult1 for all the entities with component A
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1[A]) bool) <-chan iter.Seq[QueryResult1[A]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -153,22 +167,27 @@ func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1
 	return channel
 }
 
+// Query for 2 components type.
 type Query2[A, B ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query2.
 type QueryResult2[A, B ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
 	B        *B
 }
+
 type QueryResultChunk2[A, B ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
 }
 
+// CreateQuery2 returns a new Query2, with components A, B.
 func CreateQuery2[A, B ComponentInterface](world *World, optionalComponents []OptionalComponent) Query2[A, B] {
 	var a A
 	var b B
@@ -196,6 +215,7 @@ func (query *Query2[A, B]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query2.
 func (query *Query2[A, B]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -207,6 +227,7 @@ func (query *Query2[A, B]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query2.
 func (query *Query2[A, B]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -219,6 +240,8 @@ func (query *Query2[A, B]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult2 for all the entities with components A, B
+// to which filterFn function returns true.
 func (query *Query2[A, B]) Foreach(filterFn func(QueryResult2[A, B]) bool) iter.Seq[QueryResult2[A, B]] {
 	return func(yield func(QueryResult2[A, B]) bool) {
 		storageA := getStorage[A](query.World)
@@ -251,6 +274,10 @@ func (query *Query2[A, B]) Foreach(filterFn func(QueryResult2[A, B]) bool) iter.
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult2 for all the entities with components A, B
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResult2[A, B]) bool) <-chan iter.Seq[QueryResult2[A, B]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -312,17 +339,21 @@ func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResu
 	return channel
 }
 
+// Query for 3 components type.
 type Query3[A, B, C ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query3.
 type QueryResult3[A, B, C ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
 	B        *B
 	C        *C
 }
+
 type QueryResultChunk3[A, B, C ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
@@ -330,6 +361,7 @@ type QueryResultChunk3[A, B, C ComponentInterface] struct {
 	C        []C
 }
 
+// CreateQuery3 returns a new Query3, with components A, B, C.
 func CreateQuery3[A, B, C ComponentInterface](world *World, optionalComponents []OptionalComponent) Query3[A, B, C] {
 	var a A
 	var b B
@@ -358,6 +390,7 @@ func (query *Query3[A, B, C]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query3.
 func (query *Query3[A, B, C]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -369,6 +402,7 @@ func (query *Query3[A, B, C]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query3.
 func (query *Query3[A, B, C]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -381,6 +415,8 @@ func (query *Query3[A, B, C]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult3 for all the entities with components A, B, C
+// to which filterFn function returns true.
 func (query *Query3[A, B, C]) Foreach(filterFn func(QueryResult3[A, B, C]) bool) iter.Seq[QueryResult3[A, B, C]] {
 	return func(yield func(QueryResult3[A, B, C]) bool) {
 		storageA := getStorage[A](query.World)
@@ -425,6 +461,10 @@ func (query *Query3[A, B, C]) Foreach(filterFn func(QueryResult3[A, B, C]) bool)
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult3 for all the entities with components A, B, C
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryResult3[A, B, C]) bool) <-chan iter.Seq[QueryResult3[A, B, C]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -494,12 +534,14 @@ func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryR
 	return channel
 }
 
+// Query for 4 components type.
 type Query4[A, B, C, D ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
 
+// Result returned for Query4.
 type QueryResult4[A, B, C, D ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
@@ -516,6 +558,7 @@ type QueryResultChunk4[A, B, C, D ComponentInterface] struct {
 	D        []D
 }
 
+// CreateQuery4 returns a new Query4, with components A, B, C, D.
 func CreateQuery4[A, B, C, D ComponentInterface](world *World, optionalComponents []OptionalComponent) Query4[A, B, C, D] {
 	var a A
 	var b B
@@ -545,6 +588,7 @@ func (query *Query4[A, B, C, D]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query4.
 func (query *Query4[A, B, C, D]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -556,6 +600,7 @@ func (query *Query4[A, B, C, D]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query4.
 func (query *Query4[A, B, C, D]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -568,6 +613,8 @@ func (query *Query4[A, B, C, D]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult4 for all the entities with components A, B, C, D
+// to which filterFn function returns true.
 func (query *Query4[A, B, C, D]) Foreach(filterFn func(QueryResult4[A, B, C, D]) bool) iter.Seq[QueryResult4[A, B, C, D]] {
 	return func(yield func(QueryResult4[A, B, C, D]) bool) {
 		storageA := getStorage[A](query.World)
@@ -619,6 +666,10 @@ func (query *Query4[A, B, C, D]) Foreach(filterFn func(QueryResult4[A, B, C, D])
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult4 for all the entities with components A, B, C, D
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(QueryResult4[A, B, C, D]) bool) <-chan iter.Seq[QueryResult4[A, B, C, D]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -695,11 +746,14 @@ func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(Que
 	return channel
 }
 
+// Query for 5 components type.
 type Query5[A, B, C, D, E ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query5.
 type QueryResult5[A, B, C, D, E ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
@@ -708,6 +762,7 @@ type QueryResult5[A, B, C, D, E ComponentInterface] struct {
 	D        *D
 	E        *E
 }
+
 type QueryResultChunk5[A, B, C, D, E ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
@@ -717,6 +772,7 @@ type QueryResultChunk5[A, B, C, D, E ComponentInterface] struct {
 	E        []E
 }
 
+// CreateQuery5 returns a new Query5, with components A, B, C, D, E.
 func CreateQuery5[A, B, C, D, E ComponentInterface](world *World, optionalComponents []OptionalComponent) Query5[A, B, C, D, E] {
 	var a A
 	var b B
@@ -747,6 +803,7 @@ func (query *Query5[A, B, C, D, E]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query5.
 func (query *Query5[A, B, C, D, E]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -758,6 +815,7 @@ func (query *Query5[A, B, C, D, E]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query5.
 func (query *Query5[A, B, C, D, E]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -770,6 +828,8 @@ func (query *Query5[A, B, C, D, E]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult5 for all the entities with components A, B, C, D, E
+// to which filterFn function returns true.
 func (query *Query5[A, B, C, D, E]) Foreach(filterFn func(QueryResult5[A, B, C, D, E]) bool) iter.Seq[QueryResult5[A, B, C, D, E]] {
 	return func(yield func(QueryResult5[A, B, C, D, E]) bool) {
 		storageA := getStorage[A](query.World)
@@ -828,6 +888,10 @@ func (query *Query5[A, B, C, D, E]) Foreach(filterFn func(QueryResult5[A, B, C, 
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult5 for all the entities with components A, B, C, D, E
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(QueryResult5[A, B, C, D, E]) bool) <-chan iter.Seq[QueryResult5[A, B, C, D, E]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -913,11 +977,14 @@ func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(
 	return channel
 }
 
+// Query for 6 components type.
 type Query6[A, B, C, D, E, F ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query6.
 type QueryResult6[A, B, C, D, E, F ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
@@ -927,6 +994,7 @@ type QueryResult6[A, B, C, D, E, F ComponentInterface] struct {
 	E        *E
 	F        *F
 }
+
 type QueryResultChunk6[A, B, C, D, E, F ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
@@ -937,6 +1005,7 @@ type QueryResultChunk6[A, B, C, D, E, F ComponentInterface] struct {
 	F        []F
 }
 
+// CreateQuery6 returns a new Query6, with components A, B, C, D, E, F.
 func CreateQuery6[A, B, C, D, E, F ComponentInterface](world *World, optionalComponents []OptionalComponent) Query6[A, B, C, D, E, F] {
 	var a A
 	var b B
@@ -967,6 +1036,7 @@ func (query *Query6[A, B, C, D, E, F]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query6.
 func (query *Query6[A, B, C, D, E, F]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -978,6 +1048,7 @@ func (query *Query6[A, B, C, D, E, F]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query6.
 func (query *Query6[A, B, C, D, E, F]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -990,6 +1061,8 @@ func (query *Query6[A, B, C, D, E, F]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult6 for all the entities with components A, B, C, D, E, F
+// to which filterFn function returns true.
 func (query *Query6[A, B, C, D, E, F]) Foreach(filterFn func(QueryResult6[A, B, C, D, E, F]) bool) iter.Seq[QueryResult6[A, B, C, D, E, F]] {
 	return func(yield func(QueryResult6[A, B, C, D, E, F]) bool) {
 		storageA := getStorage[A](query.World)
@@ -1055,6 +1128,10 @@ func (query *Query6[A, B, C, D, E, F]) Foreach(filterFn func(QueryResult6[A, B, 
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult6 for all the entities with components A, B, C, D, E, F
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn func(QueryResult6[A, B, C, D, E, F]) bool) <-chan iter.Seq[QueryResult6[A, B, C, D, E, F]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -1148,11 +1225,14 @@ func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn fu
 	return channel
 }
 
+// Query for 7 components type.
 type Query7[A, B, C, D, E, F, G ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query7.
 type QueryResult7[A, B, C, D, E, F, G ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
@@ -1163,6 +1243,7 @@ type QueryResult7[A, B, C, D, E, F, G ComponentInterface] struct {
 	F        *F
 	G        *G
 }
+
 type QueryResultChunk7[A, B, C, D, E, F, G ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
@@ -1174,6 +1255,7 @@ type QueryResultChunk7[A, B, C, D, E, F, G ComponentInterface] struct {
 	G        []G
 }
 
+// CreateQuery7 returns a new Query7, with components A, B, C, D, E, F, G.
 func CreateQuery7[A, B, C, D, E, F, G ComponentInterface](world *World, optionalComponents []OptionalComponent) Query7[A, B, C, D, E, F, G] {
 	var a A
 	var b B
@@ -1205,6 +1287,7 @@ func (query *Query7[A, B, C, D, E, F, G]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query7.
 func (query *Query7[A, B, C, D, E, F, G]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -1216,6 +1299,7 @@ func (query *Query7[A, B, C, D, E, F, G]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query7.
 func (query *Query7[A, B, C, D, E, F, G]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -1228,6 +1312,8 @@ func (query *Query7[A, B, C, D, E, F, G]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult7 for all the entities with components A, B, C, D, E, F, G
+// to which filterFn function returns true.
 func (query *Query7[A, B, C, D, E, F, G]) Foreach(filterFn func(QueryResult7[A, B, C, D, E, F, G]) bool) iter.Seq[QueryResult7[A, B, C, D, E, F, G]] {
 	return func(yield func(QueryResult7[A, B, C, D, E, F, G]) bool) {
 		storageA := getStorage[A](query.World)
@@ -1300,6 +1386,10 @@ func (query *Query7[A, B, C, D, E, F, G]) Foreach(filterFn func(QueryResult7[A, 
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult7 for all the entities with components A, B, C, D, E, F, G
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn func(QueryResult7[A, B, C, D, E, F, G]) bool) <-chan iter.Seq[QueryResult7[A, B, C, D, E, F, G]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -1401,11 +1491,14 @@ func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn
 	return channel
 }
 
+// Query for 8 components type.
 type Query8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	optionalComponents []OptionalComponent
 }
+
+// Result returned for Query8.
 type QueryResult8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	EntityId EntityId
 	A        *A
@@ -1417,6 +1510,7 @@ type QueryResult8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	G        *G
 	H        *H
 }
+
 type QueryResultChunk8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
@@ -1429,6 +1523,7 @@ type QueryResultChunk8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	H        []H
 }
 
+// CreateQuery8 returns a new Query8, with components A, B, C, D, E, F, G, H.
 func CreateQuery8[A, B, C, D, E, F, G, H ComponentInterface](world *World, optionalComponents []OptionalComponent) Query8[A, B, C, D, E, F, G, H] {
 	var a A
 	var b B
@@ -1461,6 +1556,7 @@ func (query *Query8[A, B, C, D, E, F, G, H]) filter() []Archetype {
 	return archetypes
 }
 
+// Count returns the total of entities fetched for Query8.
 func (query *Query8[A, B, C, D, E, F, G, H]) Count() int {
 	count := 0
 	archetypes := query.filter()
@@ -1472,6 +1568,7 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Count() int {
 	return count
 }
 
+// GetEntitiesIds returns a slice of all the EntityId fetched for Query8.
 func (query *Query8[A, B, C, D, E, F, G, H]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
@@ -1484,6 +1581,8 @@ func (query *Query8[A, B, C, D, E, F, G, H]) GetEntitiesIds() []EntityId {
 	return entities
 }
 
+// Foreach returns an iterator of QueryResult8 for all the entities with components A, B, C, D, E, F, G, H
+// to which filterFn function returns true.
 func (query *Query8[A, B, C, D, E, F, G, H]) Foreach(filterFn func(QueryResult8[A, B, C, D, E, F, G, H]) bool) iter.Seq[QueryResult8[A, B, C, D, E, F, G, H]] {
 	return func(yield func(QueryResult8[A, B, C, D, E, F, G, H]) bool) {
 		storageA := getStorage[A](query.World)
@@ -1562,6 +1661,10 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Foreach(filterFn func(QueryResult8[
 	}
 }
 
+// ForeachChannel returns a channel of iterators of QueryResult8 for all the entities with components A, B, C, D, E, F, G, H
+// to which filterFn function returns true.
+//
+// The parameter chunkSize defines the size of each iterators.
 func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filterFn func(QueryResult8[A, B, C, D, E, F, G, H]) bool) <-chan iter.Seq[QueryResult8[A, B, C, D, E, F, G, H]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
