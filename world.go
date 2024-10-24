@@ -318,6 +318,11 @@ func (world *World) SetEntityName(entityId EntityId, name string) {
 	world.entitiesNames[entityName] = entityId
 }
 
+// Count returns the number of entities in World.
+func (world *World) Count() int {
+	return len(world.entities)
+}
+
 func stringToEntityName(name string) entityName {
 	var nameByte entityName
 	copy(nameByte[:], name)
