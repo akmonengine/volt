@@ -4,9 +4,9 @@ import (
 	"slices"
 )
 
-func (world *World) createArchetype(componentsIds ...ComponentId) *Archetype {
-	archetypeKey := ArchetypeId(len(world.archetypes))
-	archetype := Archetype{
+func (world *World) createArchetype(componentsIds ...ComponentId) *archetype {
+	archetypeKey := archetypeId(len(world.archetypes))
+	archetype := archetype{
 		Id:   archetypeKey,
 		Type: componentsIds,
 	}
@@ -15,7 +15,7 @@ func (world *World) createArchetype(componentsIds ...ComponentId) *Archetype {
 	return &world.archetypes[archetypeKey]
 }
 
-func (world *World) getArchetype(entityRecord EntityRecord) *Archetype {
+func (world *World) getArchetype(entityRecord entityRecord) *archetype {
 	archetypeId := entityRecord.archetypeId
 
 	if int(archetypeId) >= len(world.archetypes) {
@@ -25,15 +25,15 @@ func (world *World) getArchetype(entityRecord EntityRecord) *Archetype {
 	return &world.archetypes[archetypeId]
 }
 
-func (world *World) setArchetype(entityRecord EntityRecord, archetype *Archetype) {
+func (world *World) setArchetype(entityRecord entityRecord, archetype *archetype) {
 	archetype.entities = append(archetype.entities, entityRecord.Id)
 
 	entityRecord.key = len(archetype.entities) - 1
 	entityRecord.archetypeId = archetype.Id
-	world.Entities[entityRecord.Id] = entityRecord
+	world.entities[entityRecord.Id] = entityRecord
 }
 
-func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *Archetype {
+func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *archetype {
 	for i, archetype := range world.archetypes {
 		if len(archetype.Type) != len(componentsIds) {
 			continue
@@ -56,8 +56,8 @@ func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *
 	return world.createArchetype(componentsIds...)
 }
 
-func (world *World) getArchetypesForComponentsIds(componentsIds ...ComponentId) []Archetype {
-	var archetypes []Archetype
+func (world *World) getArchetypesForComponentsIds(componentsIds ...ComponentId) []archetype {
+	var archetypes []archetype
 
 	for _, archetype := range world.archetypes {
 		i := 0
@@ -75,9 +75,9 @@ func (world *World) getArchetypesForComponentsIds(componentsIds ...ComponentId) 
 	return archetypes
 }
 
-func (world *World) getNextArchetype(entityId EntityId, componentsIds ...ComponentId) *Archetype {
-	var archetype *Archetype
-	if entityRecord, ok := world.Entities[entityId]; !ok {
+func (world *World) getNextArchetype(entityId EntityId, componentsIds ...ComponentId) *archetype {
+	var archetype *archetype
+	if entityRecord, ok := world.entities[entityId]; !ok {
 		archetype = world.getArchetypeForComponentsIds(componentsIds...)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)

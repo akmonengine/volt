@@ -29,11 +29,11 @@ func TestWorld_CreateEntity(t *testing.T) {
 	}
 
 	// Check if the entities all exist in the world
-	if len(world.Entities) != TEST_ENTITY_NUMBER {
+	if len(world.entities) != TEST_ENTITY_NUMBER {
 		t.Errorf("Number of entities created invalid")
 	}
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		_, ok := world.Entities[entities[i]]
+		_, ok := world.entities[entities[i]]
 
 		if !ok {
 			t.Errorf("Entity %d was not created properly", entities[i])
@@ -54,7 +54,7 @@ func TestCreateEntityWithComponents2(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -79,7 +79,7 @@ func TestCreateEntityWithComponents3(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -108,7 +108,7 @@ func TestCreateEntityWithComponents4(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -141,7 +141,7 @@ func TestCreateEntityWithComponents5(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -178,7 +178,7 @@ func TestCreateEntityWithComponents6(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -219,7 +219,7 @@ func TestCreateEntityWithComponents7(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -264,7 +264,7 @@ func TestCreateEntityWithComponents8(t *testing.T) {
 	if id := world.SearchEntity("entity1"); id == 0 {
 		t.Errorf("Could not find entityName %s", "entity1")
 	}
-	if _, ok := world.Entities[entityId]; !ok {
+	if _, ok := world.entities[entityId]; !ok {
 		t.Errorf("Could not find entityId %d", entityId)
 	}
 	if component := GetComponent[testComponent1](world, entityId); component == nil {
@@ -306,7 +306,7 @@ func TestWorld_RemoveEntity(t *testing.T) {
 	world.RemoveEntity(entities[TEST_ENTITY_NUMBER-1])
 
 	// Check the expected world size
-	if len(world.Entities) != (TEST_ENTITY_NUMBER - 3) {
+	if len(world.entities) != (TEST_ENTITY_NUMBER - 3) {
 		t.Errorf("World size not valid after removal of entities")
 	}
 

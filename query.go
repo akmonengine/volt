@@ -22,7 +22,7 @@ type QueryResult1[A ComponentInterface] struct {
 	A        *A
 }
 
-type QueryResultChunk1[A ComponentInterface] struct {
+type queryResultChunk1[A ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 }
@@ -41,7 +41,7 @@ func (query *Query1[A]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query1[A]) filter() []Archetype {
+func (query *Query1[A]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -132,7 +132,7 @@ func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1
 			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk1[A]{}
+				result := queryResultChunk1[A]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -181,7 +181,7 @@ type QueryResult2[A, B ComponentInterface] struct {
 	B        *B
 }
 
-type QueryResultChunk2[A, B ComponentInterface] struct {
+type queryResultChunk2[A, B ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -202,7 +202,7 @@ func (query *Query2[A, B]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query2[A, B]) filter() []Archetype {
+func (query *Query2[A, B]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -298,7 +298,7 @@ func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResu
 			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk2[A, B]{}
+				result := queryResultChunk2[A, B]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -354,7 +354,7 @@ type QueryResult3[A, B, C ComponentInterface] struct {
 	C        *C
 }
 
-type QueryResultChunk3[A, B, C ComponentInterface] struct {
+type queryResultChunk3[A, B, C ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -377,7 +377,7 @@ func (query *Query3[A, B, C]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query3[A, B, C]) filter() []Archetype {
+func (query *Query3[A, B, C]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -487,7 +487,7 @@ func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryR
 			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk3[A, B, C]{}
+				result := queryResultChunk3[A, B, C]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -550,7 +550,7 @@ type QueryResult4[A, B, C, D ComponentInterface] struct {
 	D        *D
 }
 
-type QueryResultChunk4[A, B, C, D ComponentInterface] struct {
+type queryResultChunk4[A, B, C, D ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -575,7 +575,7 @@ func (query *Query4[A, B, C, D]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query4[A, B, C, D]) filter() []Archetype {
+func (query *Query4[A, B, C, D]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -694,7 +694,7 @@ func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(Que
 			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk4[A, B, C, D]{}
+				result := queryResultChunk4[A, B, C, D]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -763,7 +763,7 @@ type QueryResult5[A, B, C, D, E ComponentInterface] struct {
 	E        *E
 }
 
-type QueryResultChunk5[A, B, C, D, E ComponentInterface] struct {
+type queryResultChunk5[A, B, C, D, E ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -790,7 +790,7 @@ func (query *Query5[A, B, C, D, E]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query5[A, B, C, D, E]) filter() []Archetype {
+func (query *Query5[A, B, C, D, E]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -918,7 +918,7 @@ func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(
 			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk5[A, B, C, D, E]{}
+				result := queryResultChunk5[A, B, C, D, E]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -995,7 +995,7 @@ type QueryResult6[A, B, C, D, E, F ComponentInterface] struct {
 	F        *F
 }
 
-type QueryResultChunk6[A, B, C, D, E, F ComponentInterface] struct {
+type queryResultChunk6[A, B, C, D, E, F ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -1023,7 +1023,7 @@ func (query *Query6[A, B, C, D, E, F]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query6[A, B, C, D, E, F]) filter() []Archetype {
+func (query *Query6[A, B, C, D, E, F]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -1160,7 +1160,7 @@ func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn fu
 			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk6[A, B, C, D, E, F]{}
+				result := queryResultChunk6[A, B, C, D, E, F]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -1244,7 +1244,7 @@ type QueryResult7[A, B, C, D, E, F, G ComponentInterface] struct {
 	G        *G
 }
 
-type QueryResultChunk7[A, B, C, D, E, F, G ComponentInterface] struct {
+type queryResultChunk7[A, B, C, D, E, F, G ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -1274,7 +1274,7 @@ func (query *Query7[A, B, C, D, E, F, G]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query7[A, B, C, D, E, F, G]) filter() []Archetype {
+func (query *Query7[A, B, C, D, E, F, G]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -1420,7 +1420,7 @@ func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn
 			sliceG := storageG.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk7[A, B, C, D, E, F, G]{}
+				result := queryResultChunk7[A, B, C, D, E, F, G]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
@@ -1511,7 +1511,7 @@ type QueryResult8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	H        *H
 }
 
-type QueryResultChunk8[A, B, C, D, E, F, G, H ComponentInterface] struct {
+type queryResultChunk8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	EntityId []EntityId
 	A        []A
 	B        []B
@@ -1543,7 +1543,7 @@ func (query *Query8[A, B, C, D, E, F, G, H]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query8[A, B, C, D, E, F, G, H]) filter() []Archetype {
+func (query *Query8[A, B, C, D, E, F, G, H]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
@@ -1697,7 +1697,7 @@ func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filte
 			sliceH := storageH.archetypesComponentsEntities[archetype.Id]
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
-				result := QueryResultChunk8[A, B, C, D, E, F, G, H]{}
+				result := queryResultChunk8[A, B, C, D, E, F, G, H]{}
 				end := min(chunkSize, len(archetype.entities[i:]))
 
 				// Set the capacity of each chunk so that appending to a chunk does
