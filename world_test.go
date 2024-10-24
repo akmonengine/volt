@@ -359,3 +359,21 @@ func TestWorld_GetEntityName(t *testing.T) {
 		t.Errorf("world.GetEntityName does not return empty string for entityId 0")
 	}
 }
+
+func TestWorld_Count(t *testing.T) {
+	world := CreateWorld(1024)
+
+	if world.Count() != 0 {
+		t.Errorf("world.Count should return 0 if the world is empty")
+	}
+
+	entities := make([]EntityId, TEST_ENTITY_NUMBER)
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entities[i] = world.CreateEntity(fmt.Sprint(i))
+	}
+
+	if world.Count() != TEST_ENTITY_NUMBER {
+		t.Errorf("world.Count returned %d after inserting %d entities", world.Count(), TEST_ENTITY_NUMBER)
+	}
+}
