@@ -11,47 +11,49 @@ import (
 type smallID uint8
 
 // uint64 identifier, for big scoped data.
-type ID uint64
+type id uint64
 
 // Entity identifier in the world.
-type EntityId ID
+type EntityId id
 
 // Component identifier in the register.
 type ComponentId smallID
 
-// Archetype identifier in the world.
-type ArchetypeId ID
+// archetype identifier in the world.
+type archetypeId id
 
-// List of Components required for an Archetype.
-type Type []ComponentId
+// List of ComponentId.
+type componentsIds []ComponentId
 
-type Archetype struct {
-	Id       ArchetypeId
-	Type     Type
+// Implementation of an archetype with its identifier, componentsIds, and entitiesIds
+type archetype struct {
+	Id       archetypeId
+	Type     componentsIds
 	entities []EntityId
 }
 
-type EntityRecord struct {
+// Container of archetype and key position in storage, for a given EntityId
+type entityRecord struct {
 	Id          EntityId
-	archetypeId ArchetypeId
+	archetypeId archetypeId
 	key         int
-	name        EntityName
+	name        entityName
 }
 
-// EntityName is a string transformed to byte array.
+// entityName is a string transformed to byte array.
 //
 // It avoids the garbage collector to analyze this data constantly,
 // at the price of a fixed data size.
-type EntityName [64]byte
-type EntitiesNames map[EntityName]EntityId
-type Entities map[EntityId]EntityRecord
+type entityName [64]byte
+type entitiesNames map[entityName]EntityId
+type entities map[EntityId]entityRecord
 
-// World representation, container of all the data related to Entities and their Components.
+// World representation, container of all the data related to entities and their Components.
 type World struct {
-	ComponentsRegistry ComponentsRegister
-	entitiesNames      EntitiesNames
-	Entities           Entities
-	archetypes         []Archetype
+	componentsRegistry ComponentsRegister
+	entitiesNames      entitiesNames
+	entities           entities
+	archetypes         []archetype
 	storage            []storage
 
 	entityAddedFn      func(entityId EntityId)
@@ -65,9 +67,9 @@ type World struct {
 // It preallocates initialCapacity in memory.
 func CreateWorld(initialCapacity int) *World {
 	world := &World{
-		entitiesNames:      make(EntitiesNames, initialCapacity),
-		Entities:           make(Entities, initialCapacity),
-		archetypes:         make([]Archetype, 0, 1024),
+		entitiesNames:      make(entitiesNames, initialCapacity),
+		entities:           make(entities, initialCapacity),
+		archetypes:         make([]archetype, 0, 1024),
 		storage:            make([]storage, 256),
 		entityAddedFn:      func(entityId EntityId) {},
 		entityRemovedFn:    func(entityId EntityId) {},
@@ -112,11 +114,11 @@ func (world *World) CreateEntity(name string) EntityId {
 	archetype := world.getArchetypeForComponentsIds()
 
 	world.entitiesNames[entityName] = entityId
-	entityRecord := EntityRecord{
+	entityRecord := entityRecord{
 		Id:   entityId,
 		name: entityName,
 	}
-	world.Entities[entityId] = entityRecord
+	world.entities[entityId] = entityRecord
 	world.setArchetype(entityRecord, archetype)
 
 	return entityId
@@ -129,7 +131,7 @@ func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name str
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents2(world, entityId, a, b)
 	if err != nil {
@@ -147,7 +149,7 @@ func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name 
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents3(world, entityId, a, b, c)
 	if err != nil {
@@ -165,7 +167,7 @@ func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, na
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents4(world, entityId, a, b, c, d)
 	if err != nil {
@@ -183,7 +185,7 @@ func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World,
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents5(world, entityId, a, b, c, d, e)
 	if err != nil {
@@ -201,7 +203,7 @@ func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *Wor
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents6(world, entityId, a, b, c, d, e, f)
 	if err != nil {
@@ -219,7 +221,7 @@ func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents7(world, entityId, a, b, c, d, e, f, g)
 	if err != nil {
@@ -237,7 +239,7 @@ func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](worl
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.Entities[entityId] = EntityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
 
 	err := AddComponents8(world, entityId, a, b, c, d, e, f, g, h)
 	if err != nil {
@@ -258,7 +260,7 @@ func (world *World) PublishEntity(entityId EntityId) {
 func (world *World) RemoveEntity(entityId EntityId) {
 	world.entityRemovedFn(entityId)
 
-	entityRecord := world.Entities[entityId]
+	entityRecord := world.entities[entityId]
 	archetype := world.archetypes[entityRecord.archetypeId]
 
 	lastEntityKey := len(archetype.entities) - 1
@@ -270,10 +272,10 @@ func (world *World) RemoveEntity(entityId EntityId) {
 
 	if lastEntityKey >= 0 {
 		lastEntityId := world.archetypes[archetype.Id].entities[lastEntityKey]
-		lastEntity := world.Entities[lastEntityId]
+		lastEntity := world.entities[lastEntityId]
 		if lastEntity.key > entityRecord.key {
 			lastEntity.key = entityRecord.key
-			world.Entities[lastEntityId] = lastEntity
+			world.entities[lastEntityId] = lastEntity
 			archetype.entities[entityRecord.key] = lastEntityId
 		}
 
@@ -281,8 +283,8 @@ func (world *World) RemoveEntity(entityId EntityId) {
 		world.archetypes[archetype.Id] = archetype
 	}
 
-	delete(world.entitiesNames, world.Entities[entityId].name)
-	delete(world.Entities, entityId)
+	delete(world.entitiesNames, world.entities[entityId].name)
+	delete(world.entities, entityId)
 }
 
 // SearchEntity returns the EntityId named by name.
@@ -299,7 +301,7 @@ func (world *World) SearchEntity(name string) EntityId {
 // GetEntityName returns the name of an EntityId.
 // If not found, returns an empty string.
 func (world *World) GetEntityName(entityId EntityId) string {
-	if entity, ok := world.Entities[entityId]; ok {
+	if entity, ok := world.entities[entityId]; ok {
 		return entityNameToString(entity.name)
 	}
 
@@ -310,19 +312,19 @@ func (world *World) GetEntityName(entityId EntityId) string {
 func (world *World) SetEntityName(entityId EntityId, name string) {
 	entityName := stringToEntityName(name)
 
-	entityRecord := world.Entities[entityId]
+	entityRecord := world.entities[entityId]
 	entityRecord.name = entityName
-	world.Entities[entityId] = entityRecord
+	world.entities[entityId] = entityRecord
 	world.entitiesNames[entityName] = entityId
 }
 
-func stringToEntityName(name string) EntityName {
-	var nameByte EntityName
+func stringToEntityName(name string) entityName {
+	var nameByte entityName
 	copy(nameByte[:], name)
 
 	return nameByte
 }
 
-func entityNameToString(entityName EntityName) string {
+func entityNameToString(entityName entityName) string {
 	return strings.TrimRight(string(entityName[:]), "\x00")
 }

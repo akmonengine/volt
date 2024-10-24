@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+// ComponentConfigInterface is the interface
+// defining the method required to create a new Component.
 type ComponentConfigInterface interface {
 	builderFn(component any, configuration any)
 	getComponentId() ComponentId
@@ -57,17 +59,17 @@ type ComponentBuilder func(component any, configuration any)
 // Once the component is registered, it can be added to an entity.
 func RegisterComponent[T ComponentInterface](world *World, config ComponentConfigInterface) {
 	var t T
-	if world.ComponentsRegistry == nil {
-		world.ComponentsRegistry = make(ComponentsRegister)
+	if world.componentsRegistry == nil {
+		world.componentsRegistry = make(ComponentsRegister)
 	}
 
 	config.setComponent(t)
-	world.ComponentsRegistry[t.GetComponentId()] = config
+	world.componentsRegistry[t.GetComponentId()] = config
 	getStorage[T](world)
 }
 
 func (world *World) getConfigByComponentId(componentId ComponentId) (ComponentConfigInterface, error) {
-	for _, config := range world.ComponentsRegistry {
+	for _, config := range world.componentsRegistry {
 		if config.getComponentId() == componentId {
 			return config, nil
 		}
