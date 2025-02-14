@@ -165,41 +165,40 @@ entitiesIds := query.FetchAll()
 Few ECS tools exist for Go. Arche and unitoftime/ecs are probably the most looked at, and the most optimized.
 In the benchmark folder, this module is compared to both of them.
 
-- Go - v1.23.1
-- Volt - v1.1.0
-- [Arche - v0.13.2](https://github.com/mlange-42/arche)
-- [UECS - v0.0.2-0.20240727195554-03fbb2d998cf](https://github.com/unitoftime/ecs)
+- Go - v1.24.0
+- Volt - v1.3.0
+- [Arche - v0.15.3](https://github.com/mlange-42/arche)
+- [UECS - v0.0.3](https://github.com/unitoftime/ecs)
 
 The given results were produced by a ryzen 7 5800x, with 100.000 entities:
 
-| Benchmark feature (entities count)                                | Time/Operation  | Bytes/Operation | Allocations/Operation |
-|-------------------------------------------------------------------|-----------------|-----------------|-----------------------|
-| BenchmarkCreateEntityVolt (100000)                                | 28019814 ns/op  | 27509201 B/op   | 203267 allocs/op      |
-| BenchmarkCreateEntityArche (100000)                               | 13090540 ns/op  | 43679965 B/op   | 1631 allocs/op        |
-| BenchmarkCreateEntityUECS (100000)                                | 33813923 ns/op  | 49120107 B/op   | 200148 allocs/op      |
-| BenchmarkIterateVolt (100000)                                     | 327920 ns/op    | 128 B/op        | 5 allocs/op           |
-| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 95396 ns/op     | 3274 B/op       | 93 allocs/op          |
-| BenchmarkIterateArche (100000)                                    | 302350 ns/op    | 354 B/op        | 4 allocs/op           |
-| BenchmarkIterateUECS (100000)                                     | 234814 ns/op    | 152 B/op        | 4 allocs/op           |
-| BenchmarkAddVolt (100000)                                         | 27868065 ns/op  | 4750176 B/op    | 300002 allocs/op      |
-| BenchmarkAddArche (100000)                                        | 6204147 ns/op   | 3329050 B/op    | 200000 allocs/op      |
-| BenchmarkAddUECS (100000)                                         | 71806194 ns/op  | 16643870 B/op   | 500010 allocs/op      |
-| BenchmarkRemoveVolt (100000)                                      | 19352594 ns/op  | 200000 B/op     | 100000 allocs/op      |
-| BenchmarkRemoveArche (100000)                                     | 6796755 ns/op   | 3300006 B/op    | 200000 allocs/op      |
-| BenchmarkRemoveUECS (100000)                                      | 76231994 ns/op  | 17092955 B/op   | 600002 allocs/op      |
+| Benchmark feature (entities count)                                | Time/Operation | Bytes/Operation | Allocations/Operation |
+|-------------------------------------------------------------------|----------------|-----------------|-----------------------|
+| BenchmarkCreateEntityVolt (100000)                                | 45601461 ns/op | 57246484 B/op   | 200517 allocs/op      |
+| BenchmarkCreateEntityArche (100000)                               | 6915930  ns/op | 11096813 B/op   | 61 allocs/op          |
+| BenchmarkCreateEntityUECS (100000)                                | 34796577 ns/op | 49119548 B/op   | 200146 allocs/op      |
+| BenchmarkIterateVolt (100000)                                     | 321549 ns/op   | 248 B/op        | 9 allocs/op           |
+| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 94741 ns/op    | 3312 B/op       | 93 allocs/op          |
+| BenchmarkIterateArche (100000)                                    | 426126 ns/op   | 354 B/op        | 4 allocs/op           |
+| BenchmarkIterateUECS (100000)                                     | 239065 ns/op   | 128 B/op        | 3 allocs/op           |
+| BenchmarkAddVolt (100000)                                         | 27962001 ns/op | 4848882 B/op    | 300002 allocs/op      |
+| BenchmarkAddArche (100000)                                        | 6204147 ns/op  | 3329050 B/op    | 200000 allocs/op      |
+| BenchmarkAddUECS (100000)                                         | 35480698 ns/op | 4491342 B/op    | 100004 allocs/op      |
+| BenchmarkRemoveVolt (100000)                                      | 21474139 ns/op | 200000 B/op     | 100000 allocs/op      |
+| BenchmarkRemoveArche (100000)                                     | 4704755 ns/op  | 100000 B/op     | 100000 allocs/op      |
+| BenchmarkRemoveUECS (100000)                                      | 32672295 ns/op | 3328171 B/op    | 100000 allocs/op      |
 
 These results show a few things:
 - Arche is the fastest tool for writes operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
 - Unitoftime/ecs is the fastest tool for read operations on one thread only, but the writes are currently way slower than Arche and Volt (except on the Create benchmark).
 - Volt is a good compromise, an in-between: fast enough add/remove operations, and almost as fast as Arche and UECS for reads on one thread.
-Volt uses the new iterators from go1.23, which in their current implementation are slower than using a function call in the for-loop inside the Query (as done in UECS). See https://github.com/golang/go/issues/69411.
+Volt uses the new iterators from go1.23, which in their current implementation are slower than using a function call in the for-loop inside the Query (as done in UECS).
 This means, if the Go team finds a way to improve the performances from the iterators, we can hope to acheive near performances as UECS.
 - Thanks to the iterators, Volt provides a simple way to use goroutines for read operations. The data is received through a channel of iterator.
 As seen in the results, though not totally comparable, this allows way faster reading operations than any other implementation, and to use all the CPU capabilities to perform hard work on the components.
 - It might be doable to use goroutines in Arche and UECS, but I could not find this feature natively? Creating chunks of the resulted slices would generate a lot of memory allocations and is not desirable.
 
 ## What is to come next ?
-- Hopefully the ticket https://github.com/golang/go/issues/69411 could have a huge impact to boost the performances for queries.
 - Tags (zero sized types) are useful to query entities with specific features: for example, in a renderer, to get only the entities with the boolean isCulled == false.
 This would hugely reduce the loops operations in some scenarios. Currently we can use the filters on the iterators, but it does not avoid the fact that every entity (with the given components) is looped by the renderer.
 - For now the system is not designed to manage writes on a concurrent way: it means it is not safe to add/remove components in queries 
