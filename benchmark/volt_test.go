@@ -8,7 +8,7 @@ import (
 )
 
 func BenchmarkCreateEntityVolt(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		world := volt.CreateWorld(ENTITIES_COUNT)
 		volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
 		volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
@@ -29,8 +29,6 @@ func BenchmarkCreateEntityVolt(b *testing.B) {
 }
 
 func BenchmarkIterateVolt(b *testing.B) {
-	b.StopTimer()
-
 	world := volt.CreateWorld(ENTITIES_COUNT)
 	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
 	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
@@ -41,8 +39,7 @@ func BenchmarkIterateVolt(b *testing.B) {
 		volt.AddComponent[testTag](world, id, testTag{})
 	}
 
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		query := volt.CreateQuery2[testTransform, testTag](world, []volt.OptionalComponent{})
 		for result := range query.Foreach(nil) {
 			transformData(result.A)
@@ -53,8 +50,6 @@ func BenchmarkIterateVolt(b *testing.B) {
 }
 
 func BenchmarkIterateConcurrentlyVolt(b *testing.B) {
-	b.StopTimer()
-
 	world := volt.CreateWorld(ENTITIES_COUNT)
 	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
 	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
@@ -65,8 +60,7 @@ func BenchmarkIterateConcurrentlyVolt(b *testing.B) {
 		volt.AddComponent[testTag](world, id, testTag{})
 	}
 
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		query := volt.CreateQuery2[testTransform, testTag](world, []volt.OptionalComponent{})
 		queryChannel := query.ForeachChannel(ENTITIES_COUNT/WORKERS, nil)
 

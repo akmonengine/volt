@@ -7,7 +7,7 @@ import (
 )
 
 func BenchmarkCreateEntityUECS(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		world := uecs.NewWorld()
 
 		for range ENTITIES_COUNT {
@@ -27,7 +27,6 @@ func BenchmarkCreateEntityUECS(b *testing.B) {
 }
 
 func BenchmarkIterateUECS(b *testing.B) {
-	b.StopTimer()
 	world := uecs.NewWorld()
 
 	for i := 0; i < ENTITIES_COUNT; i++ {
@@ -38,8 +37,7 @@ func BenchmarkIterateUECS(b *testing.B) {
 		)
 	}
 
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		query := uecs.Query2[testTransform, testTag](world)
 		query.MapId(func(id uecs.Id, tr *testTransform, tag *testTag) {
 			transformData(tr)

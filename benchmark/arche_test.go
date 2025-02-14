@@ -8,8 +8,8 @@ import (
 )
 
 func BenchmarkCreateEntityArche(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		world := ecs.NewWorld(ecs.NewConfig().WithCapacityIncrement(ENTITIES_COUNT))
+	for b.Loop() {
+		world := ecs.NewWorld(ENTITIES_COUNT)
 		mapper := generic.NewMap2[testTransform, testTag](&world)
 
 		for range ENTITIES_COUNT {
@@ -28,7 +28,6 @@ func BenchmarkCreateEntityArche(b *testing.B) {
 }
 
 func BenchmarkIterateArche(b *testing.B) {
-	b.StopTimer()
 	world := ecs.NewWorld()
 	mapper := generic.NewMap2[
 		testTransform,
@@ -37,8 +36,7 @@ func BenchmarkIterateArche(b *testing.B) {
 
 	mapper.NewBatch(ENTITIES_COUNT)
 
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		filter := generic.NewFilter2[testTransform, testTag]()
 		query := filter.Query(&world)
 		for query.Next() {
@@ -53,7 +51,7 @@ func BenchmarkIterateArche(b *testing.B) {
 func BenchmarkAddArche(b *testing.B) {
 	b.StopTimer()
 
-	world := ecs.NewWorld(ecs.NewConfig().WithCapacityIncrement(ENTITIES_COUNT))
+	world := ecs.NewWorld(ENTITIES_COUNT)
 	mapper := generic.NewMap1[testTag](&world)
 
 	entities := make([]ecs.Entity, 0, ENTITIES_COUNT)
@@ -80,7 +78,7 @@ func BenchmarkAddArche(b *testing.B) {
 func BenchmarkRemoveArche(b *testing.B) {
 	b.StopTimer()
 
-	world := ecs.NewWorld(ecs.NewConfig().WithCapacityIncrement(ENTITIES_COUNT))
+	world := ecs.NewWorld(ENTITIES_COUNT)
 	mapper := generic.NewMap1[testTag](&world)
 
 	entities := make([]ecs.Entity, 0, ENTITIES_COUNT)

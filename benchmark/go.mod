@@ -1,13 +1,13 @@
 module benchmark
 
-go 1.23.0
+go 1.24.0
 
 require (
-	github.com/akmonengine/volt v1.1.0
-	github.com/mlange-42/arche v0.13.2
-	github.com/unitoftime/ecs v0.0.2-0.20240727195554-03fbb2d998cf
+	github.com/akmonengine/volt v1.2.0
+	github.com/mlange-42/arche v0.15.3
+	github.com/unitoftime/ecs v0.0.3
 )
 
-require github.com/unitoftime/cod v0.0.0-20230616173404-085cf4fe3918 // indirect
+require github.com/unitoftime/cod v0.0.0-20241228160133-efe666697475 // indirect
 
-replace github.com/akmonengine/volt v1.1.0 => ./../.
+replace github.com/akmonengine/volt v1.2.0 => ./../.
