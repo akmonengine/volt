@@ -491,7 +491,7 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityId Enti
 	// If the entity has no component, simply add it the archetype
 	if entityRecord, ok := world.entities[entityId]; !ok {
 		world.setArchetype(entityRecord, archetype)
-		setComponent(world, archetype.Id, component)
+		storageA.add(archetype.Id, component)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
 		if archetype.Id != oldArchetype.Id {
@@ -499,7 +499,7 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityId Enti
 			world.setArchetype(entityRecord, archetype)
 		}
 
-		setComponent(world, archetype.Id, component)
+		storageA.add(archetype.Id, component)
 	}
 
 	return nil
@@ -514,8 +514,8 @@ func addComponentsToArchetype2[A, B ComponentInterface](world *World, entityReco
 		return fmt.Errorf("no storage found for component %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -531,9 +531,9 @@ func addComponentsToArchetype3[A, B, C ComponentInterface](world *World, entityR
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
-	setComponent(world, archetype.Id, componentC)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
+	storageC.add(archetype.Id, componentC)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -550,10 +550,10 @@ func addComponentsToArchetype4[A, B, C, D ComponentInterface](world *World, enti
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
-	setComponent(world, archetype.Id, componentC)
-	setComponent(world, archetype.Id, componentD)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
+	storageC.add(archetype.Id, componentC)
+	storageD.add(archetype.Id, componentD)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -571,11 +571,11 @@ func addComponentsToArchetype5[A, B, C, D, E ComponentInterface](world *World, e
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
-	setComponent(world, archetype.Id, componentC)
-	setComponent(world, archetype.Id, componentD)
-	setComponent(world, archetype.Id, componentE)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
+	storageC.add(archetype.Id, componentC)
+	storageD.add(archetype.Id, componentD)
+	storageE.add(archetype.Id, componentE)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -594,12 +594,12 @@ func addComponentsToArchetype6[A, B, C, D, E, F ComponentInterface](world *World
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
-	setComponent(world, archetype.Id, componentC)
-	setComponent(world, archetype.Id, componentD)
-	setComponent(world, archetype.Id, componentE)
-	setComponent(world, archetype.Id, componentF)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
+	storageC.add(archetype.Id, componentC)
+	storageD.add(archetype.Id, componentD)
+	storageE.add(archetype.Id, componentE)
+	storageF.add(archetype.Id, componentF)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -619,13 +619,13 @@ func addComponentsToArchetype7[A, B, C, D, E, F, G ComponentInterface](world *Wo
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
-	setComponent(world, archetype.Id, componentC)
-	setComponent(world, archetype.Id, componentD)
-	setComponent(world, archetype.Id, componentE)
-	setComponent(world, archetype.Id, componentF)
-	setComponent(world, archetype.Id, componentG)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
+	storageC.add(archetype.Id, componentC)
+	storageD.add(archetype.Id, componentD)
+	storageE.add(archetype.Id, componentE)
+	storageF.add(archetype.Id, componentF)
+	storageG.add(archetype.Id, componentG)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -646,14 +646,14 @@ func addComponentsToArchetype8[A, B, C, D, E, F, G, H ComponentInterface](world 
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	setComponent(world, archetype.Id, componentA)
-	setComponent(world, archetype.Id, componentB)
-	setComponent(world, archetype.Id, componentC)
-	setComponent(world, archetype.Id, componentD)
-	setComponent(world, archetype.Id, componentE)
-	setComponent(world, archetype.Id, componentF)
-	setComponent(world, archetype.Id, componentG)
-	setComponent(world, archetype.Id, componentH)
+	storageA.add(archetype.Id, componentA)
+	storageB.add(archetype.Id, componentB)
+	storageC.add(archetype.Id, componentC)
+	storageD.add(archetype.Id, componentD)
+	storageE.add(archetype.Id, componentE)
+	storageF.add(archetype.Id, componentF)
+	storageG.add(archetype.Id, componentG)
+	storageH.add(archetype.Id, componentH)
 	world.setArchetype(entityRecord, archetype)
 
 	return nil
@@ -686,10 +686,4 @@ func moveComponentsToArchetype(world *World, entityRecord entityRecord, oldArche
 	oldArchetype.entities = oldArchetype.entities[:lastEntityKey]
 
 	return key
-}
-
-func setComponent[T ComponentInterface](world *World, archetypeId archetypeId, component T) int {
-	s := getStorage[T](world)
-
-	return s.add(archetypeId, component)
 }
