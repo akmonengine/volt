@@ -40,6 +40,16 @@ func TestAddTag(t *testing.T) {
 	if err == nil {
 		t.Errorf("The tag %d should not be returned as a Component from world.GetComponent", TAG_2)
 	}
+
+	err = world.AddTag(TAG_2, entities[0])
+	if err == nil {
+		t.Errorf("AddTag should return an error due to the entity %d already having the tag %d", entities[0], TAG_2)
+	}
+
+	err = world.AddTag(TAGS_INDICES-1, entities[0])
+	if err == nil {
+		t.Errorf("AddTag should return an error due to the TagId %d being lower than the range allowed", TAGS_INDICES-1)
+	}
 }
 
 func TestHasTag(t *testing.T) {
@@ -67,6 +77,10 @@ func TestHasTag(t *testing.T) {
 			t.Errorf("entity %d should have the tag %d", result.EntityId, TAG_2)
 		}
 	}
+
+	if world.HasTag(TAG_2, 0) {
+		t.Errorf("entity %d does not exist, it should not have the tag %d", 0, TAG_2)
+	}
 }
 
 func TestRemoveTag(t *testing.T) {
@@ -91,6 +105,16 @@ func TestRemoveTag(t *testing.T) {
 	results := query.Foreach(nil)
 	if len(slices.Collect(results)) != 0 {
 		t.Errorf("entities should not have the tag %d", TAG_1)
+	}
+
+	err := world.RemoveTag(TAG_1, 0)
+	if err == nil {
+		t.Errorf("we should not be able to remove the tag %d from an unexisting entity %d", TAG_1, entities[0])
+	}
+
+	err = world.RemoveTag(TAG_1, entities[0])
+	if err == nil {
+		t.Errorf("we should not be able to remove the tag %d from the entity %d that does not own it", TAG_1, entities[0])
 	}
 }
 
