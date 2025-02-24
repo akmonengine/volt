@@ -9,11 +9,16 @@ import (
 // Optional ComponentId for Queries.
 type OptionalComponent ComponentId
 
+type QueryConfiguration struct {
+	Tags               []TagId
+	OptionalComponents []OptionalComponent
+}
+
 // Query for 1 component type.
 type Query1[A ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query1.
@@ -28,12 +33,12 @@ type queryResultChunk1[A ComponentInterface] struct {
 }
 
 // CreateQuery1 returns a new Query1, with component A.
-func CreateQuery1[A ComponentInterface](world *World, optionalComponents []OptionalComponent) Query1[A] {
+func CreateQuery1[A ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query1[A] {
 	var a A
 	return Query1[A]{
 		World:              world,
 		componentsIds:      world.getComponentsIds(a),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -45,10 +50,12 @@ func (query *Query1[A]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -171,7 +178,7 @@ func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1
 type Query2[A, B ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query2.
@@ -188,13 +195,13 @@ type queryResultChunk2[A, B ComponentInterface] struct {
 }
 
 // CreateQuery2 returns a new Query2, with components A, B.
-func CreateQuery2[A, B ComponentInterface](world *World, optionalComponents []OptionalComponent) Query2[A, B] {
+func CreateQuery2[A, B ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query2[A, B] {
 	var a A
 	var b B
 	return Query2[A, B]{
 		World:              world,
 		componentsIds:      world.getComponentsIds(a, b),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -206,10 +213,12 @@ func (query *Query2[A, B]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -343,7 +352,7 @@ func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResu
 type Query3[A, B, C ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query3.
@@ -362,14 +371,14 @@ type queryResultChunk3[A, B, C ComponentInterface] struct {
 }
 
 // CreateQuery3 returns a new Query3, with components A, B, C.
-func CreateQuery3[A, B, C ComponentInterface](world *World, optionalComponents []OptionalComponent) Query3[A, B, C] {
+func CreateQuery3[A, B, C ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query3[A, B, C] {
 	var a A
 	var b B
 	var c C
 	return Query3[A, B, C]{
 		World:              world,
 		componentsIds:      world.getComponentsIds(a, b, c),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -381,10 +390,12 @@ func (query *Query3[A, B, C]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -538,7 +549,7 @@ func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryR
 type Query4[A, B, C, D ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query4.
@@ -559,7 +570,7 @@ type queryResultChunk4[A, B, C, D ComponentInterface] struct {
 }
 
 // CreateQuery4 returns a new Query4, with components A, B, C, D.
-func CreateQuery4[A, B, C, D ComponentInterface](world *World, optionalComponents []OptionalComponent) Query4[A, B, C, D] {
+func CreateQuery4[A, B, C, D ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query4[A, B, C, D] {
 	var a A
 	var b B
 	var c C
@@ -567,7 +578,7 @@ func CreateQuery4[A, B, C, D ComponentInterface](world *World, optionalComponent
 	return Query4[A, B, C, D]{
 		World:              world,
 		componentsIds:      world.getComponentsIds(a, b, c, d),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -579,10 +590,12 @@ func (query *Query4[A, B, C, D]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -750,7 +763,7 @@ func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(Que
 type Query5[A, B, C, D, E ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query5.
@@ -773,7 +786,7 @@ type queryResultChunk5[A, B, C, D, E ComponentInterface] struct {
 }
 
 // CreateQuery5 returns a new Query5, with components A, B, C, D, E.
-func CreateQuery5[A, B, C, D, E ComponentInterface](world *World, optionalComponents []OptionalComponent) Query5[A, B, C, D, E] {
+func CreateQuery5[A, B, C, D, E ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query5[A, B, C, D, E] {
 	var a A
 	var b B
 	var c C
@@ -782,7 +795,7 @@ func CreateQuery5[A, B, C, D, E ComponentInterface](world *World, optionalCompon
 	return Query5[A, B, C, D, E]{
 		World:              world,
 		componentsIds:      world.getComponentsIds(a, b, c, d, e),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -794,10 +807,12 @@ func (query *Query5[A, B, C, D, E]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -981,7 +996,7 @@ func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(
 type Query6[A, B, C, D, E, F ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query6.
@@ -1006,7 +1021,7 @@ type queryResultChunk6[A, B, C, D, E, F ComponentInterface] struct {
 }
 
 // CreateQuery6 returns a new Query6, with components A, B, C, D, E, F.
-func CreateQuery6[A, B, C, D, E, F ComponentInterface](world *World, optionalComponents []OptionalComponent) Query6[A, B, C, D, E, F] {
+func CreateQuery6[A, B, C, D, E, F ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query6[A, B, C, D, E, F] {
 	var a A
 	var b B
 	var c C
@@ -1015,7 +1030,7 @@ func CreateQuery6[A, B, C, D, E, F ComponentInterface](world *World, optionalCom
 	var f F
 	return Query6[A, B, C, D, E, F]{World: world,
 		componentsIds:      world.getComponentsIds(a, b, c, d, e, f),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -1027,10 +1042,12 @@ func (query *Query6[A, B, C, D, E, F]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -1229,7 +1246,7 @@ func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn fu
 type Query7[A, B, C, D, E, F, G ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query7.
@@ -1256,7 +1273,7 @@ type queryResultChunk7[A, B, C, D, E, F, G ComponentInterface] struct {
 }
 
 // CreateQuery7 returns a new Query7, with components A, B, C, D, E, F, G.
-func CreateQuery7[A, B, C, D, E, F, G ComponentInterface](world *World, optionalComponents []OptionalComponent) Query7[A, B, C, D, E, F, G] {
+func CreateQuery7[A, B, C, D, E, F, G ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query7[A, B, C, D, E, F, G] {
 	var a A
 	var b B
 	var c C
@@ -1266,7 +1283,7 @@ func CreateQuery7[A, B, C, D, E, F, G ComponentInterface](world *World, optional
 	var g G
 	return Query7[A, B, C, D, E, F, G]{World: world,
 		componentsIds:      world.getComponentsIds(a, b, c, d, e, f, g),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -1278,10 +1295,12 @@ func (query *Query7[A, B, C, D, E, F, G]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes
@@ -1495,7 +1514,7 @@ func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn
 type Query8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
-	optionalComponents []OptionalComponent
+	queryConfiguration QueryConfiguration
 }
 
 // Result returned for Query8.
@@ -1524,7 +1543,7 @@ type queryResultChunk8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 }
 
 // CreateQuery8 returns a new Query8, with components A, B, C, D, E, F, G, H.
-func CreateQuery8[A, B, C, D, E, F, G, H ComponentInterface](world *World, optionalComponents []OptionalComponent) Query8[A, B, C, D, E, F, G, H] {
+func CreateQuery8[A, B, C, D, E, F, G, H ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query8[A, B, C, D, E, F, G, H] {
 	var a A
 	var b B
 	var c C
@@ -1535,7 +1554,7 @@ func CreateQuery8[A, B, C, D, E, F, G, H ComponentInterface](world *World, optio
 	var h H
 	return Query8[A, B, C, D, E, F, G, H]{World: world,
 		componentsIds:      world.getComponentsIds(a, b, c, d, e, f, g, h),
-		optionalComponents: optionalComponents,
+		queryConfiguration: queryConfiguration,
 	}
 }
 
@@ -1547,10 +1566,12 @@ func (query *Query8[A, B, C, D, E, F, G, H]) filter() []archetype {
 	var componentsIds []ComponentId
 
 	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.optionalComponents, OptionalComponent(componentId)) {
+		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
+
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
 	return archetypes

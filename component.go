@@ -663,6 +663,10 @@ func moveComponentsToArchetype(world *World, entityRecord entityRecord, oldArche
 	var key, lastEntityKey int
 
 	for _, componentId := range oldArchetype.Type {
+		// tags are not movable
+		if componentId >= TAGS_INDICES {
+			continue
+		}
 		if !slices.Contains(archetype.Type, componentId) {
 			continue
 		}

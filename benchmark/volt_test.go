@@ -40,7 +40,7 @@ func BenchmarkIterateVolt(b *testing.B) {
 	}
 
 	for b.Loop() {
-		query := volt.CreateQuery2[testTransform, testTag](world, []volt.OptionalComponent{})
+		query := volt.CreateQuery2[testTransform, testTag](world, volt.QueryConfiguration{})
 		for result := range query.Foreach(nil) {
 			transformData(result.A)
 		}
@@ -61,7 +61,7 @@ func BenchmarkIterateConcurrentlyVolt(b *testing.B) {
 	}
 
 	for b.Loop() {
-		query := volt.CreateQuery2[testTransform, testTag](world, []volt.OptionalComponent{})
+		query := volt.CreateQuery2[testTransform, testTag](world, volt.QueryConfiguration{})
 		queryChannel := query.ForeachChannel(ENTITIES_COUNT/WORKERS, nil)
 
 		runWorkers(WORKERS, func(workerId int) {

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// uint8 identifier, for small scoped data.
-type smallID uint8
+// uint16 identifier, for small scoped data.
+type smallId uint16
 
 // uint64 identifier, for big scoped data.
 type id uint64
@@ -17,7 +17,7 @@ type id uint64
 type EntityId id
 
 // Component identifier in the register.
-type ComponentId smallID
+type ComponentId smallId
 
 // archetype identifier in the world.
 type archetypeId id
@@ -70,7 +70,7 @@ func CreateWorld(initialCapacity int) *World {
 		entitiesNames:      make(entitiesNames, initialCapacity),
 		entities:           make(entities, initialCapacity),
 		archetypes:         make([]archetype, 0, 1024),
-		storage:            make([]storage, 256),
+		storage:            make([]storage, TAGS_INDICES),
 		entityAddedFn:      func(entityId EntityId) {},
 		entityRemovedFn:    func(entityId EntityId) {},
 		componentAddedFn:   func(entityId EntityId, componentId ComponentId) {},

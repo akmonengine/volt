@@ -26,6 +26,10 @@ func getStorage[T ComponentInterface](world *World) *ComponentsStorage[T] {
 }
 
 func (world *World) getStorageForComponentId(componentId ComponentId) (storage, error) {
+	if componentId >= TAGS_INDICES {
+		return nil, fmt.Errorf("componentId %d overflow the range allowed [%d;%d]", componentId, COMPONENTS_INDICES, TAGS_INDICES)
+	}
+
 	s := world.storage[componentId]
 
 	if s == nil {
