@@ -7,9 +7,7 @@ import (
 	"strings"
 )
 
-// uint8 identifier, for small scoped data.
-type tinyId uint8
-
+// uint16 identifier, for small scoped data.
 type smallId uint16
 
 // uint64 identifier, for big scoped data.
