@@ -19,10 +19,22 @@ func TestAddTag(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery1[testComponent1](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -60,10 +72,22 @@ func TestHasTag(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery1[testComponent1](world, QueryConfiguration{Tags: []TagId{}})
@@ -91,10 +115,22 @@ func TestRemoveTag(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery1[testComponent1](world, QueryConfiguration{Tags: []TagId{TAG_1}})
@@ -127,11 +163,26 @@ func TestTag2(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery2[testComponent1, testComponent2](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -161,12 +212,30 @@ func TestTag3(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		AddComponent[testComponent3](world, entities[i], testComponent3{})
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent3](world, entities[i], testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -198,14 +267,34 @@ func TestTag4(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		AddComponent[testComponent3](world, entities[i], testComponent3{})
-		AddComponent[testComponent4](world, entities[i], testComponent4{})
-
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent3](world, entities[i], testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent4](world, entities[i], testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -238,15 +327,38 @@ func TestTag5(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		AddComponent[testComponent3](world, entities[i], testComponent3{})
-		AddComponent[testComponent4](world, entities[i], testComponent4{})
-		AddComponent[testComponent5](world, entities[i], testComponent5{})
-
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent3](world, entities[i], testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent4](world, entities[i], testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent5](world, entities[i], testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -280,16 +392,42 @@ func TestTag6(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		AddComponent[testComponent3](world, entities[i], testComponent3{})
-		AddComponent[testComponent4](world, entities[i], testComponent4{})
-		AddComponent[testComponent5](world, entities[i], testComponent5{})
-		AddComponent[testComponent6](world, entities[i], testComponent6{})
-
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent3](world, entities[i], testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent4](world, entities[i], testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent5](world, entities[i], testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent6](world, entities[i], testComponent6{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -324,17 +462,46 @@ func TestTag7(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		AddComponent[testComponent3](world, entities[i], testComponent3{})
-		AddComponent[testComponent4](world, entities[i], testComponent4{})
-		AddComponent[testComponent5](world, entities[i], testComponent5{})
-		AddComponent[testComponent6](world, entities[i], testComponent6{})
-		AddComponent[testComponent7](world, entities[i], testComponent7{})
-
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent3](world, entities[i], testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent4](world, entities[i], testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent5](world, entities[i], testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent6](world, entities[i], testComponent6{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent7](world, entities[i], testComponent7{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, QueryConfiguration{Tags: []TagId{TAG_2}})
@@ -370,18 +537,50 @@ func TestTag8(t *testing.T) {
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
 		entities[i] = world.CreateEntity(fmt.Sprint(i))
 
-		AddComponent[testComponent1](world, entities[i], testComponent1{})
-		AddComponent[testComponent2](world, entities[i], testComponent2{})
-		AddComponent[testComponent3](world, entities[i], testComponent3{})
-		AddComponent[testComponent4](world, entities[i], testComponent4{})
-		AddComponent[testComponent5](world, entities[i], testComponent5{})
-		AddComponent[testComponent6](world, entities[i], testComponent6{})
-		AddComponent[testComponent7](world, entities[i], testComponent7{})
-		AddComponent[testComponent8](world, entities[i], testComponent8{})
-
-		world.AddTag(TAG_1, entities[i])
-		world.AddTag(TAG_2, entities[i])
-		world.RemoveTag(TAG_1, entities[i])
+		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent2](world, entities[i], testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent3](world, entities[i], testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent4](world, entities[i], testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent5](world, entities[i], testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent6](world, entities[i], testComponent6{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent7](world, entities[i], testComponent7{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = AddComponent[testComponent8](world, entities[i], testComponent8{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.AddTag(TAG_2, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+		err = world.RemoveTag(TAG_1, entities[i])
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
 	}
 
 	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, QueryConfiguration{Tags: []TagId{TAG_2}})
