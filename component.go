@@ -63,12 +63,19 @@ func AddComponent[T ComponentInterface](world *World, entityId EntityId, compone
 //
 // This solution is faster than an atomic solution.
 func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a A, b B) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents2(world, entityRecord, a, b)
+}
+
+func addComponents2[A, B ComponentInterface](world *World, entityRecord entityRecord, a A, b B) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId()})
 	}
@@ -93,19 +100,26 @@ func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a 
 //
 // This solution is faster than an atomic solution.
 func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId, a A, b B, c C) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents3(world, entityRecord, a, b, c)
+}
+
+func addComponents3[A, B, C ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId()})
 	}
 
 	err := addComponentsToArchetype3(world, entityRecord, archetype, a, b, c)
 	if err != nil {
-		return fmt.Errorf("the components %v cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId()}, entityId, err)
+		return fmt.Errorf("the components %d cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId()}, entityId, err)
 	}
 
 	world.componentAddedFn(entityId, a.GetComponentId())
@@ -124,19 +138,26 @@ func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId,
 //
 // This solution is faster than an atomic solution.
 func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents4(world, entityRecord, a, b, c, d)
+}
+
+func addComponents4[A, B, C, D ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()})
 	}
 
 	err := addComponentsToArchetype4(world, entityRecord, archetype, a, b, c, d)
 	if err != nil {
-		return fmt.Errorf("the components %v cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()}, entityId, err)
+		return fmt.Errorf("the components %d cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()}, entityId, err)
 	}
 
 	world.componentAddedFn(entityId, a.GetComponentId())
@@ -156,19 +177,26 @@ func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId Entity
 //
 // This solution is faster than an atomic solution.
 func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents5(world, entityRecord, a, b, c, d, e)
+}
+
+func addComponents5[A, B, C, D, E ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()})
 	}
 
 	err := addComponentsToArchetype5(world, entityRecord, archetype, a, b, c, d, e)
 	if err != nil {
-		return fmt.Errorf("the components %v cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()}, entityId, err)
+		return fmt.Errorf("the components %d cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()}, entityId, err)
 	}
 
 	world.componentAddedFn(entityId, a.GetComponentId())
@@ -189,19 +217,26 @@ func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId Ent
 //
 // This solution is faster than an atomic solution.
 func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents6(world, entityRecord, a, b, c, d, e, f)
+}
+
+func addComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()})
 	}
 
 	err := addComponentsToArchetype6(world, entityRecord, archetype, a, b, c, d, e, f)
 	if err != nil {
-		return fmt.Errorf("the components %v cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()}, entityId, err)
+		return fmt.Errorf("the components %d cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()}, entityId, err)
 	}
 
 	world.componentAddedFn(entityId, a.GetComponentId())
@@ -223,19 +258,26 @@ func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId 
 //
 // This solution is faster than an atomic solution.
 func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F, g G) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents7(world, entityRecord, a, b, c, d, e, f, g)
+}
+
+func addComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F, g G) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()})
 	}
 
 	err := addComponentsToArchetype7(world, entityRecord, archetype, a, b, c, d, e, f, g)
 	if err != nil {
-		return fmt.Errorf("the components %v cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()}, entityId, err)
+		return fmt.Errorf("the components %d cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()}, entityId, err)
 	}
 
 	world.componentAddedFn(entityId, a.GetComponentId())
@@ -258,19 +300,26 @@ func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 //
 // This solution is faster than an atomic solution.
 func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F, g G, h H) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId())
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
+
+	return addComponents8(world, entityRecord, a, b, c, d, e, f, g, h)
+}
+
+func addComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F, g G, h H) error {
+	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId())
+
+	entityId := entityRecord.Id
+
 	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()})
 	}
 
 	err := addComponentsToArchetype8(world, entityRecord, archetype, a, b, c, d, e, f, g, h)
 	if err != nil {
-		return fmt.Errorf("the components %v cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()}, entityId, err)
+		return fmt.Errorf("the components %d cannot be added to entity %d: %w", []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()}, entityId, err)
 	}
 
 	world.componentAddedFn(entityId, a.GetComponentId())

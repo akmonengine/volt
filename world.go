@@ -131,9 +131,10 @@ func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name str
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents2(world, entityId, a, b)
+	err := addComponents2(world, entityRecord, a, b)
 	if err != nil {
 		return 0, err
 	}
@@ -149,9 +150,10 @@ func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name 
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents3(world, entityId, a, b, c)
+	err := addComponents3(world, entityRecord, a, b, c)
 	if err != nil {
 		return 0, err
 	}
@@ -167,9 +169,10 @@ func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, na
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents4(world, entityId, a, b, c, d)
+	err := addComponents4(world, entityRecord, a, b, c, d)
 	if err != nil {
 		return 0, err
 	}
@@ -185,9 +188,10 @@ func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World,
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents5(world, entityId, a, b, c, d, e)
+	err := addComponents5(world, entityRecord, a, b, c, d, e)
 	if err != nil {
 		return 0, err
 	}
@@ -203,9 +207,10 @@ func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *Wor
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents6(world, entityId, a, b, c, d, e, f)
+	err := addComponents6(world, entityRecord, a, b, c, d, e, f)
 	if err != nil {
 		return 0, err
 	}
@@ -221,9 +226,10 @@ func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents7(world, entityId, a, b, c, d, e, f, g)
+	err := addComponents7(world, entityRecord, a, b, c, d, e, f, g)
 	if err != nil {
 		return 0, err
 	}
@@ -239,9 +245,10 @@ func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](worl
 	entityId := newEntityId()
 
 	world.entitiesNames[entityName] = entityId
-	world.entities[entityId] = entityRecord{Id: entityId, name: entityName}
+	entityRecord := entityRecord{Id: entityId, name: entityName}
+	world.entities[entityId] = entityRecord
 
-	err := AddComponents8(world, entityId, a, b, c, d, e, f, g, h)
+	err := addComponents8(world, entityRecord, a, b, c, d, e, f, g, h)
 	if err != nil {
 		return 0, err
 	}
