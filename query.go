@@ -54,9 +54,7 @@ func (query *Query1[A]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -219,9 +217,7 @@ func (query *Query2[A, B]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -398,9 +394,7 @@ func (query *Query3[A, B, C]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -600,9 +594,7 @@ func (query *Query4[A, B, C, D]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -819,9 +811,7 @@ func (query *Query5[A, B, C, D, E]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -1056,9 +1046,7 @@ func (query *Query6[A, B, C, D, E, F]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -1311,9 +1299,7 @@ func (query *Query7[A, B, C, D, E, F, G]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
@@ -1584,9 +1570,7 @@ func (query *Query8[A, B, C, D, E, F, G, H]) filter() []archetype {
 			componentsIds = append(componentsIds, componentId)
 		}
 	}
-	for _, tagId := range query.queryConfiguration.Tags {
-		componentsIds = append(componentsIds, tagId)
-	}
+	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
 
 	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
 
