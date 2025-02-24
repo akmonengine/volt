@@ -28,7 +28,7 @@ An entity is composed from 1 to N Component(s).
 It is a structure of properties, and should not contain any logic by itself (meaning no functions).
 The Components are manipulated by Systems.
 
-A Component is defined by its ComponentId.
+A Component is defined by its ComponentId, ranging between [0;2048].
 
 ### System
 A system is a specialized tool that fetches entities, filtered by their Components, and transforms the datas.
@@ -53,7 +53,7 @@ Using the Structure Of Arrays (SoA) paradigm, Components are persisted in a dedi
 ```go 
 world := volt.CreateWorld()
 ```
-- Create your components, and implement the ComponentInterface with GetComponentId()
+- Create your components, and implement the ComponentInterface with GetComponentId(). Your ComponentId should range between [0;2048].
 ```go 
 const (
     transformComponentId = iota
@@ -114,7 +114,7 @@ entityName := world.GetEntityName(entityId)
 The most powerful feature is the possibility to query entities with a given set of Components.
 For example, in the Rendering system of the game engine, a query will fetch only for the entities having a Mesh & Transform:
 ```go
-query := volt.CreateQuery2[transformComponent, meshComponent](world, []volt.OptionalComponent{meshComponentId})
+query := volt.CreateQuery2[transformComponent, meshComponent](world, volt.QueryConfiguration{OptionalComponents: []volt.OptionalComponent{meshComponentId}})
 for result := range query.Foreach(nil) {
     transformData(result.A)
 }
@@ -123,7 +123,7 @@ The Foreach function receives a function to pre-filter the results, and returns 
 
 For faster performances, you can use concurrency with the function ForeachChannel:
 ```go
-query := volt.CreateQuery2[transformComponent, meshComponent](world, []volt.OptionalComponent{meshComponent})
+query := volt.CreateQuery2[transformComponent, meshComponent](world, volt.QueryConfiguration{OptionalComponents: []volt.OptionalComponent{meshComponentId}})
 queryChannel := query.ForeachChannel(1000, nil)
 
 runWorkers(4, func(workerId int) {
@@ -161,12 +161,38 @@ Or get the entities identifiers as a slice:
 entitiesIds := query.FetchAll()
 ```
 
+## Tags
+Tags are considered like any other Component internally, except they have no structure/value attached.
+They cannot be fetched using functions like _GetComponent_. Due to their simpler form, they do not need to be registered.
+
+Tags are useful to categorize your entities.
+
+e.g. "NPC", "STATIC", "DISABLED". For example, if you want to fetch only static content, you can query through the tag "STATIC".
+The Query will return only the entities tagged, in a faster way than applying the filter function in _Query.Foreach_ to check on each entities if they are static.
+
+e.g. to fetch only static entities:
+```go
+const TAG_STATIC_ID = iota + volt.TAGS_INDICES
+query := volt.CreateQuery2[transformComponent, meshComponent](world, volt.QueryConfiguration{Tags: []volt.TagId{TAG_STATIC_ID}})
+for result := range query.Foreach(nil) {
+    transformData(result.A)
+}
+```
+Important: the TagIds should start from volt.TAGS_INDICES, allowing a range from [2048; 65535] for TagIds.
+
+You can Add a Tag, check if an entity Has a Tag, or Remove it:
+```go
+world.AddTag(TAG_STATIC_ID, entityId)
+world.HasTag(TAG_STATIC_ID, entityId)
+world.RemoveTag(TAG_STATIC_ID, entityId)
+```
+
 ## Benchmark
 Few ECS tools exist for Go. Arche and unitoftime/ecs are probably the most looked at, and the most optimized.
 In the benchmark folder, this module is compared to both of them.
 
 - Go - v1.24.0
-- Volt - v1.3.0
+- Volt - v1.4.0
 - [Arche - v0.15.3](https://github.com/mlange-42/arche)
 - [UECS - v0.0.3](https://github.com/unitoftime/ecs)
 
@@ -174,19 +200,19 @@ The given results were produced by a ryzen 7 5800x, with 100.000 entities:
 
 | Benchmark feature (entities count)                                | Time/Operation | Bytes/Operation | Allocations/Operation |
 |-------------------------------------------------------------------|----------------|-----------------|-----------------------|
-| BenchmarkCreateEntityVolt (100000)                                | 45601461 ns/op | 57246484 B/op   | 200517 allocs/op      |
-| BenchmarkCreateEntityArche (100000)                               | 6915930  ns/op | 11096813 B/op   | 61 allocs/op          |
-| BenchmarkCreateEntityUECS (100000)                                | 34796577 ns/op | 49119548 B/op   | 200146 allocs/op      |
-| BenchmarkIterateVolt (100000)                                     | 321549 ns/op   | 248 B/op        | 9 allocs/op           |
-| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 94741 ns/op    | 3312 B/op       | 93 allocs/op          |
-| BenchmarkIterateArche (100000)                                    | 426126 ns/op   | 354 B/op        | 4 allocs/op           |
-| BenchmarkIterateUECS (100000)                                     | 239065 ns/op   | 128 B/op        | 3 allocs/op           |
-| BenchmarkAddVolt (100000)                                         | 27962001 ns/op | 4848882 B/op    | 300002 allocs/op      |
-| BenchmarkAddArche (100000)                                        | 6204147 ns/op  | 3329050 B/op    | 200000 allocs/op      |
-| BenchmarkAddUECS (100000)                                         | 35480698 ns/op | 4491342 B/op    | 100004 allocs/op      |
-| BenchmarkRemoveVolt (100000)                                      | 21474139 ns/op | 200000 B/op     | 100000 allocs/op      |
-| BenchmarkRemoveArche (100000)                                     | 4704755 ns/op  | 100000 B/op     | 100000 allocs/op      |
-| BenchmarkRemoveUECS (100000)                                      | 32672295 ns/op | 3328171 B/op    | 100000 allocs/op      |
+| BenchmarkCreateEntityVolt (100000)                                | 41716162 ns/op | 57996246 B/op   | 200517 allocs/op      |
+| BenchmarkCreateEntityArche (100000)                               | 6922002  ns/op | 11096962 B/op   | 61 allocs/op          |
+| BenchmarkCreateEntityUECS (100000)                                | 34596263 ns/op | 49119538 B/op   | 200146 allocs/op      |
+| BenchmarkIterateVolt (100000)                                     | 317646 ns/op   | 264 B/op        | 9 allocs/op           |
+| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 95976 ns/op    | 3327 B/op       | 93 allocs/op          |
+| BenchmarkIterateArche (100000)                                    | 429663 ns/op   | 354 B/op        | 4 allocs/op           |
+| BenchmarkIterateUECS (100000)                                     | 234043 ns/op   | 128 B/op        | 3 allocs/op           |
+| BenchmarkAddVolt (100000)                                         | 29081055 ns/op | 4806438 B/op    | 300002 allocs/op      |
+| BenchmarkAddArche (100000)                                        | 4262538 ns/op  | 119805 B/op     | 100000 allocs/op      |
+| BenchmarkAddUECS (100000)                                         | 37041871 ns/op | 4574654 B/op    | 100004 allocs/op      |
+| BenchmarkRemoveVolt (100000)                                      | 21988113 ns/op | 400000 B/op     | 100000 allocs/op      |
+| BenchmarkRemoveArche (100000)                                     | 4749902 ns/op  | 100000 B/op     | 100000 allocs/op      |
+| BenchmarkRemoveUECS (100000)                                      | 31742113 ns/op | 3328168 B/op    | 100000 allocs/op      |
 
 These results show a few things:
 - Arche is the fastest tool for writes operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
@@ -197,6 +223,10 @@ This means, if the Go team finds a way to improve the performances from the iter
 - Thanks to the iterators, Volt provides a simple way to use goroutines for read operations. The data is received through a channel of iterator.
 As seen in the results, though not totally comparable, this allows way faster reading operations than any other implementation, and to use all the CPU capabilities to perform hard work on the components.
 - It might be doable to use goroutines in Arche and UECS, but I could not find this feature natively? Creating chunks of the resulted slices would generate a lot of memory allocations and is not desirable.
+
+### Other benchmarks
+The creator and maintainer of Arche has published more complex benchmarks available here:
+https://github.com/mlange-42/go-ecs-benchmarks
 
 ## What is to come next ?
 - Tags (zero sized types) are useful to query entities with specific features: for example, in a renderer, to get only the entities with the boolean isCulled == false.
