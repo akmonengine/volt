@@ -80,10 +80,10 @@ func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a 
 }
 
 func addComponents2[A, B ComponentInterface](world *World, entityRecord entityRecord, a A, b B) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId())
 
 	entityId := entityRecord.Id
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId()})
 	}
 
@@ -116,11 +116,11 @@ func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId,
 }
 
 func addComponents3[A, B, C ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId())
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId()})
 	}
 
@@ -154,11 +154,11 @@ func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId Entity
 }
 
 func addComponents4[A, B, C, D ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId())
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()})
 	}
 
@@ -193,11 +193,11 @@ func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId Ent
 }
 
 func addComponents5[A, B, C, D, E ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId())
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()})
 	}
 
@@ -233,11 +233,11 @@ func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId 
 }
 
 func addComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e, f)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId())
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e, f)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()})
 	}
 
@@ -274,11 +274,11 @@ func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 }
 
 func addComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F, g G) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId())
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()})
 	}
 
@@ -316,11 +316,11 @@ func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, ent
 }
 
 func addComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F, g G, h H) error {
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g, h)...)
+	archetype := world.getNextArchetype(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId())
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g, h)...) {
+	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()})
 	}
 
