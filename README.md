@@ -84,6 +84,8 @@ volt.RegisterComponent[transformComponent](world, &ComponentConfig[transformComp
 ```go 
 entityId := world.CreateEntity("entityName")
 ```
+**Important**: the entity name MUST be unique.
+
 - Add the component to the entity
 ```go 
 component := volt.ConfigureComponent[transformComponent](&scene.World, transformConfiguration{x: 1.0, y: 2.0, z: 3.0})
@@ -192,27 +194,32 @@ Few ECS tools exist for Go. Arche and unitoftime/ecs are probably the most looke
 In the benchmark folder, this module is compared to both of them.
 
 - Go - v1.24.0
-- Volt - v1.4.0
+- Volt - v1.5.0
 - [Arche - v0.15.3](https://github.com/mlange-42/arche)
 - [UECS - v0.0.3](https://github.com/unitoftime/ecs)
 
 The given results were produced by a ryzen 7 5800x, with 100.000 entities:
 
-| Benchmark feature (entities count)                                | Time/Operation | Bytes/Operation | Allocations/Operation |
-|-------------------------------------------------------------------|----------------|-----------------|-----------------------|
-| BenchmarkCreateEntityVolt (100000)                                | 41716162 ns/op | 57996246 B/op   | 200517 allocs/op      |
-| BenchmarkCreateEntityArche (100000)                               | 6922002  ns/op | 11096962 B/op   | 61 allocs/op          |
-| BenchmarkCreateEntityUECS (100000)                                | 34596263 ns/op | 49119538 B/op   | 200146 allocs/op      |
-| BenchmarkIterateVolt (100000)                                     | 317646 ns/op   | 264 B/op        | 9 allocs/op           |
-| BenchmarkIterateConcurrentlyVolt (100000) - 16 concurrent workers | 95976 ns/op    | 3327 B/op       | 93 allocs/op          |
-| BenchmarkIterateArche (100000)                                    | 429663 ns/op   | 354 B/op        | 4 allocs/op           |
-| BenchmarkIterateUECS (100000)                                     | 234043 ns/op   | 128 B/op        | 3 allocs/op           |
-| BenchmarkAddVolt (100000)                                         | 29081055 ns/op | 4806438 B/op    | 300002 allocs/op      |
-| BenchmarkAddArche (100000)                                        | 4262538 ns/op  | 119805 B/op     | 100000 allocs/op      |
-| BenchmarkAddUECS (100000)                                         | 37041871 ns/op | 4574654 B/op    | 100004 allocs/op      |
-| BenchmarkRemoveVolt (100000)                                      | 21988113 ns/op | 400000 B/op     | 100000 allocs/op      |
-| BenchmarkRemoveArche (100000)                                     | 4749902 ns/op  | 100000 B/op     | 100000 allocs/op      |
-| BenchmarkRemoveUECS (100000)                                      | 31742113 ns/op | 3328168 B/op    | 100000 allocs/op      |
+goos: linux
+goarch: amd64
+pkg: benchmark
+cpu: AMD Ryzen 7 5800X 8-Core Processor             
+
+| Benchmark                       | Iterations | ns/op     | B/op       | Allocs/op |
+|---------------------------------|------------|-----------|------------|-----------|
+| BenchmarkCreateEntityArche-16   | 171        | 6948273   | 11096966   | 61        |
+| BenchmarkIterateArche-16        | 2704       | 426795    | 354        | 4         |
+| BenchmarkAddArche-16            | 279        | 4250519   | 120089     | 100000    |
+| BenchmarkRemoveArche-16         | 249        | 4821120   | 100000     | 100000    |
+| BenchmarkCreateEntityUECS-16    | 34         | 37943381  | 49119549   | 200146    |
+| BenchmarkIterateUECS-16         | 3885       | 287027    | 128        | 3         |
+| BenchmarkAddUECS-16             | 30         | 38097927  | 4620476    | 100004    |
+| BenchmarkRemoveUECS-16          | 40         | 31008811  | 3302536    | 100000    |
+| BenchmarkCreateEntityVolt-16    | 49         | 27246822  | 41214216   | 200259    |
+| BenchmarkIterateVolt-16         | 3651       | 329858    | 264        | 9         |
+| BenchmarkIterateConcurrentlyVolt-16 | 10000      | 102732    | 3330       | 93        |
+| BenchmarkAddVolt-16             | 54         | 22508281  | 4597363    | 300001    |
+| BenchmarkRemoveVolt-16          | 72         | 17219355  | 400001     | 100000    |
 
 These results show a few things:
 - Arche is the fastest tool for writes operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
