@@ -23,9 +23,10 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 		return fmt.Errorf("the entity %d already owns the tag %d", entityId, tagId)
 	}
 
-	archetype := world.getNextArchetype(entityId, tagId)
+	entityRecord := world.entities[entityId]
+	archetype := world.getNextArchetype(entityRecord, tagId)
 
-	if entityRecord, ok := world.entities[entityId]; !ok {
+	if entityRecord.Id == 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)

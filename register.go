@@ -35,8 +35,9 @@ func (componentConfig *ComponentConfig[T]) addComponent(world *World, entityId E
 	var t T
 	componentConfig.builderFn(&t, configuration)
 
-	archetype := world.getNextArchetype(entityId, componentConfig.id)
-	err := addComponentsToArchetype1[T](world, entityId, archetype, t)
+	entityRecord := world.entities[entityId]
+	archetype := world.getNextArchetype(entityRecord, componentConfig.id)
+	err := addComponentsToArchetype1[T](world, entityRecord, archetype, t)
 
 	return err
 }
