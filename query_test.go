@@ -95,6 +95,7 @@ func TestQuery1_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -132,6 +133,7 @@ func TestQuery1_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -228,6 +230,7 @@ func TestQuery2_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -266,6 +269,7 @@ func TestQuery2_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -367,6 +371,7 @@ func TestQuery3_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -406,6 +411,7 @@ func TestQuery3_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -510,6 +516,7 @@ func TestQuery4_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -550,6 +557,7 @@ func TestQuery4_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -658,6 +666,7 @@ func TestQuery5_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -699,6 +708,7 @@ func TestQuery5_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -811,6 +821,7 @@ func TestQuery6_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -853,6 +864,7 @@ func TestQuery6_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -970,6 +982,7 @@ func TestQuery7_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -1014,6 +1027,7 @@ func TestQuery7_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -1127,6 +1141,7 @@ func TestQuery8_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }
@@ -1171,6 +1186,7 @@ func TestQuery8_ForeachChannel(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
 		}
 	}
 }

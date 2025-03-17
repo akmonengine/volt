@@ -36,15 +36,23 @@ func ConfigureComponent[T ComponentInterface](world *World, conf any) T {
 
 // AddComponent adds the component T to the existing EntityId.
 //
-// It returns an error if the entity already has the component, or if an internal error occurs.
+// It returns an error if:
+//   - the entity does not exist
+//   - the entity has the component
+//   - an internal error occurs
 func AddComponent[T ComponentInterface](world *World, entityId EntityId, component T) error {
 	componentId := component.GetComponentId()
 	if world.HasComponents(entityId, componentId) {
 		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
 	}
 
-	archetype := world.getNextArchetype(entityId, world.getComponentsIds(component)...)
-	err := addComponentsToArchetype1(world, entityId, archetype, component)
+	entityRecord, ok := world.entities[entityId]
+	if !ok {
+		return fmt.Errorf("entity %v does not exist", entityId)
+	}
+
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(component)...)
+	err := addComponentsToArchetype1(world, entityRecord, archetype, component)
 	if err != nil {
 		return fmt.Errorf("the component %d cannot be added to entity %d: %w", componentId, entityId, err)
 	}
@@ -56,7 +64,7 @@ func AddComponent[T ComponentInterface](world *World, entityId EntityId, compone
 
 // AddComponents2 adds the components A, B to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -72,11 +80,10 @@ func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a 
 }
 
 func addComponents2[A, B ComponentInterface](world *World, entityRecord entityRecord, a A, b B) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b)...)
 
 	entityId := entityRecord.Id
-
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId()})
 	}
 
@@ -93,7 +100,7 @@ func addComponents2[A, B ComponentInterface](world *World, entityRecord entityRe
 
 // AddComponents3 adds the components A, B, C to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -109,11 +116,11 @@ func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId,
 }
 
 func addComponents3[A, B, C ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c)...)
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId()})
 	}
 
@@ -131,7 +138,7 @@ func addComponents3[A, B, C ComponentInterface](world *World, entityRecord entit
 
 // AddComponents4 adds the components A, B, C, D to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -147,11 +154,11 @@ func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId Entity
 }
 
 func addComponents4[A, B, C, D ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d)...)
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId()})
 	}
 
@@ -170,7 +177,7 @@ func addComponents4[A, B, C, D ComponentInterface](world *World, entityRecord en
 
 // AddComponents5 adds the components A, B, C, D, E to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -186,11 +193,11 @@ func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId Ent
 }
 
 func addComponents5[A, B, C, D, E ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e)...)
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId()})
 	}
 
@@ -210,7 +217,7 @@ func addComponents5[A, B, C, D, E ComponentInterface](world *World, entityRecord
 
 // AddComponents6 adds the components A, B, C, D, E, F to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -226,11 +233,11 @@ func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId 
 }
 
 func addComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e, f)...)
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e, f)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId()})
 	}
 
@@ -251,7 +258,7 @@ func addComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityRec
 
 // AddComponents7 adds the components A, B, C, D, E, F, G to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -267,11 +274,11 @@ func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 }
 
 func addComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F, g G) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g)...)
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId()})
 	}
 
@@ -293,7 +300,7 @@ func addComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 
 // AddComponents8 adds the components A, B, C, D, E, F, G, H to the existing EntityId.
 //
-// It returns an error if the:
+// It returns an error if:
 //   - the entity does not exist
 //   - the entity has one of the component
 //   - an internal error occurs
@@ -309,11 +316,11 @@ func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, ent
 }
 
 func addComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, entityRecord entityRecord, a A, b B, c C, d D, e E, f F, g G, h H) error {
-	archetype := world.getArchetypeForComponentsIds(a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId())
+	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g, h)...)
 
 	entityId := entityRecord.Id
 
-	if world.hasComponents(entityRecord, a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()) {
+	if world.hasComponents(entityRecord, world.getComponentsIds(a, b, c, d, e, f, g, h)...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, []ComponentId{a.GetComponentId(), b.GetComponentId(), c.GetComponentId(), d.GetComponentId(), e.GetComponentId(), f.GetComponentId(), g.GetComponentId(), h.GetComponentId()})
 	}
 
@@ -480,7 +487,7 @@ func (world *World) GetComponent(entityId EntityId, componentId ComponentId) (an
 	return s.get(entityRecord.archetypeId, entityRecord.key), nil
 }
 
-func addComponentsToArchetype1[A ComponentInterface](world *World, entityId EntityId, archetype *archetype, component A) error {
+func addComponentsToArchetype1[A ComponentInterface](world *World, entityRecord entityRecord, archetype *archetype, component A) error {
 	storageA := getStorage[A](world)
 
 	if storageA == nil {
@@ -489,7 +496,7 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityId Enti
 	}
 
 	// If the entity has no component, simply add it the archetype
-	if entityRecord, ok := world.entities[entityId]; !ok {
+	if entityRecord.archetypeId == 0 {
 		world.setArchetype(entityRecord, archetype)
 		storageA.add(archetype.Id, component)
 	} else {
@@ -514,9 +521,19 @@ func addComponentsToArchetype2[A, B ComponentInterface](world *World, entityReco
 		return fmt.Errorf("no storage found for component %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }
@@ -531,10 +548,20 @@ func addComponentsToArchetype3[A, B, C ComponentInterface](world *World, entityR
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
 	storageC.add(archetype.Id, componentC)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }
@@ -550,11 +577,21 @@ func addComponentsToArchetype4[A, B, C, D ComponentInterface](world *World, enti
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
 	storageC.add(archetype.Id, componentC)
 	storageD.add(archetype.Id, componentD)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }
@@ -571,12 +608,22 @@ func addComponentsToArchetype5[A, B, C, D, E ComponentInterface](world *World, e
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
 	storageC.add(archetype.Id, componentC)
 	storageD.add(archetype.Id, componentD)
 	storageE.add(archetype.Id, componentE)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }
@@ -594,13 +641,23 @@ func addComponentsToArchetype6[A, B, C, D, E, F ComponentInterface](world *World
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
 	storageC.add(archetype.Id, componentC)
 	storageD.add(archetype.Id, componentD)
 	storageE.add(archetype.Id, componentE)
 	storageF.add(archetype.Id, componentF)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }
@@ -619,6 +676,17 @@ func addComponentsToArchetype7[A, B, C, D, E, F, G ComponentInterface](world *Wo
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
 	storageC.add(archetype.Id, componentC)
@@ -626,7 +694,6 @@ func addComponentsToArchetype7[A, B, C, D, E, F, G ComponentInterface](world *Wo
 	storageE.add(archetype.Id, componentE)
 	storageF.add(archetype.Id, componentF)
 	storageG.add(archetype.Id, componentG)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }
@@ -646,6 +713,17 @@ func addComponentsToArchetype8[A, B, C, D, E, F, G, H ComponentInterface](world 
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
+	// If the entity has no component, simply add it the archetype
+	if entityRecord.archetypeId == 0 {
+		world.setArchetype(entityRecord, archetype)
+	} else {
+		oldArchetype := world.getArchetype(entityRecord)
+		if archetype.Id != oldArchetype.Id {
+			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
+			world.setArchetype(entityRecord, archetype)
+		}
+	}
+
 	storageA.add(archetype.Id, componentA)
 	storageB.add(archetype.Id, componentB)
 	storageC.add(archetype.Id, componentC)
@@ -654,7 +732,6 @@ func addComponentsToArchetype8[A, B, C, D, E, F, G, H ComponentInterface](world 
 	storageF.add(archetype.Id, componentF)
 	storageG.add(archetype.Id, componentG)
 	storageH.add(archetype.Id, componentH)
-	world.setArchetype(entityRecord, archetype)
 
 	return nil
 }

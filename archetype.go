@@ -75,9 +75,9 @@ func (world *World) getArchetypesForComponentsIds(componentsIds ...ComponentId) 
 	return archetypes
 }
 
-func (world *World) getNextArchetype(entityId EntityId, componentsIds ...ComponentId) *archetype {
+func (world *World) getNextArchetype(entityRecord entityRecord, componentsIds ...ComponentId) *archetype {
 	var archetype *archetype
-	if entityRecord, ok := world.entities[entityId]; !ok {
+	if entityRecord.archetypeId == 0 {
 		archetype = world.getArchetypeForComponentsIds(componentsIds...)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
