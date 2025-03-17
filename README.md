@@ -84,6 +84,8 @@ volt.RegisterComponent[transformComponent](world, &ComponentConfig[transformComp
 ```go 
 entityId := world.CreateEntity("entityName")
 ```
+**Important**: the entity name MUST be unique.
+
 - Add the component to the entity
 ```go 
 component := volt.ConfigureComponent[transformComponent](&scene.World, transformConfiguration{x: 1.0, y: 2.0, z: 3.0})
