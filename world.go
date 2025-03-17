@@ -248,7 +248,8 @@ func (world *World) RemoveEntity(entityId EntityId) {
 	archetype := world.archetypes[entityRecord.archetypeId]
 
 	lastEntityKey := len(archetype.entities) - 1
-	for _, s := range world.storage {
+	for _, componentId := range archetype.Type {
+		s := world.storage[componentId]
 		if s != nil && slices.Contains(archetype.Type, s.getType()) {
 			s.moveLastToKey(archetype.Id, entityRecord.key)
 		}
