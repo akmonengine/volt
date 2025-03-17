@@ -45,7 +45,7 @@ type entityRecord struct {
 //
 // It avoids the garbage collector to analyze this data constantly,
 // at the price of a fixed data size.
-type entityName = string
+type entityName []byte
 type entityHashName = uint64
 type entitiesNames map[entityHashName]EntityId
 type entities map[EntityId]entityRecord
@@ -111,16 +111,14 @@ func newEntityId() EntityId {
 // CreateEntity creates a new Entity in World;
 // It is linked to no Component.
 func (world *World) CreateEntity(name string) EntityId {
-	hash := fnv.New64()
-	hash.Write([]byte(name))
-
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
 	archetype := world.getArchetypeForComponentsIds()
 
-	world.entitiesNames[hash.Sum64()] = entityId
+	world.entitiesNames[hashEntityName(entityName)] = entityId
 	entityRecord := entityRecord{
 		Id:   entityId,
-		name: name,
+		name: entityName,
 	}
 	world.entities[entityId] = entityRecord
 	world.setArchetype(entityRecord, archetype)
@@ -131,12 +129,11 @@ func (world *World) CreateEntity(name string) EntityId {
 // CreateEntityWithComponents2 creates an entity in World;
 // It sets the components A, B to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name string, a A, b B) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents2(world, entityRecord, a, b)
@@ -151,12 +148,11 @@ func CreateEntityWithComponents2[A, B ComponentInterface](world *World, name str
 //
 // It sets the components A, B, C to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name string, a A, b B, c C) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents3(world, entityRecord, a, b, c)
@@ -171,12 +167,11 @@ func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, name 
 //
 // It sets the components A, B, C, D to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, name string, a A, b B, c C, d D) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents4(world, entityRecord, a, b, c, d)
@@ -191,12 +186,11 @@ func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, na
 //
 // It sets the components A, B, C, D, E to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World, name string, a A, b B, c C, d D, e E) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents5(world, entityRecord, a, b, c, d, e)
@@ -211,12 +205,11 @@ func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World,
 //
 // It sets the components A, B, C, D, E, F to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents6(world, entityRecord, a, b, c, d, e, f)
@@ -231,12 +224,11 @@ func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *Wor
 //
 // It sets the components A, B, C, D, E, F, G to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F, g G) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents7(world, entityRecord, a, b, c, d, e, f, g)
@@ -251,12 +243,11 @@ func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *
 //
 // It sets the components A, B, C, D, E, F, G, H to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, name string, a A, b B, c C, d D, e E, f F, g G, h H) (EntityId, error) {
+	entityName := stringToEntityName(name)
 	entityId := newEntityId()
-	hash := fnv.New64()
-	hash.Write([]byte(name))
 
-	world.entitiesNames[hash.Sum64()] = entityId
-	entityRecord := entityRecord{Id: entityId, name: name}
+	world.entitiesNames[hashEntityName(entityName)] = entityId
+	entityRecord := entityRecord{Id: entityId, name: entityName}
 	world.entities[entityId] = entityRecord
 
 	err := addComponents8(world, entityRecord, a, b, c, d, e, f, g, h)
@@ -301,19 +292,15 @@ func (world *World) RemoveEntity(entityId EntityId) {
 		world.archetypes[archetype.Id] = archetype
 	}
 
-	hash := fnv.New64()
-	hash.Write([]byte(world.entities[entityId].name))
-	delete(world.entitiesNames, hash.Sum64())
+	delete(world.entitiesNames, hashEntityName(world.entities[entityId].name))
 	delete(world.entities, entityId)
 }
 
 // SearchEntity returns the EntityId named by name.
 // If not found, returns 0.
 func (world *World) SearchEntity(name string) EntityId {
-	hash := fnv.New64()
-	hash.Write([]byte(name))
-
-	if entityId, ok := world.entitiesNames[hash.Sum64()]; ok {
+	entityName := stringToEntityName(name)
+	if entityId, ok := world.entitiesNames[hashEntityName(entityName)]; ok {
 		return entityId
 	}
 
@@ -332,18 +319,31 @@ func (world *World) GetEntityName(entityId EntityId) string {
 
 // SetEntityName sets the name for an EntityId.
 func (world *World) SetEntityName(entityId EntityId, name string) {
-	hash := fnv.New64()
-	hash.Write([]byte(name))
+	entityName := stringToEntityName(name)
 
 	entityRecord := world.entities[entityId]
-	entityRecord.name = entityName(name)
+	entityRecord.name = entityName
 	world.entities[entityId] = entityRecord
-	world.entitiesNames[hash.Sum64()] = entityId
+	world.entitiesNames[hashEntityName(entityName)] = entityId
 }
 
 // Count returns the number of entities in World.
 func (world *World) Count() int {
 	return len(world.entities)
+}
+
+func hashEntityName(name entityName) entityHashName {
+	h := fnv.New64()
+	h.Write(name)
+
+	return h.Sum64()
+}
+
+func stringToEntityName(name string) entityName {
+	var nameByte entityName
+	copy(nameByte[:], name)
+
+	return nameByte
 }
 
 func entityNameToString(entityName entityName) string {
