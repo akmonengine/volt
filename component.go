@@ -12,6 +12,11 @@ type ComponentInterface interface {
 	GetComponentId() ComponentId
 }
 
+type ComponentIdConf struct {
+	ComponentId
+	conf any
+}
+
 func (world *World) getComponentsIds(components ...ComponentInterface) []ComponentId {
 	componentsIds := make([]ComponentId, len(components))
 
@@ -367,6 +372,40 @@ func (world *World) AddComponent(entityId EntityId, componentId ComponentId, con
 	return nil
 }
 
+// AddComponents adds variadic components to the EntityId.
+//
+// This non-generic version is adapted for when generics are not available, though might be slower.
+// It returns an error if:
+//   - the entity already has the components Ids
+//   - the componentsIds are not registered in the World
+//   - an internal error occurs
+func (world *World) AddComponents(entityId EntityId, componentsIdsConfs ...ComponentIdConf) error {
+	var componentsIds []ComponentId
+	for _, componentIdConf := range componentsIdsConfs {
+		componentsIds = append(componentsIds, componentIdConf.ComponentId)
+	}
+
+	if world.HasComponents(entityId, componentsIds...) {
+		return fmt.Errorf("the entity %d already owns the components %v", entityId, componentsIds)
+	}
+
+	for _, componentIdConf := range componentsIdsConfs {
+		componentRegistry, err := world.getConfigByComponentId(componentIdConf.ComponentId)
+		if err != nil {
+			return err
+		}
+
+		err = componentRegistry.addComponent(world, entityId, componentIdConf.conf)
+		if err != nil {
+			return err
+		}
+
+		world.componentAddedFn(entityId, componentIdConf.ComponentId)
+	}
+
+	return nil
+}
+
 // RemoveComponent removes the component to EntityId.
 //
 // It returns an error if the EntityId does not have the component.
@@ -498,16 +537,14 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityRecord 
 	// If the entity has no component, simply add it the archetype
 	if entityRecord.archetypeId == 0 {
 		world.setArchetype(entityRecord, archetype)
-		storageA.add(archetype.Id, component)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
 		if archetype.Id != oldArchetype.Id {
 			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
 			world.setArchetype(entityRecord, archetype)
 		}
-
-		storageA.add(archetype.Id, component)
 	}
+	storageA.add(archetype.Id, component)
 
 	return nil
 }

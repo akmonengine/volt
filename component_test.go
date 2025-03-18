@@ -111,6 +111,32 @@ func TestAddComponent(t *testing.T) {
 	}
 }
 
+func TestAddComponents(t *testing.T) {
+	entities := make([]EntityId, TEST_ENTITY_NUMBER)
+	world := CreateWorld(1024)
+
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{BuilderFn: func(component any, configuration any) {}})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{BuilderFn: func(component any, configuration any) {}})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entities[i] = world.CreateEntity(fmt.Sprint(i))
+
+		err := world.AddComponents(entities[i], ComponentIdConf{ComponentId: testComponent1Id}, ComponentIdConf{ComponentId: testComponent2Id}, ComponentIdConf{ComponentId: testComponent3Id}, ComponentIdConf{ComponentId: testComponent4Id}, ComponentIdConf{ComponentId: testComponent5Id})
+		if err != nil {
+			t.Errorf("could not add components to entity %d: %s", entities[i], err)
+		}
+	}
+
+	for _, entityId := range entities {
+		if !world.HasComponents(entityId, testComponent1Id, testComponent2Id, testComponent3Id, testComponent4Id, testComponent5Id) {
+			t.Errorf("Expected 5 components for entity %d", entityId)
+		}
+	}
+}
+
 func TestConfigureComponent(t *testing.T) {
 	world := CreateWorld(1024)
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{BuilderFn: func(component any, configuration any) {
