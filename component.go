@@ -46,14 +46,14 @@ func ConfigureComponent[T ComponentInterface](world *World, conf any) T {
 //   - the entity has the component
 //   - an internal error occurs
 func AddComponent[T ComponentInterface](world *World, entityId EntityId, component T) error {
-	componentId := component.GetComponentId()
-	if world.HasComponents(entityId, componentId) {
-		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
-	}
-
 	entityRecord, ok := world.entities[entityId]
 	if !ok {
 		return fmt.Errorf("entity %v does not exist", entityId)
+	}
+
+	componentId := component.GetComponentId()
+	if world.hasComponents(entityRecord, componentId) {
+		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
 	}
 
 	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(component)...)
@@ -354,7 +354,12 @@ func addComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, ent
 //   - the componentId is not registered in the World
 //   - an internal error occurs
 func (world *World) AddComponent(entityId EntityId, componentId ComponentId, conf any) error {
-	if world.HasComponents(entityId, componentId) {
+	entityRecord, ok := world.entities[entityId]
+	if !ok {
+		return fmt.Errorf("entity %v does not exist", entityId)
+	}
+
+	if world.hasComponents(entityRecord, componentId) {
 		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
 	}
 
@@ -380,12 +385,17 @@ func (world *World) AddComponent(entityId EntityId, componentId ComponentId, con
 //   - the componentsIds are not registered in the World
 //   - an internal error occurs
 func (world *World) AddComponents(entityId EntityId, componentsIdsConfs ...ComponentIdConf) error {
+	entityRecord, ok := world.entities[entityId]
+	if !ok {
+		return fmt.Errorf("entity %v does not exist", entityId)
+	}
+
 	var componentsIds []ComponentId
 	for _, componentIdConf := range componentsIdsConfs {
 		componentsIds = append(componentsIds, componentIdConf.ComponentId)
 	}
 
-	if world.HasComponents(entityId, componentsIds...) {
+	if world.hasComponents(entityRecord, componentsIds...) {
 		return fmt.Errorf("the entity %d already owns the components %v", entityId, componentsIds)
 	}
 
@@ -412,7 +422,11 @@ func (world *World) AddComponents(entityId EntityId, componentsIdsConfs ...Compo
 func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) error {
 	var t T
 	componentId := t.GetComponentId()
-	entityRecord := world.entities[entityId]
+
+	entityRecord, ok := world.entities[entityId]
+	if !ok {
+		return fmt.Errorf("entity %v does not exist", entityId)
+	}
 
 	if !world.hasComponents(entityRecord, componentId) {
 		return fmt.Errorf("the entity %d doesn't own the component %d", entityId, componentId)
