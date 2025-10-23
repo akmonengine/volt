@@ -1,7 +1,6 @@
 package volt
 
 import (
-	"fmt"
 	"slices"
 	"testing"
 )
@@ -17,7 +16,7 @@ func TestAddTag(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -70,7 +69,7 @@ func TestHasTag(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -102,7 +101,7 @@ func TestHasTag(t *testing.T) {
 		}
 	}
 
-	if world.HasTag(TAG_2, 0) {
+	if world.HasTag(TAG_2, TEST_ENTITY_NUMBER) {
 		t.Errorf("entity %d does not exist, it should not have the tag %d", 0, TAG_2)
 	}
 }
@@ -113,7 +112,7 @@ func TestRemoveTag(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -161,7 +160,7 @@ func TestTag2(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -210,7 +209,7 @@ func TestTag3(t *testing.T) {
 	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -265,7 +264,7 @@ func TestTag4(t *testing.T) {
 	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -325,7 +324,7 @@ func TestTag5(t *testing.T) {
 	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -390,7 +389,7 @@ func TestTag6(t *testing.T) {
 	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -460,7 +459,7 @@ func TestTag7(t *testing.T) {
 	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {
@@ -535,7 +534,7 @@ func TestTag8(t *testing.T) {
 	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entities[i], testComponent1{})
 		if err != nil {

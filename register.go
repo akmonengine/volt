@@ -48,7 +48,7 @@ func (componentConfig *ComponentConfig[T]) builderFn(component any, configuratio
 	}
 }
 
-type ComponentsRegister map[ComponentId]ComponentConfigInterface
+type ComponentsRegister []ComponentConfigInterface
 
 // ComponentBuilder is the function called to set the properties of a given component.
 //
@@ -61,7 +61,10 @@ type ComponentBuilder func(component any, configuration any)
 func RegisterComponent[T ComponentInterface](world *World, config ComponentConfigInterface) {
 	var t T
 	if world.componentsRegistry == nil {
-		world.componentsRegistry = make(ComponentsRegister)
+		world.componentsRegistry = make(ComponentsRegister, TAGS_INDICES)
+		for i := range TAGS_INDICES {
+			world.componentsRegistry[i] = nil
+		}
 	}
 
 	config.setComponent(t)
@@ -70,11 +73,9 @@ func RegisterComponent[T ComponentInterface](world *World, config ComponentConfi
 }
 
 func (world *World) getConfigByComponentId(componentId ComponentId) (ComponentConfigInterface, error) {
-	for _, config := range world.componentsRegistry {
-		if config.getComponentId() == componentId {
-			return config, nil
-		}
+	if world.componentsRegistry[componentId] == nil {
+		return nil, fmt.Errorf("componentConfiguration not found for %d", componentId)
 	}
 
-	return nil, fmt.Errorf("componentConfiguration not found for %d", componentId)
+	return world.componentsRegistry[componentId], nil
 }

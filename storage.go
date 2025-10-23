@@ -10,7 +10,7 @@ func getStorage[T ComponentInterface](world *World) *ComponentsStorage[T] {
 	var t T
 	componentId := t.GetComponentId()
 
-	if _, ok := world.componentsRegistry[componentId]; !ok {
+	if world.componentsRegistry[componentId] == nil {
 		return nil
 	}
 
