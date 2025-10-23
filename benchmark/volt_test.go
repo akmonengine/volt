@@ -2,24 +2,12 @@ package benchmark
 
 import (
 	"math/rand/v2"
-	"os"
-	"runtime/pprof"
-	"runtime/trace"
 	"testing"
 
 	"github.com/akmonengine/volt"
 )
 
 func BenchmarkCreateEntityVolt(b *testing.B) {
-	// Write to the trace file.
-	f, _ := os.Create("trace.out")
-	fcpu, _ := os.Create(`cpu.prof`)
-	fheap, _ := os.Create(`heap.prof`)
-
-	pprof.StartCPUProfile(fcpu)
-	pprof.WriteHeapProfile(fheap)
-	trace.Start(f)
-
 	for b.Loop() {
 		world := volt.CreateWorld(ENTITIES_COUNT)
 		volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
@@ -36,13 +24,6 @@ func BenchmarkCreateEntityVolt(b *testing.B) {
 			)
 		}
 	}
-
-	defer f.Close()
-	defer fcpu.Close()
-	defer fheap.Close()
-
-	trace.Stop()
-	pprof.StopCPUProfile()
 
 	b.ReportAllocs()
 }
