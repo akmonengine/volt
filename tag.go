@@ -26,14 +26,10 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 	entityRecord := world.entities[entityId]
 	archetype := world.getNextArchetype(entityRecord, tagId)
 
-	if entityRecord.Id == 0 {
+	oldArchetype := world.getArchetype(entityRecord)
+	if archetype.Id != oldArchetype.Id {
+		moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
 		world.setArchetype(entityRecord, archetype)
-	} else {
-		oldArchetype := world.getArchetype(entityRecord)
-		if archetype.Id != oldArchetype.Id {
-			moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
-			world.setArchetype(entityRecord, archetype)
-		}
 	}
 
 	return nil
@@ -41,10 +37,10 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 
 // HasTag returns a boolean, to check if an EntityId owns a Tag.
 func (world *World) HasTag(tagId TagId, entityId EntityId) bool {
-	entityRecord, ok := world.entities[entityId]
-	if !ok {
+	if int(entityId) >= len(world.entities) {
 		return false
 	}
+	entityRecord := world.entities[entityId]
 
 	return world.hasComponents(entityRecord, tagId)
 }
@@ -54,10 +50,10 @@ func (world *World) HasTag(tagId TagId, entityId EntityId) bool {
 // - The entity does not exists.
 // - The entity already owns the Tag.
 func (world *World) RemoveTag(tagId TagId, entityId EntityId) error {
-	entityRecord, ok := world.entities[entityId]
-	if !ok {
+	if int(entityId) >= len(world.entities) {
 		return fmt.Errorf("the entity %d does not exist", entityId)
 	}
+	entityRecord := world.entities[entityId]
 
 	if !world.HasTag(tagId, entityId) {
 		return fmt.Errorf("the entity %d doesn't own the tag %d", entityId, tagId)

@@ -1,7 +1,6 @@
 package volt
 
 import (
-	"fmt"
 	"slices"
 	"testing"
 )
@@ -26,7 +25,7 @@ func TestQuery1_filter(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponent[testComponent1](world, entityId, testComponent1{})
@@ -53,7 +52,7 @@ func TestQuery1_Count(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		err := AddComponent[testComponent1](world, entityId, testComponent1{})
 		if err != nil {
@@ -73,7 +72,7 @@ func TestQuery1_Foreach(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponent[testComponent1](world, entityId, testComponent1{})
@@ -106,7 +105,7 @@ func TestQuery1_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponent[testComponent1](world, entityId, testComponent1{})
@@ -160,7 +159,7 @@ func TestQuery2_filter(t *testing.T) {
 	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
@@ -188,7 +187,7 @@ func TestQuery2_Count(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -208,7 +207,7 @@ func TestQuery2_Foreach(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
@@ -242,7 +241,7 @@ func TestQuery2_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
@@ -298,7 +297,7 @@ func TestQuery3_filter(t *testing.T) {
 	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
@@ -327,7 +326,7 @@ func TestQuery3_Count(t *testing.T) {
 	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -349,7 +348,7 @@ func TestQuery3_Foreach(t *testing.T) {
 	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
@@ -384,7 +383,7 @@ func TestQuery3_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
@@ -442,7 +441,7 @@ func TestQuery4_filter(t *testing.T) {
 	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
@@ -472,7 +471,7 @@ func TestQuery4_Count(t *testing.T) {
 	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -494,7 +493,7 @@ func TestQuery4_Foreach(t *testing.T) {
 	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
@@ -530,7 +529,7 @@ func TestQuery4_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
@@ -590,7 +589,7 @@ func TestQuery5_filter(t *testing.T) {
 	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
@@ -621,7 +620,7 @@ func TestQuery5_Count(t *testing.T) {
 	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -644,7 +643,7 @@ func TestQuery5_Foreach(t *testing.T) {
 	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
@@ -681,7 +680,7 @@ func TestQuery5_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
@@ -743,7 +742,7 @@ func TestQuery6_filter(t *testing.T) {
 	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
@@ -775,7 +774,7 @@ func TestQuery6_Count(t *testing.T) {
 	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -799,7 +798,7 @@ func TestQuery6_Foreach(t *testing.T) {
 	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
@@ -837,7 +836,7 @@ func TestQuery6_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
@@ -901,7 +900,7 @@ func TestQuery7_filter(t *testing.T) {
 	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		if i%2 == 0 {
 			err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
@@ -934,7 +933,7 @@ func TestQuery7_Count(t *testing.T) {
 	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -960,7 +959,7 @@ func TestQuery7_Foreach(t *testing.T) {
 	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
@@ -1000,7 +999,7 @@ func TestQuery7_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
@@ -1065,7 +1064,7 @@ func TestQuery8_filter(t *testing.T) {
 	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 
 		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
 		if err != nil {
@@ -1092,7 +1091,7 @@ func TestQuery8_Count(t *testing.T) {
 	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -1119,7 +1118,7 @@ func TestQuery8_Foreach(t *testing.T) {
 	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
@@ -1159,7 +1158,7 @@ func TestQuery8_ForeachChannel(t *testing.T) {
 	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entityId := world.CreateEntity(fmt.Sprint(i))
+		entityId := world.CreateEntity()
 		entities = append(entities, entityId)
 
 		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})

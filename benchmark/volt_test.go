@@ -1,10 +1,10 @@
 package benchmark
 
 import (
-	"github.com/akmonengine/volt"
 	"math/rand/v2"
-	"strconv"
 	"testing"
+
+	"github.com/akmonengine/volt"
 )
 
 func BenchmarkCreateEntityVolt(b *testing.B) {
@@ -13,8 +13,8 @@ func BenchmarkCreateEntityVolt(b *testing.B) {
 		volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
 		volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
-		for j := range ENTITIES_COUNT {
-			volt.CreateEntityWithComponents2(world, strconv.Itoa(j),
+		for range ENTITIES_COUNT {
+			volt.CreateEntityWithComponents2(world,
 				testTransform{
 					x: rand.Float64() * 100,
 					y: rand.Float64() * 100,
@@ -34,7 +34,7 @@ func BenchmarkIterateVolt(b *testing.B) {
 	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	for i := 0; i < ENTITIES_COUNT; i++ {
-		id := world.CreateEntity(strconv.Itoa(i))
+		id := world.CreateEntity()
 		volt.AddComponent[testTransform](world, id, testTransform{})
 		volt.AddComponent[testTag](world, id, testTag{})
 	}
@@ -55,7 +55,7 @@ func BenchmarkIterateConcurrentlyVolt(b *testing.B) {
 	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	for i := 0; i < ENTITIES_COUNT; i++ {
-		id := world.CreateEntity(strconv.Itoa(i))
+		id := world.CreateEntity()
 		volt.AddComponent[testTransform](world, id, testTransform{})
 		volt.AddComponent[testTag](world, id, testTag{})
 	}
@@ -84,8 +84,8 @@ func BenchmarkAddVolt(b *testing.B) {
 	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	entities := make([]volt.EntityId, 0, ENTITIES_COUNT)
-	for j := range ENTITIES_COUNT {
-		entityId := world.CreateEntity(strconv.Itoa(j))
+	for range ENTITIES_COUNT {
+		entityId := world.CreateEntity()
 		volt.AddComponent(world, entityId, testTag{})
 		entities = append(entities, entityId)
 	}
@@ -113,8 +113,8 @@ func BenchmarkRemoveVolt(b *testing.B) {
 	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
 
 	entities := make([]volt.EntityId, 0, ENTITIES_COUNT)
-	for j := range ENTITIES_COUNT {
-		entityId := world.CreateEntity(strconv.Itoa(j))
+	for range ENTITIES_COUNT {
+		entityId := world.CreateEntity()
 		volt.AddComponent(world, entityId, testTag{})
 		entities = append(entities, entityId)
 	}

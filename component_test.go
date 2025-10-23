@@ -1,7 +1,6 @@
 package volt
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -14,7 +13,6 @@ const (
 	testComponent6Id
 	testComponent7Id
 	testComponent8Id
-	testComponent9Id
 )
 
 type testComponent struct {
@@ -91,7 +89,7 @@ func TestAddComponent(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := AddComponent(world, entities[i], testComponent1{})
 		if err != nil {
@@ -122,7 +120,7 @@ func TestAddComponents(t *testing.T) {
 	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 
 		err := world.AddComponents(entities[i], ComponentIdConf{ComponentId: testComponent1Id}, ComponentIdConf{ComponentId: testComponent2Id}, ComponentIdConf{ComponentId: testComponent3Id}, ComponentIdConf{ComponentId: testComponent4Id}, ComponentIdConf{ComponentId: testComponent5Id})
 		if err != nil {
@@ -160,7 +158,7 @@ func TestGetComponent(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 		err := AddComponent(world, entities[i], testComponent1{})
 		if err != nil {
 			t.Errorf("%s", err.Error())
@@ -189,7 +187,7 @@ func TestRemoveComponent(t *testing.T) {
 	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{BuilderFn: func(component any, configuration any) {}})
 
 	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
-		entities[i] = world.CreateEntity(fmt.Sprint(i))
+		entities[i] = world.CreateEntity()
 		err := AddComponent(world, entities[i], testComponent1{testComponent{x: i, y: i, z: i}})
 		if err != nil {
 			t.Errorf("%s", err.Error())
