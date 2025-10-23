@@ -88,8 +88,8 @@ entityId := world.CreateEntity()
 
 - Add the component to the entity
 ```go 
-component := volt.ConfigureComponent[transformComponent](&scene.World, transformConfiguration{x: 1.0, y: 2.0, z: 3.0})
-volt.AddComponent(&scene.World, entity, component)
+component := volt.ConfigureComponent[transformComponent](&world, transformConfiguration{x: 1.0, y: 2.0, z: 3.0})
+volt.AddComponent(&world, entity, component)
 ```
 - Remove the component to the entity
 ```go
@@ -228,7 +228,7 @@ func GetEntityName(world *volt.World, entityId volt.EntityId) string {
 }
 
 func (scene *Scene) SearchEntity(name string) volt.EntityId {
-    q := volt.CreateQuery1[MetadataComponent](&scene.World, volt.QueryConfiguration{})
+    q := volt.CreateQuery1[MetadataComponent](&world, volt.QueryConfiguration{})
     for result := range q.Foreach(nil) {
         if result.A.Name == name {
             return result.EntityId
