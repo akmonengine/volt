@@ -82,9 +82,9 @@ volt.RegisterComponent[transformComponent](world, &ComponentConfig[transformComp
 ```
 - Create the entity
 ```go 
-entityId := world.CreateEntity("entityName")
+entityId := world.CreateEntity()
 ```
-**Important**: the entity name MUST be unique.
+**Important**: the entity will receive a unique identifier. When the entity is removed, this id can be used again and assigned to a new entity.
 
 - Add the component to the entity
 ```go 
@@ -101,15 +101,6 @@ if err != nil {
 - Delete the entity
 ```go
 world.RemoveEntity(entityId)
-```
-## Searching for an entity
-- Knowing an entity by its name, you can get its identifier:
-```go
-entityId := world.SearchEntity("entityName")
-```
-- The reversed search is also possible, fetching its name by its idenfier:
-```go
-entityName := world.GetEntityName(entityId)
 ```
 
 ## Queries
@@ -187,6 +178,65 @@ You can Add a Tag, check if an entity Has a Tag, or Remove it:
 world.AddTag(TAG_STATIC_ID, entityId)
 world.HasTag(TAG_STATIC_ID, entityId)
 world.RemoveTag(TAG_STATIC_ID, entityId)
+```
+
+## Events
+The lifecycle (creation/deletion) of entities and components can trigger events.
+You can configure a callback function for each of these events, to execute your custom code:
+```go
+world := volt.CreateWorld(100)
+world.SetEntityAddedFn(func(entityId volt.EntityId) {
+    fmt.Println("A new entity has been created", entityId)
+})
+world.SetEntityRemovedFn(func(entityId volt.EntityId) {
+    fmt.Println("An entity has been deleted", entityId)
+})
+world.SetComponentAddedFn(func(entityId volt.EntityId, componentId volt.ComponentId) {
+    fmt.Println("The component", componentId, "is attached to the entity", entityId)
+})
+world.SetComponentRemovedFn(func(entityId volt.EntityId, componentId volt.ComponentId) {
+fmt.Println("The component", componentId, "is removed from the entity", entityId)
+})
+```
+
+## Naming entities
+Volt managed the naming of entities up to the version 1.6.0. For performances reasons, this feature is removed from the v1.7.0+.
+You now have to keep track of the names by yourself in your application:
+- Having a simple map[name string]volt.EntityId, you can react to the events and register these. Keep in mind that if your scene has a lot
+of entities, it will probably have a huge impact on the garbage collector.
+- Add a MetadataComponent. To fetch an entity by its name can be very slow, so you probably do not want to name all your entities. For example:
+```go
+const MetadataComponentId = 0
+
+type MetadataComponent struct {
+	Name string
+}
+
+func (MetadataComponent MetadataComponent) GetComponentId() volt.ComponentId {
+	return MetadataComponentId
+}
+volt.RegisterComponent[MetadataComponent](&world, &volt.ComponentConfig[MetadataComponent]{BuilderFn: func(component any, configuration any) {}})
+
+func GetEntityName(world *volt.World, entityId volt.EntityId) string {
+    if world.HasComponents(entityId, MetadataComponentId) {
+        metadata := volt.GetComponent[MetadataComponent](world, entityId)
+    
+        return metadata.Name
+    }
+    
+    return ""
+}
+
+func (scene *Scene) SearchEntity(name string) volt.EntityId {
+    q := volt.CreateQuery1[MetadataComponent](&scene.World, volt.QueryConfiguration{})
+    for result := range q.Foreach(nil) {
+        if result.A.Name == name {
+            return result.EntityId
+        }
+    }
+    
+    return 0
+}
 ```
 
 ## Benchmark
