@@ -124,7 +124,7 @@ func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[Qu
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query1[A]) Task(workersCount int, filterFn func(QueryResult1[A]) bool, fn func(data QueryResult1[A])) {
+func (query *Query1[A]) Task(workersCount int, filterFn func(QueryResult1[A]) bool, fn func(result QueryResult1[A])) {
 	storageA := getStorage[A](query.World)
 
 	archetypes := query.filter()
@@ -323,7 +323,7 @@ func (query *Query2[A, B]) Foreach(filterFn func(QueryResult2[A, B]) bool) iter.
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query2[A, B]) Task(workersCount int, filterFn func(QueryResult2[A, B]) bool, fn func(data QueryResult2[A, B])) {
+func (query *Query2[A, B]) Task(workersCount int, filterFn func(QueryResult2[A, B]) bool, fn func(result QueryResult2[A, B])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 
@@ -550,7 +550,7 @@ func (query *Query3[A, B, C]) Foreach(filterFn func(QueryResult3[A, B, C]) bool)
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query3[A, B, C]) Task(workersCount int, filterFn func(QueryResult3[A, B, C]) bool, fn func(data QueryResult3[A, B, C])) {
+func (query *Query3[A, B, C]) Task(workersCount int, filterFn func(QueryResult3[A, B, C]) bool, fn func(result QueryResult3[A, B, C])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
@@ -800,7 +800,7 @@ func (query *Query4[A, B, C, D]) Foreach(filterFn func(QueryResult4[A, B, C, D])
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query4[A, B, C, D]) Task(workersCount int, filterFn func(QueryResult4[A, B, C, D]) bool, fn func(data QueryResult4[A, B, C, D])) {
+func (query *Query4[A, B, C, D]) Task(workersCount int, filterFn func(QueryResult4[A, B, C, D]) bool, fn func(result QueryResult4[A, B, C, D])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
@@ -1072,7 +1072,7 @@ func (query *Query5[A, B, C, D, E]) Foreach(filterFn func(QueryResult5[A, B, C, 
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query5[A, B, C, D, E]) Task(workersCount int, filterFn func(QueryResult5[A, B, C, D, E]) bool, fn func(data QueryResult5[A, B, C, D, E])) {
+func (query *Query5[A, B, C, D, E]) Task(workersCount int, filterFn func(QueryResult5[A, B, C, D, E]) bool, fn func(result QueryResult5[A, B, C, D, E])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
@@ -1367,7 +1367,7 @@ func (query *Query6[A, B, C, D, E, F]) Foreach(filterFn func(QueryResult6[A, B, 
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query6[A, B, C, D, E, F]) Task(workersCount int, filterFn func(QueryResult6[A, B, C, D, E, F]) bool, fn func(data QueryResult6[A, B, C, D, E, F])) {
+func (query *Query6[A, B, C, D, E, F]) Task(workersCount int, filterFn func(QueryResult6[A, B, C, D, E, F]) bool, fn func(result QueryResult6[A, B, C, D, E, F])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
@@ -1685,7 +1685,7 @@ func (query *Query7[A, B, C, D, E, F, G]) Foreach(filterFn func(QueryResult7[A, 
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query7[A, B, C, D, E, F, G]) Task(workersCount int, filterFn func(QueryResult7[A, B, C, D, E, F, G]) bool, fn func(data QueryResult7[A, B, C, D, E, F, G])) {
+func (query *Query7[A, B, C, D, E, F, G]) Task(workersCount int, filterFn func(QueryResult7[A, B, C, D, E, F, G]) bool, fn func(result QueryResult7[A, B, C, D, E, F, G])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
@@ -2025,7 +2025,7 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Foreach(filterFn func(QueryResult8[
 //
 // The workersCount parameter determines the number of parallel workers.
 // Data is automatically partitioned across workers for optimal performance.
-func (query *Query8[A, B, C, D, E, F, G, H]) Task(workersCount int, filterFn func(QueryResult8[A, B, C, D, E, F, G, H]) bool, fn func(data QueryResult8[A, B, C, D, E, F, G, H])) {
+func (query *Query8[A, B, C, D, E, F, G, H]) Task(workersCount int, filterFn func(QueryResult8[A, B, C, D, E, F, G, H]) bool, fn func(result QueryResult8[A, B, C, D, E, F, G, H])) {
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
