@@ -76,6 +76,27 @@ func BenchmarkIterateConcurrentlyVolt(b *testing.B) {
 	b.ReportAllocs()
 }
 
+func BenchmarkTaskVolt(b *testing.B) {
+	world := volt.CreateWorld(ENTITIES_COUNT)
+	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
+
+	for i := 0; i < ENTITIES_COUNT; i++ {
+		id := world.CreateEntity()
+		volt.AddComponent[testTransform](world, id, testTransform{})
+		volt.AddComponent[testTag](world, id, testTag{})
+	}
+
+	for b.Loop() {
+		query := volt.CreateQuery2[testTransform, testTag](world, volt.QueryConfiguration{})
+		query.Task(WORKERS, nil, func(result volt.QueryResult2[testTransform, testTag]) {
+			transformData(result.A)
+		})
+	}
+
+	b.ReportAllocs()
+}
+
 func BenchmarkAddVolt(b *testing.B) {
 	b.StopTimer()
 
