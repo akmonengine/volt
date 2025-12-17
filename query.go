@@ -4,6 +4,7 @@ import (
 	"iter"
 	"math"
 	"slices"
+	"sync"
 )
 
 // Optional ComponentId for Queries.
@@ -117,10 +118,43 @@ func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[Qu
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult1.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query1[A]) Task(workersCount int, filterFn func(QueryResult1[A]) bool, fn func(result QueryResult1[A])) {
+	storageA := getStorage[A](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult1[A]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult1 for all the entities with component A
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1[A]) bool) <-chan iter.Seq[QueryResult1[A]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -283,10 +317,48 @@ func (query *Query2[A, B]) Foreach(filterFn func(QueryResult2[A, B]) bool) iter.
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult2.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query2[A, B]) Task(workersCount int, filterFn func(QueryResult2[A, B]) bool, fn func(result QueryResult2[A, B])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult2[A, B]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult2 for all the entities with components A, B
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResult2[A, B]) bool) <-chan iter.Seq[QueryResult2[A, B]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -472,10 +544,53 @@ func (query *Query3[A, B, C]) Foreach(filterFn func(QueryResult3[A, B, C]) bool)
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult3.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query3[A, B, C]) Task(workersCount int, filterFn func(QueryResult3[A, B, C]) bool, fn func(result QueryResult3[A, B, C])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+	storageC := getStorage[C](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult3[A, B, C]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			if sliceC != nil {
+				result.C = &sliceC[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult3 for all the entities with components A, B, C
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryResult3[A, B, C]) bool) <-chan iter.Seq[QueryResult3[A, B, C]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -679,10 +794,58 @@ func (query *Query4[A, B, C, D]) Foreach(filterFn func(QueryResult4[A, B, C, D])
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult4.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query4[A, B, C, D]) Task(workersCount int, filterFn func(QueryResult4[A, B, C, D]) bool, fn func(result QueryResult4[A, B, C, D])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+	storageC := getStorage[C](query.World)
+	storageD := getStorage[D](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult4[A, B, C, D]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			if sliceC != nil {
+				result.C = &sliceC[i]
+			}
+			if sliceD != nil {
+				result.D = &sliceD[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult4 for all the entities with components A, B, C, D
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(QueryResult4[A, B, C, D]) bool) <-chan iter.Seq[QueryResult4[A, B, C, D]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -903,10 +1066,63 @@ func (query *Query5[A, B, C, D, E]) Foreach(filterFn func(QueryResult5[A, B, C, 
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult5.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query5[A, B, C, D, E]) Task(workersCount int, filterFn func(QueryResult5[A, B, C, D, E]) bool, fn func(result QueryResult5[A, B, C, D, E])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+	storageC := getStorage[C](query.World)
+	storageD := getStorage[D](query.World)
+	storageE := getStorage[E](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult5[A, B, C, D, E]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			if sliceC != nil {
+				result.C = &sliceC[i]
+			}
+			if sliceD != nil {
+				result.D = &sliceD[i]
+			}
+			if sliceE != nil {
+				result.E = &sliceE[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult5 for all the entities with components A, B, C, D, E
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(QueryResult5[A, B, C, D, E]) bool) <-chan iter.Seq[QueryResult5[A, B, C, D, E]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -1145,10 +1361,68 @@ func (query *Query6[A, B, C, D, E, F]) Foreach(filterFn func(QueryResult6[A, B, 
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult6.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query6[A, B, C, D, E, F]) Task(workersCount int, filterFn func(QueryResult6[A, B, C, D, E, F]) bool, fn func(result QueryResult6[A, B, C, D, E, F])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+	storageC := getStorage[C](query.World)
+	storageD := getStorage[D](query.World)
+	storageE := getStorage[E](query.World)
+	storageF := getStorage[F](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+		sliceF := storageF.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult6[A, B, C, D, E, F]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			if sliceC != nil {
+				result.C = &sliceC[i]
+			}
+			if sliceD != nil {
+				result.D = &sliceD[i]
+			}
+			if sliceE != nil {
+				result.E = &sliceE[i]
+			}
+			if sliceF != nil {
+				result.F = &sliceF[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult6 for all the entities with components A, B, C, D, E, F
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn func(QueryResult6[A, B, C, D, E, F]) bool) <-chan iter.Seq[QueryResult6[A, B, C, D, E, F]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -1405,10 +1679,73 @@ func (query *Query7[A, B, C, D, E, F, G]) Foreach(filterFn func(QueryResult7[A, 
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult7.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query7[A, B, C, D, E, F, G]) Task(workersCount int, filterFn func(QueryResult7[A, B, C, D, E, F, G]) bool, fn func(result QueryResult7[A, B, C, D, E, F, G])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+	storageC := getStorage[C](query.World)
+	storageD := getStorage[D](query.World)
+	storageE := getStorage[E](query.World)
+	storageF := getStorage[F](query.World)
+	storageG := getStorage[G](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+		sliceF := storageF.archetypesComponentsEntities[archetype.Id]
+		sliceG := storageG.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult7[A, B, C, D, E, F, G]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			if sliceC != nil {
+				result.C = &sliceC[i]
+			}
+			if sliceD != nil {
+				result.D = &sliceD[i]
+			}
+			if sliceE != nil {
+				result.E = &sliceE[i]
+			}
+			if sliceF != nil {
+				result.F = &sliceF[i]
+			}
+			if sliceG != nil {
+				result.G = &sliceG[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult7 for all the entities with components A, B, C, D, E, F, G
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn func(QueryResult7[A, B, C, D, E, F, G]) bool) <-chan iter.Seq[QueryResult7[A, B, C, D, E, F, G]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -1682,10 +2019,78 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Foreach(filterFn func(QueryResult8[
 	}
 }
 
+// Task executes fn in parallel across workersCount goroutines for all entities matching the query.
+// Each entity's components are passed to fn through QueryResult8.
+// If filterFn is provided and returns false for an entity, that entity is skipped.
+//
+// The workersCount parameter determines the number of parallel workers.
+// Data is automatically partitioned across workers for optimal performance.
+func (query *Query8[A, B, C, D, E, F, G, H]) Task(workersCount int, filterFn func(QueryResult8[A, B, C, D, E, F, G, H]) bool, fn func(result QueryResult8[A, B, C, D, E, F, G, H])) {
+	storageA := getStorage[A](query.World)
+	storageB := getStorage[B](query.World)
+	storageC := getStorage[C](query.World)
+	storageD := getStorage[D](query.World)
+	storageE := getStorage[E](query.World)
+	storageF := getStorage[F](query.World)
+	storageG := getStorage[G](query.World)
+	storageH := getStorage[H](query.World)
+
+	archetypes := query.filter()
+	for _, archetype := range archetypes {
+		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+		sliceF := storageF.archetypesComponentsEntities[archetype.Id]
+		sliceG := storageG.archetypesComponentsEntities[archetype.Id]
+		sliceH := storageH.archetypesComponentsEntities[archetype.Id]
+
+		task(workersCount, archetype.entities, func(i int, data EntityId) {
+			var result QueryResult8[A, B, C, D, E, F, G, H]
+
+			if sliceA != nil {
+				result.A = &sliceA[i]
+			}
+			if sliceB != nil {
+				result.B = &sliceB[i]
+			}
+			if sliceC != nil {
+				result.C = &sliceC[i]
+			}
+			if sliceD != nil {
+				result.D = &sliceD[i]
+			}
+			if sliceE != nil {
+				result.E = &sliceE[i]
+			}
+			if sliceF != nil {
+				result.F = &sliceF[i]
+			}
+			if sliceG != nil {
+				result.G = &sliceG[i]
+			}
+			if sliceH != nil {
+				result.H = &sliceH[i]
+			}
+			result.EntityId = archetype.entities[i]
+
+			if filterFn != nil && !filterFn(result) {
+				return
+			}
+
+			fn(result)
+		})
+	}
+}
+
 // ForeachChannel returns a channel of iterators of QueryResult8 for all the entities with components A, B, C, D, E, F, G, H
 // to which filterFn function returns true.
-//
 // The parameter chunkSize defines the size of each iterators.
+//
+// Deprecated: ForeachChannel is deprecated and will be removed in a future version.
+// Use Task(workersCount, filterFn, fn) instead, which offers better performance
+// and a simpler API for parallel iteration.
 func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filterFn func(QueryResult8[A, B, C, D, E, F, G, H]) bool) <-chan iter.Seq[QueryResult8[A, B, C, D, E, F, G, H]] {
 	if chunkSize == 0 {
 		panic("chunk size must be greater than zero")
@@ -1793,4 +2198,21 @@ func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filte
 	}()
 
 	return channel
+}
+
+func task[T any](workersCount int, data []T, fn func(i int, data T)) {
+	var wg sync.WaitGroup
+	dataSize := len(data)
+	chunkSize := (dataSize + workersCount - 1) / workersCount
+
+	for workerID := 0; workerID < workersCount; workerID++ {
+		wg.Add(1)
+		go func(start, end int) {
+			defer wg.Done()
+			for i := start; i < end; i++ {
+				fn(i, data[i])
+			}
+		}(workerID*chunkSize, min((workerID+1)*chunkSize, dataSize))
+	}
+	wg.Wait()
 }

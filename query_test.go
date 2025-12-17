@@ -2,6 +2,7 @@ package volt
 
 import (
 	"slices"
+	"sync"
 	"testing"
 )
 
@@ -94,6 +95,46 @@ func TestQuery1_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
+		}
+	}
+}
+
+func TestQuery1_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponent[testComponent1](world, entityId, testComponent1{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery1[testComponent1](world, QueryConfiguration{})
+	var results []QueryResult1[testComponent1]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult1[testComponent1]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
 			break
 		}
 	}
@@ -229,6 +270,47 @@ func TestQuery2_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
+		}
+	}
+}
+
+func TestQuery2_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents2[testComponent1, testComponent2](world, entityId, testComponent1{}, testComponent2{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery2[testComponent1, testComponent2](world, QueryConfiguration{})
+	var results []QueryResult2[testComponent1, testComponent2]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult2[testComponent1, testComponent2]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
 			break
 		}
 	}
@@ -375,6 +457,48 @@ func TestQuery3_Foreach(t *testing.T) {
 	}
 }
 
+func TestQuery3_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents3[testComponent1, testComponent2, testComponent3](world, entityId, testComponent1{}, testComponent2{}, testComponent3{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery3[testComponent1, testComponent2, testComponent3](world, QueryConfiguration{})
+	var results []QueryResult3[testComponent1, testComponent2, testComponent3]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult3[testComponent1, testComponent2, testComponent3]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
+			break
+		}
+	}
+}
+
 func TestQuery3_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
@@ -515,6 +639,49 @@ func TestQuery4_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
+		}
+	}
+}
+
+func TestQuery4_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents4[testComponent1, testComponent2, testComponent3, testComponent4](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world, QueryConfiguration{})
+	var results []QueryResult4[testComponent1, testComponent2, testComponent3, testComponent4]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult4[testComponent1, testComponent2, testComponent3, testComponent4]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
 			break
 		}
 	}
@@ -670,6 +837,50 @@ func TestQuery5_Foreach(t *testing.T) {
 	}
 }
 
+func TestQuery5_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5](world, QueryConfiguration{})
+	var results []QueryResult5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult5[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
+			break
+		}
+	}
+}
+
 func TestQuery5_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
@@ -820,6 +1031,51 @@ func TestQuery6_Foreach(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("query should return EntityId %d in Foreach iterator", entityId)
+			break
+		}
+	}
+}
+
+func TestQuery6_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6](world, QueryConfiguration{})
+	var results []QueryResult6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult6[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
 			break
 		}
 	}
@@ -986,6 +1242,52 @@ func TestQuery7_Foreach(t *testing.T) {
 	}
 }
 
+func TestQuery7_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7](world, QueryConfiguration{})
+	var results []QueryResult7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult7[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
+			break
+		}
+	}
+}
+
 func TestQuery7_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)
@@ -1144,6 +1446,54 @@ func TestQuery8_Foreach(t *testing.T) {
 		}
 	}
 }
+
+func TestQuery8_Task(t *testing.T) {
+	var entities []EntityId
+	world := CreateWorld(TEST_ENTITY_NUMBER)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+	RegisterComponent[testComponent5](world, &ComponentConfig[testComponent5]{})
+	RegisterComponent[testComponent6](world, &ComponentConfig[testComponent6]{})
+	RegisterComponent[testComponent7](world, &ComponentConfig[testComponent7]{})
+	RegisterComponent[testComponent8](world, &ComponentConfig[testComponent8]{})
+
+	for i := 0; i < TEST_ENTITY_NUMBER; i++ {
+		entityId := world.CreateEntity()
+		entities = append(entities, entityId)
+
+		err := AddComponents8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, entityId, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}, testComponent5{}, testComponent6{}, testComponent7{}, testComponent8{})
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+	}
+
+	query := CreateQuery8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8](world, QueryConfiguration{})
+	var results []QueryResult8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8]
+	var mu sync.Mutex
+
+	query.Task(4, nil, func(result QueryResult8[testComponent1, testComponent2, testComponent3, testComponent4, testComponent5, testComponent6, testComponent7, testComponent8]) {
+		mu.Lock()
+		results = append(results, result)
+		mu.Unlock()
+	})
+
+	for _, entityId := range entities {
+		found := false
+		for _, result := range results {
+			if result.EntityId == entityId {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("query should return EntityId %d in Task iterator", entityId)
+			break
+		}
+	}
+}
+
 func TestQuery8_ForeachChannel(t *testing.T) {
 	var entities []EntityId
 	world := CreateWorld(TEST_ENTITY_NUMBER)

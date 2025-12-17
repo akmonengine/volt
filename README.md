@@ -112,7 +112,8 @@ for result := range query.Foreach(nil) {
     transformData(result.A)
 }
 ```
-The Foreach function receives a function to pre-filter the results, and returns an iterator.
+
+DEPRECATED: The Foreach function receives a function to pre-filter the results, and returns an iterator.
 
 For faster performances, you can use concurrency with the function ForeachChannel:
 ```go
@@ -141,6 +142,21 @@ func runWorkers(workersNumber int, worker func(int)) {
   
   wg.Wait()
 }
+```
+
+The Task function replaces the previous ForeachChannel function: it gives a simpler API with smaller memory footprint, for similar performances.
+
+It is useful for executing code on all queried entities, by dispatching the work across a defined number of workers.
+Internally, this function leverages the iterator typically obtained through the Foreach function.
+
+The number of workers should be considered based on the task's complexity:
+dispatching has a minmal overhead that might outweigh the benefits if the entity count to worker count ratio is not appropriate.
+```go
+query := volt.CreateQuery2[transformComponent, meshComponent](world, volt.QueryConfiguration{OptionalComponents: []volt.OptionalComponent{meshComponentId}})
+
+query.Task(4, nil, func(result volt.QueryResult2[transformComponent, meshComponent]) {
+    transformData(result.A)
+})
 ```
 
 Queries exist for 1 to 8 Components.
@@ -255,21 +271,22 @@ goarch: amd64
 pkg: benchmark
 cpu: AMD Ryzen 7 5800X 8-Core Processor             
 
-| Benchmark                       | Iterations | ns/op     | B/op       | Allocs/op |
-|---------------------------------|------------|-----------|------------|-----------|
-| BenchmarkCreateEntityArche-16   | 171        | 7138387   | 11096954   | 61        |
-| BenchmarkIterateArche-16        | 2798       | 429744    | 354        | 4         |
-| BenchmarkAddArche-16            | 253        | 4673362   | 122153     | 100000    |
-| BenchmarkRemoveArche-16         | 247        | 4840772   | 100000     | 100000    |
-| BenchmarkCreateEntityUECS-16    | 27         | 38852089  | 49119503   | 200146    |
-| BenchmarkIterateUECS-16         | 4892       | 235333    | 128        | 3         |
-| BenchmarkAddUECS-16             | 28         | 38982533  | 4721942    | 100005    |
-| BenchmarkRemoveUECS-16          | 30         | 40290316  | 3336712    | 100000    |
-| BenchmarkCreateEntityVolt-16    | 63         | 18836136  | 35181458   | 100101    |
-| BenchmarkIterateVolt-16         | 3619       | 337764    | 256        | 8         |
-| BenchmarkIterateConcurrentlyVolt-16 | 9164      | 121653    | 3324       | 91        |
-| BenchmarkAddVolt-16             | 103         | 11379690  | 4313182    | 300000    |
-| BenchmarkRemoveVolt-16          | 146         | 7647252  | 400001     | 100000    |
+| Benchmark                                        | Iterations  | ns/op     | B/op       | Allocs/op |
+|--------------------------------------------------|-------------|-----------|------------|-----------|
+| BenchmarkCreateEntityArche-16                    | 171         | 7138387   | 11096954   | 61        |
+| BenchmarkIterateArche-16                         | 2798        | 429744    | 354        | 4         |
+| BenchmarkAddArche-16                             | 253         | 4673362   | 122153     | 100000    |
+| BenchmarkRemoveArche-16                          | 247         | 4840772   | 100000     | 100000    |
+| BenchmarkCreateEntityUECS-16                     | 27          | 38852089  | 49119503   | 200146    |
+| BenchmarkIterateUECS-16                          | 4892        | 235333    | 128        | 3         |
+| BenchmarkAddUECS-16                              | 28          | 38982533  | 4721942    | 100005    |
+| BenchmarkRemoveUECS-16                           | 30          | 40290316  | 3336712    | 100000    |
+| BenchmarkCreateEntityVolt-16                     | 63          | 18836136  | 35181458   | 100101    |
+| BenchmarkIterateVolt-16                          | 3619        | 337764    | 256        | 8         |
+| (DEPRECATED) BenchmarkIterateConcurrentlyVolt-16 | 9164        | 121653    | 3324       | 91        |
+| BenchmarkTaskVolt-16                             | 9859        | 119525    | 1847       | 38        |
+| BenchmarkAddVolt-16                              | 103         | 11379690  | 4313182    | 300000    |
+| BenchmarkRemoveVolt-16                           | 146         | 7647252   | 400001     | 100000    |
 
 These results show a few things:
 - Arche is the fastest tool for writes operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
