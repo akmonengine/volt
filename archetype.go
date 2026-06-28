@@ -76,6 +76,13 @@ func (world *World) getArchetypesForComponentsIds(componentsIds ...ComponentId) 
 }
 
 func (world *World) getNextArchetype(entityRecord entityRecord, componentsIds ...ComponentId) *archetype {
+	// Fast path: a single-component transition (AddComponent, AddTag, ...) is
+	// resolved through the archetype graph, avoiding both the linear scan over
+	// all archetypes and the slice rebuild done below.
+	if len(componentsIds) == 1 {
+		return world.archetypeAfterAdd(entityRecord.archetypeId, componentsIds[0])
+	}
+
 	var archetype *archetype
 	if entityRecord.archetypeId == 0 {
 		archetype = world.getArchetypeForComponentsIds(componentsIds...)
@@ -89,4 +96,58 @@ func (world *World) getNextArchetype(entityRecord entityRecord, componentsIds ..
 	}
 
 	return archetype
+}
+
+// archetypeAfterAdd returns the archetype obtained by adding componentId to the
+// archetype fromId, using (and lazily populating) the cached archetype graph.
+func (world *World) archetypeAfterAdd(fromId archetypeId, componentId ComponentId) *archetype {
+	if destId, ok := world.archetypes[fromId].addEdges[componentId]; ok {
+		return &world.archetypes[destId]
+	}
+
+	// Cache miss: compute the destination once. getArchetypeForComponentsIds may
+	// create a new archetype and reallocate world.archetypes, so we resolve every
+	// archetype by index afterwards rather than holding a stale pointer.
+	newType := append(slices.Clone(world.archetypes[fromId].Type), componentId)
+	destId := world.getArchetypeForComponentsIds(newType...).Id
+	world.linkArchetypes(fromId, destId, componentId)
+
+	return &world.archetypes[destId]
+}
+
+// archetypeAfterRemove returns the archetype obtained by removing componentId
+// from the archetype fromId, using (and lazily populating) the archetype graph.
+func (world *World) archetypeAfterRemove(fromId archetypeId, componentId ComponentId) *archetype {
+	if destId, ok := world.archetypes[fromId].removeEdges[componentId]; ok {
+		return &world.archetypes[destId]
+	}
+
+	fromType := world.archetypes[fromId].Type
+	newType := make(componentsIds, 0, len(fromType))
+	for _, c := range fromType {
+		if c != componentId {
+			newType = append(newType, c)
+		}
+	}
+	destId := world.getArchetypeForComponentsIds(newType...).Id
+	// dest --add componentId--> from, and from --remove componentId--> dest.
+	world.linkArchetypes(destId, fromId, componentId)
+
+	return &world.archetypes[destId]
+}
+
+// linkArchetypes records the bidirectional transition between two archetypes:
+// fromId --add componentId--> destId and destId --remove componentId--> fromId.
+func (world *World) linkArchetypes(fromId, destId archetypeId, componentId ComponentId) {
+	from := &world.archetypes[fromId]
+	if from.addEdges == nil {
+		from.addEdges = make(map[ComponentId]archetypeId)
+	}
+	from.addEdges[componentId] = destId
+
+	dest := &world.archetypes[destId]
+	if dest.removeEdges == nil {
+		dest.removeEdges = make(map[ComponentId]archetypeId)
+	}
+	dest.removeEdges[componentId] = fromId
 }

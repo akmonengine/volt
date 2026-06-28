@@ -2,7 +2,6 @@ package volt
 
 import (
 	"fmt"
-	"slices"
 )
 
 const COMPONENTS_INDICES = 0
@@ -63,15 +62,11 @@ func (world *World) RemoveTag(tagId TagId, entityId EntityId) error {
 		return fmt.Errorf("the entity %d doesn't own the tag %d", entityId, tagId)
 	}
 
+	// Resolve the destination archetype through the graph. This may create a new
+	// archetype and reallocate world.archetypes, so resolve both pointers after.
+	archetype := world.archetypeAfterRemove(entityRecord.archetypeId, tagId)
 	oldArchetype := &world.archetypes[entityRecord.archetypeId]
 
-	// Move every components to the new one, and set all the records
-	componentKey := slices.Index(oldArchetype.Type, tagId)
-
-	componentsIds := make([]ComponentId, len(oldArchetype.Type))
-	copy(componentsIds, oldArchetype.Type)
-	componentsIds = append(componentsIds[:componentKey], componentsIds[componentKey+1:]...)
-	archetype := world.getArchetypeForComponentsIds(componentsIds...)
 	moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
 
 	world.setArchetype(entityRecord, archetype)

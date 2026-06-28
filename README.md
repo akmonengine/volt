@@ -259,8 +259,8 @@ func (scene *Scene) SearchEntity(name string) volt.EntityId {
 Few ECS tools exist for Go. Arche and unitoftime/ecs are probably the most looked at, and the most optimized.
 In the benchmark folder, this module is compared to both of them.
 
-- Go - v1.25.3
-- Volt - v1.7.0
+- Go - v1.26.4
+- Volt - v1.9.0
 - [Arche - v0.15.3](https://github.com/mlange-42/arche)
 - [UECS - v0.0.3](https://github.com/unitoftime/ecs)
 
@@ -271,27 +271,30 @@ goarch: amd64
 pkg: benchmark
 cpu: AMD Ryzen 7 5800X 8-Core Processor             
 
+Values are the median over 6 runs:
+
 | Benchmark                                        | Iterations  | ns/op     | B/op       | Allocs/op |
 |--------------------------------------------------|-------------|-----------|------------|-----------|
-| BenchmarkCreateEntityArche-16                    | 171         | 7138387   | 11096954   | 61        |
-| BenchmarkIterateArche-16                         | 2798        | 429744    | 354        | 4         |
-| BenchmarkAddArche-16                             | 253         | 4673362   | 122153     | 100000    |
-| BenchmarkRemoveArche-16                          | 247         | 4840772   | 100000     | 100000    |
-| BenchmarkCreateEntityUECS-16                     | 27          | 38852089  | 49119503   | 200146    |
-| BenchmarkIterateUECS-16                          | 4892        | 235333    | 128        | 3         |
-| BenchmarkAddUECS-16                              | 28          | 38982533  | 4721942    | 100005    |
-| BenchmarkRemoveUECS-16                           | 30          | 40290316  | 3336712    | 100000    |
-| BenchmarkCreateEntityVolt-16                     | 63          | 18836136  | 35181458   | 100101    |
-| BenchmarkIterateVolt-16                          | 3619        | 337764    | 256        | 8         |
-| (DEPRECATED) BenchmarkIterateConcurrentlyVolt-16 | 9164        | 121653    | 3324       | 91        |
-| BenchmarkTaskVolt-16                             | 9859        | 119525    | 1847       | 38        |
-| BenchmarkAddVolt-16                              | 103         | 11379690  | 4313182    | 300000    |
-| BenchmarkRemoveVolt-16                           | 146         | 7647252   | 400001     | 100000    |
+| BenchmarkCreateEntityArche-16                    | 152         | 7906676   | 11096815   | 61        |
+| BenchmarkIterateArche-16                         | 3484        | 337794    | 354        | 4         |
+| BenchmarkAddArche-16                             | 286         | 4177088   | 119632     | 100000    |
+| BenchmarkRemoveArche-16                          | 248         | 4794950   | 100000     | 100000    |
+| BenchmarkCreateEntityUECS-16                     | 32          | 35455745  | 49119512   | 200146    |
+| BenchmarkIterateUECS-16                          | 5035        | 237613    | 128        | 3         |
+| BenchmarkAddUECS-16                              | 34          | 31213636  | 4437536    | 100004    |
+| BenchmarkRemoveUECS-16                           | 38          | 29573272  | 3309389    | 100000    |
+| BenchmarkCreateEntityVolt-16                     | 70          | 15858217  | 35197857   | 100101    |
+| BenchmarkIterateVolt-16                          | 3900        | 302282    | 144        | 5         |
+| (DEPRECATED) BenchmarkIterateConcurrentlyVolt-16 | 11877       | 100236    | 3332       | 94        |
+| BenchmarkTaskVolt-16                             | 12320       | 97474     | 1856       | 39        |
+| BenchmarkAddVolt-16                              | 121         | 9782019   | 2866598    | 200000    |
+| BenchmarkRemoveVolt-16                           | 160         | 7447984   | 0          | 0         |
 
 These results show a few things:
-- Arche is the fastest tool for writes operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
+- Arche is still the fastest tool for raw write operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
 - Unitoftime/ecs is the fastest tool for read operations on one thread only, but the writes are currently way slower than Arche and Volt (except on the Create benchmark).
 - Volt is a good compromise, an in-between: fast enough add/remove operations, and almost as fast as Arche and UECS for reads on one thread.
+- Volt's write path is now much lighter on the garbage collector: thanks to the archetype transition graph and the typed storage, removing a component allocates nothing (0 allocs/op) and adding one roughly halved its allocations compared to previous versions.
 Volt uses the new iterators from go1.23, which in their current implementation are slower than using a function call in the for-loop inside the Query (as done in UECS).
 This means, if the Go team finds a way to improve the performances from the iterators, we can hope to acheive near performances as UECS.
 - Thanks to the iterators, Volt provides a simple way to use goroutines for read operations. The data is received through a channel of iterator.

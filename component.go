@@ -469,17 +469,14 @@ func (world *World) RemoveComponent(entityId EntityId, componentId ComponentId) 
 func removeComponent(world *World, s storage, entityRecord entityRecord, componentId ComponentId) {
 	world.componentRemovedFn(entityRecord.Id, componentId)
 
-	oldArchetype := &world.archetypes[entityRecord.archetypeId]
+	oldArchetypeId := entityRecord.archetypeId
+	s.moveLastToKey(oldArchetypeId, entityRecord.key)
 
-	s.moveLastToKey(oldArchetype.Id, entityRecord.key)
+	// Resolve the destination archetype through the graph. This may create a new
+	// archetype and reallocate world.archetypes, so resolve both pointers after.
+	archetype := world.archetypeAfterRemove(oldArchetypeId, componentId)
+	oldArchetype := &world.archetypes[oldArchetypeId]
 
-	// Move every components to the new one, and set all the records
-	componentKey := slices.Index(oldArchetype.Type, componentId)
-
-	componentsIds := make([]ComponentId, len(oldArchetype.Type))
-	copy(componentsIds, oldArchetype.Type)
-	componentsIds = append(componentsIds[:componentKey], componentsIds[componentKey+1:]...)
-	archetype := world.getArchetypeForComponentsIds(componentsIds...)
 	moveComponentsToArchetype(world, entityRecord, oldArchetype, archetype)
 
 	world.setArchetype(entityRecord, archetype)

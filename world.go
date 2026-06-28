@@ -24,6 +24,14 @@ type archetype struct {
 	Id       archetypeId
 	Type     componentsIds
 	entities []EntityId
+
+	// Archetype graph: cached transitions to neighbour archetypes.
+	// addEdges[c] is the archetype reached by adding component c to this one;
+	// removeEdges[c] the one reached by removing c. Archetypes are never
+	// destroyed, so these edges never go stale. They turn the per-operation
+	// archetype lookup from a linear scan into an O(1) hop after the first time.
+	addEdges    map[ComponentId]archetypeId
+	removeEdges map[ComponentId]archetypeId
 }
 
 // Container of archetype and key position in storage, for a given EntityId
