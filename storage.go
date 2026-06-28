@@ -80,18 +80,21 @@ func (c *ComponentsStorage[T]) size(archetypeId archetypeId) int {
 }
 
 func (c *ComponentsStorage[T]) add(archetypeId archetypeId, component ComponentInterface) int {
-	// this function could be simplified using:
-	// c.size(archetypeId) - 1
-	// but to reduce the usage of mapaccess we compute the size ourselves instead of calling c.size
+	return c.addTyped(archetypeId, component.(T))
+}
 
-	c.archetypesComponentsEntities[archetypeId] = append(c.archetypesComponentsEntities[archetypeId], component.(T))
+// addTyped appends a component without boxing it into ComponentInterface.
+// The generic add/copy paths hold a concrete *ComponentsStorage[T], so they can
+// call this directly and avoid one heap allocation per component added.
+func (c *ComponentsStorage[T]) addTyped(archetypeId archetypeId, component T) int {
+	// We compute the size ourselves instead of calling c.size to reduce mapaccess.
+	c.archetypesComponentsEntities[archetypeId] = append(c.archetypesComponentsEntities[archetypeId], component)
 
 	return len(c.archetypesComponentsEntities[archetypeId]) - 1
-
 }
 
 func (c *ComponentsStorage[T]) copy(oldArchetypeId archetypeId, archetypeId archetypeId, recordKey int) int {
-	return c.add(archetypeId, c.archetypesComponentsEntities[oldArchetypeId][recordKey])
+	return c.addTyped(archetypeId, c.archetypesComponentsEntities[oldArchetypeId][recordKey])
 }
 
 func (c *ComponentsStorage[T]) set(archetypeId archetypeId, key int, component ComponentInterface) {
