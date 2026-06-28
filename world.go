@@ -1,10 +1,6 @@
 // Package volt is an ECS for game development, based on the Archetype paradigm.
 package volt
 
-import (
-	"slices"
-)
-
 // uint16 identifier, for small scoped data.
 type smallId uint16
 
@@ -248,8 +244,13 @@ func (world *World) RemoveEntity(entityId EntityId) {
 
 	lastEntityKey := len(archetype.entities) - 1
 	for _, componentId := range archetype.Type {
+		// Tags have no storage: their id lives outside the storage range,
+		// so indexing world.storage[componentId] would overflow.
+		if componentId >= TAGS_INDICES {
+			continue
+		}
 		s := world.storage[componentId]
-		if s != nil && slices.Contains(archetype.Type, s.getType()) {
+		if s != nil {
 			s.moveLastToKey(archetype.Id, entityRecord.key)
 		}
 	}
