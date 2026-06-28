@@ -558,7 +558,7 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityRecord 
 			world.setArchetype(entityRecord, archetype)
 		}
 	}
-	storageA.add(archetype.Id, component)
+	storageA.addTyped(archetype.Id, component)
 
 	return nil
 }
@@ -583,8 +583,8 @@ func addComponentsToArchetype2[A, B ComponentInterface](world *World, entityReco
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
 
 	return nil
 }
@@ -610,9 +610,9 @@ func addComponentsToArchetype3[A, B, C ComponentInterface](world *World, entityR
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
-	storageC.add(archetype.Id, componentC)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
+	storageC.addTyped(archetype.Id, componentC)
 
 	return nil
 }
@@ -639,10 +639,10 @@ func addComponentsToArchetype4[A, B, C, D ComponentInterface](world *World, enti
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
-	storageC.add(archetype.Id, componentC)
-	storageD.add(archetype.Id, componentD)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
+	storageC.addTyped(archetype.Id, componentC)
+	storageD.addTyped(archetype.Id, componentD)
 
 	return nil
 }
@@ -670,11 +670,11 @@ func addComponentsToArchetype5[A, B, C, D, E ComponentInterface](world *World, e
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
-	storageC.add(archetype.Id, componentC)
-	storageD.add(archetype.Id, componentD)
-	storageE.add(archetype.Id, componentE)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
+	storageC.addTyped(archetype.Id, componentC)
+	storageD.addTyped(archetype.Id, componentD)
+	storageE.addTyped(archetype.Id, componentE)
 
 	return nil
 }
@@ -703,12 +703,12 @@ func addComponentsToArchetype6[A, B, C, D, E, F ComponentInterface](world *World
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
-	storageC.add(archetype.Id, componentC)
-	storageD.add(archetype.Id, componentD)
-	storageE.add(archetype.Id, componentE)
-	storageF.add(archetype.Id, componentF)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
+	storageC.addTyped(archetype.Id, componentC)
+	storageD.addTyped(archetype.Id, componentD)
+	storageE.addTyped(archetype.Id, componentE)
+	storageF.addTyped(archetype.Id, componentF)
 
 	return nil
 }
@@ -738,13 +738,13 @@ func addComponentsToArchetype7[A, B, C, D, E, F, G ComponentInterface](world *Wo
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
-	storageC.add(archetype.Id, componentC)
-	storageD.add(archetype.Id, componentD)
-	storageE.add(archetype.Id, componentE)
-	storageF.add(archetype.Id, componentF)
-	storageG.add(archetype.Id, componentG)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
+	storageC.addTyped(archetype.Id, componentC)
+	storageD.addTyped(archetype.Id, componentD)
+	storageE.addTyped(archetype.Id, componentE)
+	storageF.addTyped(archetype.Id, componentF)
+	storageG.addTyped(archetype.Id, componentG)
 
 	return nil
 }
@@ -775,14 +775,14 @@ func addComponentsToArchetype8[A, B, C, D, E, F, G, H ComponentInterface](world 
 		}
 	}
 
-	storageA.add(archetype.Id, componentA)
-	storageB.add(archetype.Id, componentB)
-	storageC.add(archetype.Id, componentC)
-	storageD.add(archetype.Id, componentD)
-	storageE.add(archetype.Id, componentE)
-	storageF.add(archetype.Id, componentF)
-	storageG.add(archetype.Id, componentG)
-	storageH.add(archetype.Id, componentH)
+	storageA.addTyped(archetype.Id, componentA)
+	storageB.addTyped(archetype.Id, componentB)
+	storageC.addTyped(archetype.Id, componentC)
+	storageD.addTyped(archetype.Id, componentD)
+	storageE.addTyped(archetype.Id, componentE)
+	storageF.addTyped(archetype.Id, componentF)
+	storageG.addTyped(archetype.Id, componentG)
+	storageH.addTyped(archetype.Id, componentH)
 
 	return nil
 }
