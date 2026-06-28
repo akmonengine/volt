@@ -94,7 +94,7 @@ func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[Qu
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
 			var dataA *A
 			for i, entityId := range archetype.entities {
 				if sliceA != nil {
@@ -129,7 +129,7 @@ func (query *Query1[A]) Task(workersCount int, filterFn func(QueryResult1[A]) bo
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult1[A]
@@ -170,7 +170,7 @@ func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk1[A]{}
@@ -292,8 +292,8 @@ func (query *Query2[A, B]) Foreach(filterFn func(QueryResult2[A, B]) bool) iter.
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
 
 			var result QueryResult2[A, B]
 			for i, entityId := range archetype.entities {
@@ -329,8 +329,8 @@ func (query *Query2[A, B]) Task(workersCount int, filterFn func(QueryResult2[A, 
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult2[A, B]
@@ -375,8 +375,8 @@ func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResu
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk2[A, B]{}
@@ -508,9 +508,9 @@ func (query *Query3[A, B, C]) Foreach(filterFn func(QueryResult3[A, B, C]) bool)
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
 			var dataA *A
 			var dataB *B
 			var dataC *C
@@ -557,9 +557,9 @@ func (query *Query3[A, B, C]) Task(workersCount int, filterFn func(QueryResult3[
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
+		sliceC := storageC.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult3[A, B, C]
@@ -608,9 +608,9 @@ func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryR
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk3[A, B, C]{}
@@ -752,10 +752,10 @@ func (query *Query4[A, B, C, D]) Foreach(filterFn func(QueryResult4[A, B, C, D])
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
 			var dataA *A
 			var dataB *B
 			var dataC *C
@@ -808,10 +808,10 @@ func (query *Query4[A, B, C, D]) Task(workersCount int, filterFn func(QueryResul
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
+		sliceC := storageC.getColumn(archetype.Id)
+		sliceD := storageD.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult4[A, B, C, D]
@@ -864,10 +864,10 @@ func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(Que
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk4[A, B, C, D]{}
@@ -1018,11 +1018,11 @@ func (query *Query5[A, B, C, D, E]) Foreach(filterFn func(QueryResult5[A, B, C, 
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
 			var dataA *A
 			var dataB *B
 			var dataC *C
@@ -1081,11 +1081,11 @@ func (query *Query5[A, B, C, D, E]) Task(workersCount int, filterFn func(QueryRe
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
+		sliceC := storageC.getColumn(archetype.Id)
+		sliceD := storageD.getColumn(archetype.Id)
+		sliceE := storageE.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult5[A, B, C, D, E]
@@ -1142,11 +1142,11 @@ func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk5[A, B, C, D, E]{}
@@ -1307,12 +1307,12 @@ func (query *Query6[A, B, C, D, E, F]) Foreach(filterFn func(QueryResult6[A, B, 
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
+			sliceF := storageF.getColumn(archetype.Id)
 			var dataA *A
 			var dataB *B
 			var dataC *C
@@ -1377,12 +1377,12 @@ func (query *Query6[A, B, C, D, E, F]) Task(workersCount int, filterFn func(Quer
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-		sliceF := storageF.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
+		sliceC := storageC.getColumn(archetype.Id)
+		sliceD := storageD.getColumn(archetype.Id)
+		sliceE := storageE.getColumn(archetype.Id)
+		sliceF := storageF.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult6[A, B, C, D, E, F]
@@ -1443,12 +1443,12 @@ func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn fu
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
+			sliceF := storageF.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk6[A, B, C, D, E, F]{}
@@ -1619,13 +1619,13 @@ func (query *Query7[A, B, C, D, E, F, G]) Foreach(filterFn func(QueryResult7[A, 
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
-			sliceG := storageG.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
+			sliceF := storageF.getColumn(archetype.Id)
+			sliceG := storageG.getColumn(archetype.Id)
 			var dataA *A
 			var dataB *B
 			var dataC *C
@@ -1696,13 +1696,13 @@ func (query *Query7[A, B, C, D, E, F, G]) Task(workersCount int, filterFn func(Q
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-		sliceF := storageF.archetypesComponentsEntities[archetype.Id]
-		sliceG := storageG.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
+		sliceC := storageC.getColumn(archetype.Id)
+		sliceD := storageD.getColumn(archetype.Id)
+		sliceE := storageE.getColumn(archetype.Id)
+		sliceF := storageF.getColumn(archetype.Id)
+		sliceG := storageG.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult7[A, B, C, D, E, F, G]
@@ -1767,13 +1767,13 @@ func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
-			sliceG := storageG.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
+			sliceF := storageF.getColumn(archetype.Id)
+			sliceG := storageG.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk7[A, B, C, D, E, F, G]{}
@@ -1954,14 +1954,14 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Foreach(filterFn func(QueryResult8[
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
-			sliceG := storageG.archetypesComponentsEntities[archetype.Id]
-			sliceH := storageH.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
+			sliceF := storageF.getColumn(archetype.Id)
+			sliceG := storageG.getColumn(archetype.Id)
+			sliceH := storageH.getColumn(archetype.Id)
 			var dataA *A
 			var dataB *B
 			var dataC *C
@@ -2037,14 +2037,14 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Task(workersCount int, filterFn fun
 
 	archetypes := query.filter()
 	for _, archetype := range archetypes {
-		sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-		sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-		sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-		sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-		sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-		sliceF := storageF.archetypesComponentsEntities[archetype.Id]
-		sliceG := storageG.archetypesComponentsEntities[archetype.Id]
-		sliceH := storageH.archetypesComponentsEntities[archetype.Id]
+		sliceA := storageA.getColumn(archetype.Id)
+		sliceB := storageB.getColumn(archetype.Id)
+		sliceC := storageC.getColumn(archetype.Id)
+		sliceD := storageD.getColumn(archetype.Id)
+		sliceE := storageE.getColumn(archetype.Id)
+		sliceF := storageF.getColumn(archetype.Id)
+		sliceG := storageG.getColumn(archetype.Id)
+		sliceH := storageH.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
 			var result QueryResult8[A, B, C, D, E, F, G, H]
@@ -2113,14 +2113,14 @@ func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filte
 
 		archetypes := query.filter()
 		for _, archetype := range archetypes {
-			sliceA := storageA.archetypesComponentsEntities[archetype.Id]
-			sliceB := storageB.archetypesComponentsEntities[archetype.Id]
-			sliceC := storageC.archetypesComponentsEntities[archetype.Id]
-			sliceD := storageD.archetypesComponentsEntities[archetype.Id]
-			sliceE := storageE.archetypesComponentsEntities[archetype.Id]
-			sliceF := storageF.archetypesComponentsEntities[archetype.Id]
-			sliceG := storageG.archetypesComponentsEntities[archetype.Id]
-			sliceH := storageH.archetypesComponentsEntities[archetype.Id]
+			sliceA := storageA.getColumn(archetype.Id)
+			sliceB := storageB.getColumn(archetype.Id)
+			sliceC := storageC.getColumn(archetype.Id)
+			sliceD := storageD.getColumn(archetype.Id)
+			sliceE := storageE.getColumn(archetype.Id)
+			sliceF := storageF.getColumn(archetype.Id)
+			sliceG := storageG.getColumn(archetype.Id)
+			sliceH := storageH.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
 				result := queryResultChunk8[A, B, C, D, E, F, G, H]{}

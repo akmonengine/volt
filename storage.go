@@ -2,8 +2,6 @@ package volt
 
 import (
 	"fmt"
-	"maps"
-	"slices"
 )
 
 func getStorage[T ComponentInterface](world *World) *ComponentsStorage[T] {
@@ -17,7 +15,7 @@ func getStorage[T ComponentInterface](world *World) *ComponentsStorage[T] {
 	if world.storage[componentId] == nil {
 		s := &ComponentsStorage[T]{
 			componentId:                  componentId,
-			archetypesComponentsEntities: make(ArchetypesComponentsEntities[T]),
+			archetypesComponentsEntities: make(ArchetypesComponentsEntities[T], 0),
 		}
 		world.storage[componentId] = s
 	}
@@ -52,7 +50,12 @@ type storage interface {
 	delete(archetypeId archetypeId, key int)
 }
 
-type ArchetypesComponentsEntities[T ComponentInterface] map[archetypeId][]T
+// ArchetypesComponentsEntities stores, for each archetype, the column of T
+// components (Structure of Arrays). It is indexed directly by archetypeId:
+// archetypeId is dense (0, 1, 2, ...), so a slice avoids the hashing cost of a
+// map on every storage access, in both read (queries) and write paths. A nil
+// column means the archetype does not hold this component.
+type ArchetypesComponentsEntities[T ComponentInterface] [][]T
 
 type ComponentsStorage[T ComponentInterface] struct {
 	componentId                  ComponentId
@@ -64,19 +67,52 @@ func (c *ComponentsStorage[T]) getType() ComponentId {
 }
 
 func (c *ComponentsStorage[T]) getArchetypes() []archetypeId {
-	return slices.Collect(maps.Keys(c.archetypesComponentsEntities))
+	var archetypes []archetypeId
+	for id, column := range c.archetypesComponentsEntities {
+		if column != nil {
+			archetypes = append(archetypes, archetypeId(id))
+		}
+	}
+
+	return archetypes
 }
 
 func (c *ComponentsStorage[T]) hasArchetype(archetypeId archetypeId) bool {
-	if _, ok := c.archetypesComponentsEntities[archetypeId]; !ok {
-		return false
+	return int(archetypeId) < len(c.archetypesComponentsEntities) && c.archetypesComponentsEntities[archetypeId] != nil
+}
+
+// getColumn returns the component column for archetypeId, or nil if this storage
+// holds no data for it. It is bounds-safe: an archetype that does not contain
+// this component (e.g. an optional component absent from the archetype) has an
+// id beyond the columns slice, so a raw index would panic.
+//
+// Kept out of line on purpose: inlining it into the query hot loops perturbs
+// their codegen and slows iteration. As a per-archetype call its cost is
+// negligible, mirroring how the previous map access stayed out of line.
+//
+//go:noinline
+func (c *ComponentsStorage[T]) getColumn(archetypeId archetypeId) []T {
+	if int(archetypeId) >= len(c.archetypesComponentsEntities) {
+		return nil
 	}
 
-	return true
+	return c.archetypesComponentsEntities[archetypeId]
 }
 
 func (c *ComponentsStorage[T]) size(archetypeId archetypeId) int {
+	if int(archetypeId) >= len(c.archetypesComponentsEntities) {
+		return 0
+	}
+
 	return len(c.archetypesComponentsEntities[archetypeId])
+}
+
+// grow extends the columns slice so that archetypeId is a valid index.
+// Growth is amortized through append, and new columns start as nil.
+func (c *ComponentsStorage[T]) grow(archetypeId archetypeId) {
+	for len(c.archetypesComponentsEntities) <= int(archetypeId) {
+		c.archetypesComponentsEntities = append(c.archetypesComponentsEntities, nil)
+	}
 }
 
 func (c *ComponentsStorage[T]) add(archetypeId archetypeId, component ComponentInterface) int {
@@ -87,7 +123,7 @@ func (c *ComponentsStorage[T]) add(archetypeId archetypeId, component ComponentI
 // The generic add/copy paths hold a concrete *ComponentsStorage[T], so they can
 // call this directly and avoid one heap allocation per component added.
 func (c *ComponentsStorage[T]) addTyped(archetypeId archetypeId, component T) int {
-	// We compute the size ourselves instead of calling c.size to reduce mapaccess.
+	c.grow(archetypeId)
 	c.archetypesComponentsEntities[archetypeId] = append(c.archetypesComponentsEntities[archetypeId], component)
 
 	return len(c.archetypesComponentsEntities[archetypeId]) - 1
@@ -106,21 +142,11 @@ func (c *ComponentsStorage[T]) get(archetypeId archetypeId, key int) any {
 }
 
 func (c *ComponentsStorage[T]) moveLastToKey(archetypeId archetypeId, recordKey int) {
-	// this function could be simplified using:
-	// 	lastKey := c.size(archetypeId) - 1
-	// 	c.set(archetypeId, recordKey, c.archetypesComponentsEntities[archetypeId][lastKey])
-	//	c.delete(archetypeId, lastKey)
-	// but this would imply lot of map access, reducing the performances
-
 	data := c.archetypesComponentsEntities[archetypeId]
-	size := len(data)
-	lastKey := size - 1
+	lastKey := len(data) - 1
 
 	data[recordKey] = data[lastKey]
-
-	if lastKey < size {
-		c.archetypesComponentsEntities[archetypeId] = append(data[:lastKey], data[lastKey+1:]...)
-	}
+	c.archetypesComponentsEntities[archetypeId] = data[:lastKey]
 }
 
 func (c *ComponentsStorage[T]) delete(archetypeId archetypeId, key int) {
