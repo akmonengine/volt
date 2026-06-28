@@ -56,25 +56,6 @@ func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *
 	return world.createArchetype(componentsIds...)
 }
 
-func (world *World) getArchetypesForComponentsIds(componentsIds ...ComponentId) []archetype {
-	var archetypes []archetype
-
-	for _, archetype := range world.archetypes {
-		i := 0
-		for _, componentId := range componentsIds {
-			if slices.Contains(archetype.Type, componentId) {
-				i++
-			}
-		}
-
-		if i == len(componentsIds) {
-			archetypes = append(archetypes, archetype)
-		}
-	}
-
-	return archetypes
-}
-
 func (world *World) getNextArchetype(entityRecord entityRecord, componentsIds ...ComponentId) *archetype {
 	// Fast path: a single-component transition (AddComponent, AddTag, ...) is
 	// resolved through the archetype graph, avoiding both the linear scan over
@@ -150,4 +131,27 @@ func (world *World) linkArchetypes(fromId, destId archetypeId, componentId Compo
 		dest.removeEdges = make(map[ComponentId]archetypeId)
 	}
 	dest.removeEdges[componentId] = fromId
+}
+
+// matchArchetypes appends, into buf, the id of every archetype whose Type
+// contains all of componentsIds (the query's required components + tags). The
+// caller passes a reused buffer (buf[:0]) to avoid per-call allocations.
+func (world *World) matchArchetypes(buf []archetypeId, componentsIds []ComponentId) []archetypeId {
+	for i := range world.archetypes {
+		archetype := &world.archetypes[i]
+
+		matched := true
+		for _, componentId := range componentsIds {
+			if !slices.Contains(archetype.Type, componentId) {
+				matched = false
+				break
+			}
+		}
+
+		if matched {
+			buf = append(buf, archetypeId(i))
+		}
+	}
+
+	return buf
 }
