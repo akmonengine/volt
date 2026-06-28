@@ -1,10 +1,6 @@
 // Package volt is an ECS for game development, based on the Archetype paradigm.
 package volt
 
-import (
-	"slices"
-)
-
 // uint16 identifier, for small scoped data.
 type smallId uint16
 
@@ -59,7 +55,7 @@ type World struct {
 func CreateWorld(initialCapacity int) *World {
 	world := &World{
 		pool:               pool{},
-		entities:           make(entities, initialCapacity),
+		entities:           make(entities, 0, initialCapacity),
 		archetypes:         make([]archetype, 0, 1024),
 		storage:            make([]storage, TAGS_INDICES),
 		entityAddedFn:      func(entityId EntityId) {},
@@ -241,6 +237,12 @@ func (world *World) PublishEntity(entityId EntityId) {
 //
 // It calls the callback setted in SetEntityRemovedFn beforehand, so that the callback still has access to the data.
 func (world *World) RemoveEntity(entityId EntityId) {
+	// Reject unknown or already-removed entities, which also prevents a
+	// double-remove from corrupting an archetype (negative key indexing).
+	if !world.Exists(entityId) {
+		return
+	}
+
 	world.entityRemovedFn(entityId)
 
 	entityRecord := world.entities[entityId]
@@ -248,8 +250,13 @@ func (world *World) RemoveEntity(entityId EntityId) {
 
 	lastEntityKey := len(archetype.entities) - 1
 	for _, componentId := range archetype.Type {
+		// Tags have no storage: their id lives outside the storage range,
+		// so indexing world.storage[componentId] would overflow.
+		if componentId >= TAGS_INDICES {
+			continue
+		}
 		s := world.storage[componentId]
-		if s != nil && slices.Contains(archetype.Type, s.getType()) {
+		if s != nil {
 			s.moveLastToKey(archetype.Id, entityRecord.key)
 		}
 	}
@@ -267,7 +274,19 @@ func (world *World) RemoveEntity(entityId EntityId) {
 		world.archetypes[archetype.Id] = archetype
 	}
 
+	// Tombstone the slot: a negative key marks the id as free until it is
+	// recycled, so Has/Get/Exists no longer report stale data for it.
+	world.entities[entityId].key = -1
 	world.pool.Recycle(entityId)
+}
+
+// Exists reports whether entityId refers to a live entity of the World.
+//
+// It returns false for ids that were never created, or that have been removed
+// and not yet recycled into a new entity. A negative key is the tombstone left
+// behind by RemoveEntity.
+func (world *World) Exists(entityId EntityId) bool {
+	return int(entityId) < len(world.entities) && world.entities[entityId].key >= 0
 }
 
 // Count returns the number of entities in World.

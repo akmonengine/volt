@@ -19,6 +19,10 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 		return fmt.Errorf("the tagId %d is not allowed, it collides with Components Ids range [%d-%d]", tagId, COMPONENTS_INDICES, TAGS_INDICES)
 	}
 
+	if !world.Exists(entityId) {
+		return fmt.Errorf("the entity %d does not exist", entityId)
+	}
+
 	if world.HasTag(tagId, entityId) {
 		return fmt.Errorf("the entity %d already owns the tag %d", entityId, tagId)
 	}
@@ -37,7 +41,7 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 
 // HasTag returns a boolean, to check if an EntityId owns a Tag.
 func (world *World) HasTag(tagId TagId, entityId EntityId) bool {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return false
 	}
 	entityRecord := world.entities[entityId]
@@ -50,7 +54,7 @@ func (world *World) HasTag(tagId TagId, entityId EntityId) bool {
 // - The entity does not exists.
 // - The entity already owns the Tag.
 func (world *World) RemoveTag(tagId TagId, entityId EntityId) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("the entity %d does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
