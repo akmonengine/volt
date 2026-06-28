@@ -598,3 +598,46 @@ func TestTag8(t *testing.T) {
 		t.Errorf("The tag %d should not be returned as a Component from world.GetComponent", TAG_2)
 	}
 }
+
+// TestRemoveEntityWithTag guards against a regression where RemoveEntity
+// panicked with an out-of-range index, because it tried to look up a storage
+// for tag ids (which live outside the storage range and have no storage).
+func TestRemoveEntityWithTag(t *testing.T) {
+	world := CreateWorld(1024)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+
+	entities := make([]EntityId, 5)
+	for i := range entities {
+		entities[i] = world.CreateEntity()
+		if err := AddComponent[testComponent1](world, entities[i], testComponent1{}); err != nil {
+			t.Fatalf("%s", err.Error())
+		}
+		if err := world.AddTag(TAG_1, entities[i]); err != nil {
+			t.Fatalf("%s", err.Error())
+		}
+	}
+
+	// Remove a middle entity (the hardest case: triggers the swap-with-last path).
+	world.RemoveEntity(entities[2])
+
+	// The remaining tagged entities must still be reachable and consistent.
+	q := CreateQuery1[testComponent1](world, QueryConfiguration{Tags: []TagId{TAG_1}})
+	if got := q.Count(); got != 4 {
+		t.Fatalf("expected 4 tagged entities after removal, got %d", got)
+	}
+	for _, e := range []EntityId{entities[0], entities[1], entities[3], entities[4]} {
+		if !world.HasTag(TAG_1, e) {
+			t.Fatalf("entity %d lost its tag after sibling removal", e)
+		}
+		if !world.HasComponents(e, testComponent1Id) {
+			t.Fatalf("entity %d lost its component after sibling removal", e)
+		}
+	}
+
+	// An entity carrying only a tag (no component) must also be removable.
+	tagOnly := world.CreateEntity()
+	if err := world.AddTag(TAG_2, tagOnly); err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+	world.RemoveEntity(tagOnly)
+}
