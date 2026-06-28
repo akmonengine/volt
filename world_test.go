@@ -267,8 +267,8 @@ func TestWorld_RemoveEntity(t *testing.T) {
 func TestWorld_Count(t *testing.T) {
 	world := CreateWorld(1024)
 
-	if world.Count() != 1024 {
-		t.Errorf("world.Count should return 0 if the world is empty")
+	if world.Count() != 0 {
+		t.Errorf("world.Count should return 0 if the world is empty, got %d", world.Count())
 	}
 
 	entities := make([]EntityId, TEST_ENTITY_NUMBER)
@@ -279,5 +279,52 @@ func TestWorld_Count(t *testing.T) {
 
 	if world.Count() != TEST_ENTITY_NUMBER {
 		t.Errorf("world.Count returned %d after inserting %d entities", world.Count(), TEST_ENTITY_NUMBER)
+	}
+}
+
+// TestEntityLiveness verifies that removed (and not-yet-recycled) entities are
+// reported as non-existent, instead of returning stale component/tag data.
+func TestEntityLiveness(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+
+	e := world.CreateEntity()
+	if err := AddComponent[testComponent1](world, e, testComponent1{}); err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+	if !world.Exists(e) {
+		t.Fatal("freshly created entity should exist")
+	}
+
+	world.RemoveEntity(e)
+
+	if world.Exists(e) {
+		t.Fatal("removed entity should not exist")
+	}
+	if world.HasComponents(e, testComponent1Id) {
+		t.Fatal("removed entity should not report owning a component")
+	}
+	if GetComponent[testComponent1](world, e) != nil {
+		t.Fatal("removed entity should not return a component pointer")
+	}
+	if err := AddComponent[testComponent1](world, e, testComponent1{}); err == nil {
+		t.Fatal("adding a component to a removed entity should error")
+	}
+	if err := RemoveComponent[testComponent1](world, e); err == nil {
+		t.Fatal("removing a component from a removed entity should error")
+	}
+
+	// Never-created ids (within and beyond the preallocated capacity) don't exist.
+	if world.Exists(999) {
+		t.Fatal("never-created id should not exist")
+	}
+
+	// Double-remove must be a safe no-op.
+	world.RemoveEntity(e)
+
+	// The id can be recycled into a fresh, live entity.
+	e2 := world.CreateEntity()
+	if !world.Exists(e2) {
+		t.Fatal("recycled entity should exist")
 	}
 }

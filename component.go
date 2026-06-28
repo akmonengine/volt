@@ -46,7 +46,7 @@ func ConfigureComponent[T ComponentInterface](world *World, conf any) T {
 //   - the entity has the component
 //   - an internal error occurs
 func AddComponent[T ComponentInterface](world *World, entityId EntityId, component T) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -76,7 +76,7 @@ func AddComponent[T ComponentInterface](world *World, entityId EntityId, compone
 //
 // This solution is faster than an atomic solution.
 func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a A, b B) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -112,7 +112,7 @@ func addComponents2[A, B ComponentInterface](world *World, entityRecord entityRe
 //
 // This solution is faster than an atomic solution.
 func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId, a A, b B, c C) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -150,7 +150,7 @@ func addComponents3[A, B, C ComponentInterface](world *World, entityRecord entit
 //
 // This solution is faster than an atomic solution.
 func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -189,7 +189,7 @@ func addComponents4[A, B, C, D ComponentInterface](world *World, entityRecord en
 //
 // This solution is faster than an atomic solution.
 func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -229,7 +229,7 @@ func addComponents5[A, B, C, D, E ComponentInterface](world *World, entityRecord
 //
 // This solution is faster than an atomic solution.
 func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -270,7 +270,7 @@ func addComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityRec
 //
 // This solution is faster than an atomic solution.
 func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F, g G) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -312,7 +312,7 @@ func addComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 //
 // This solution is faster than an atomic solution.
 func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, entityId EntityId, a A, b B, c C, d D, e E, f F, g G, h H) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -354,7 +354,7 @@ func addComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, ent
 //   - the componentId is not registered in the World
 //   - an internal error occurs
 func (world *World) AddComponent(entityId EntityId, componentId ComponentId, conf any) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -385,7 +385,7 @@ func (world *World) AddComponent(entityId EntityId, componentId ComponentId, con
 //   - the componentsIds are not registered in the World
 //   - an internal error occurs
 func (world *World) AddComponents(entityId EntityId, componentsIdsConfs ...ComponentIdConf) error {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -423,7 +423,7 @@ func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) erro
 	var t T
 	componentId := t.GetComponentId()
 
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
 	entityRecord := world.entities[entityId]
@@ -446,6 +446,9 @@ func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) erro
 //   - the entity does not have the component
 //   - the ComponentId is not registered in the World
 func (world *World) RemoveComponent(entityId EntityId, componentId ComponentId) error {
+	if !world.Exists(entityId) {
+		return fmt.Errorf("entity %v does not exist", entityId)
+	}
 	entityRecord := world.entities[entityId]
 
 	if !world.hasComponents(entityRecord, componentId) {
@@ -486,7 +489,7 @@ func removeComponent(world *World, s storage, entityRecord entityRecord, compone
 //
 // It returns false if at least one ComponentId is not owned.
 func (world *World) HasComponents(entityId EntityId, componentsIds ...ComponentId) bool {
-	if int(entityId) >= len(world.entities) {
+	if !world.Exists(entityId) {
 		return false
 	}
 	entityRecord := world.entities[entityId]
@@ -509,7 +512,14 @@ func (world *World) hasComponents(entityRecord entityRecord, componentsIds ...Co
 //
 // If the entity does not have the component, it returns nil
 func GetComponent[T ComponentInterface](world *World, entityId EntityId) *T {
+	if !world.Exists(entityId) {
+		return nil
+	}
+
 	s := getStorage[T](world)
+	if s == nil {
+		return nil
+	}
 	entityRecord := world.entities[entityId]
 
 	if !s.hasArchetype(entityRecord.archetypeId) {
@@ -527,6 +537,9 @@ func GetComponent[T ComponentInterface](world *World, entityId EntityId) *T {
 //   - the ComponentId is not registered in the World
 //   - the entity does not have the component
 func (world *World) GetComponent(entityId EntityId, componentId ComponentId) (any, error) {
+	if !world.Exists(entityId) {
+		return nil, fmt.Errorf("entity %v does not exist", entityId)
+	}
 	entityRecord := world.entities[entityId]
 	s, err := world.getStorageForComponentId(componentId)
 	if err != nil {
