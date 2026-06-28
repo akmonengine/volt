@@ -283,18 +283,18 @@ Values are the median over 6 runs:
 | BenchmarkIterateUECS-16                          | 5035        | 237613    | 128        | 3         |
 | BenchmarkAddUECS-16                              | 34          | 31213636  | 4437536    | 100004    |
 | BenchmarkRemoveUECS-16                           | 38          | 29573272  | 3309389    | 100000    |
-| BenchmarkCreateEntityVolt-16                     | 70          | 15858217  | 35197857   | 100101    |
-| BenchmarkIterateVolt-16                          | 3900        | 302282    | 144        | 5         |
-| (DEPRECATED) BenchmarkIterateConcurrentlyVolt-16 | 11877       | 100236    | 3332       | 94        |
-| BenchmarkTaskVolt-16                             | 12320       | 97474     | 1856       | 39        |
-| BenchmarkAddVolt-16                              | 121         | 9782019   | 2866598    | 200000    |
-| BenchmarkRemoveVolt-16                           | 160         | 7447984   | 0          | 0         |
+| BenchmarkCreateEntityVolt-16                     | 82          | 13722710  | 35197352   | 100101    |
+| BenchmarkIterateVolt-16                          | 3910        | 301468    | 144        | 5         |
+| (DEPRECATED) BenchmarkIterateConcurrentlyVolt-16 | 12021       | 99938     | 3333       | 94        |
+| BenchmarkTaskVolt-16                             | 12362       | 96913     | 1856       | 39        |
+| BenchmarkAddVolt-16                              | 186         | 6321860   | 2772970    | 200000    |
+| BenchmarkRemoveVolt-16                           | 287         | 4163989   | 0          | 0         |
 
 These results show a few things:
-- Arche is still the fastest tool for raw write operations. In our game development though we would rather lean towards fastest read operations, because the games loops will read way more often than write.
+- Arche still leads on entity creation and on raw component addition, but Volt is now competitive on writes: it is on par with (and on Remove slightly faster than) Arche, while staying allocation-light.
 - Unitoftime/ecs is the fastest tool for read operations on one thread only, but the writes are currently way slower than Arche and Volt (except on the Create benchmark).
-- Volt is a good compromise, an in-between: fast enough add/remove operations, and almost as fast as Arche and UECS for reads on one thread.
-- Volt's write path is now much lighter on the garbage collector: thanks to the archetype transition graph and the typed storage, removing a component allocates nothing (0 allocs/op) and adding one roughly halved its allocations compared to previous versions.
+- Volt is a good compromise, an in-between: fast add/remove operations, and almost as fast as Arche and UECS for reads on one thread.
+- Volt's write path is now much lighter and faster: thanks to the archetype transition graph, the typed storage and the archetype-indexed (map-free) component storage, removing a component allocates nothing (0 allocs/op) and both add and remove dropped significantly in time compared to previous versions.
 Volt uses the new iterators from go1.23, which in their current implementation are slower than using a function call in the for-loop inside the Query (as done in UECS).
 This means, if the Go team finds a way to improve the performances from the iterators, we can hope to acheive near performances as UECS.
 - Thanks to the iterators, Volt provides a simple way to use goroutines for read operations. The data is received through a channel of iterator.

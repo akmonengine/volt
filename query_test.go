@@ -1539,3 +1539,47 @@ func TestQuery8_ForeachChannel(t *testing.T) {
 		}
 	}
 }
+
+// TestQueryOptionalComponentAbsentFromHigherArchetype guards a regression in the
+// archetype-indexed storage: a query with an OPTIONAL component matches archetypes
+// that do not contain it. Such an archetype can have an id beyond the optional
+// component's column slice, so the column must be fetched in a bounds-safe way
+// (returning nil) instead of indexing directly, which used to panic.
+func TestQueryOptionalComponentAbsentFromHigherArchetype(t *testing.T) {
+	world := CreateWorld(64)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	RegisterComponent[testComponent3](world, &ComponentConfig[testComponent3]{})
+	RegisterComponent[testComponent4](world, &ComponentConfig[testComponent4]{})
+
+	// Archetype {1,2,3,4} is created first (lower id), growing component 4's column.
+	for i := 0; i < 3; i++ {
+		if _, err := CreateEntityWithComponents4(world, testComponent1{}, testComponent2{}, testComponent3{}, testComponent4{}); err != nil {
+			t.Fatalf("%s", err.Error())
+		}
+	}
+	// Archetype {1,2,3} is created after (higher id) and never appears in component 4's column.
+	for i := 0; i < 3; i++ {
+		if _, err := CreateEntityWithComponents3(world, testComponent1{}, testComponent2{}, testComponent3{}); err != nil {
+			t.Fatalf("%s", err.Error())
+		}
+	}
+
+	q := CreateQuery4[testComponent1, testComponent2, testComponent3, testComponent4](world,
+		QueryConfiguration{OptionalComponents: []OptionalComponent{OptionalComponent(testComponent4Id)}})
+
+	// Foreach must not panic and must yield all 6 entities; D is nil for the {1,2,3} ones.
+	withD, total := 0, 0
+	for result := range q.Foreach(nil) {
+		total++
+		if result.D != nil {
+			withD++
+		}
+	}
+	if total != 6 || withD != 3 {
+		t.Fatalf("Foreach: expected total=6 withD=3, got total=%d withD=%d", total, withD)
+	}
+
+	// Task path must not panic either.
+	q.Task(2, nil, func(r QueryResult4[testComponent1, testComponent2, testComponent3, testComponent4]) {})
+}
