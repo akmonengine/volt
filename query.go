@@ -15,11 +15,59 @@ type QueryConfiguration struct {
 	OptionalComponents []OptionalComponent
 }
 
+// filterCache memoizes the archetypes matching a query, shared by every QueryN.
+// filterIds (required components + tags) is immutable and computed once at query
+// creation. archetypes is a reused buffer recomputed only when a new archetype
+// appears in the world, detected through version: archetypes are never destroyed,
+// so len(world.archetypes) acts as a monotonic version.
+type filterCache struct {
+	filterIds  []ComponentId
+	archetypes []archetypeId
+	version    int
+}
+
+func newFilterCache(componentsIds []ComponentId, queryConfiguration QueryConfiguration) filterCache {
+	return filterCache{
+		filterIds: buildFilterIds(componentsIds, queryConfiguration),
+		version:   -1,
+	}
+}
+
+// resolve returns the matching archetype ids, recomputing only on a cache miss.
+func (cache *filterCache) resolve(world *World) []archetypeId {
+	if cache.version == len(world.archetypes) {
+		return cache.archetypes
+	}
+
+	cache.archetypes = world.matchArchetypes(cache.archetypes[:0], cache.filterIds)
+	cache.version = len(world.archetypes)
+
+	return cache.archetypes
+}
+
+// buildFilterIds computes the component ids an archetype must contain to match a
+// query: the required (non-optional) components plus the tags. Immutable for the
+// query's lifetime, so it is computed once instead of on every Foreach/Task/Count.
+func buildFilterIds(componentsIds []ComponentId, queryConfiguration QueryConfiguration) []ComponentId {
+	filterIds := make([]ComponentId, 0, len(componentsIds)+len(queryConfiguration.Tags))
+
+	for _, componentId := range componentsIds {
+		if !slices.Contains(queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
+			filterIds = append(filterIds, componentId)
+		}
+	}
+	filterIds = append(filterIds, queryConfiguration.Tags...)
+
+	return filterIds
+}
+
 // Query for 1 component type.
 type Query1[A ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query1.
@@ -36,10 +84,12 @@ type queryResultChunk1[A ComponentInterface] struct {
 // CreateQuery1 returns a new Query1, with component A.
 func CreateQuery1[A ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query1[A] {
 	var a A
+	componentsIds := world.getComponentsIds(a)
 	return Query1[A]{
 		World:              world,
-		componentsIds:      world.getComponentsIds(a),
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -47,27 +97,15 @@ func (query *Query1[A]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query1[A]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query1[A]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query1.
 func (query *Query1[A]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -77,9 +115,8 @@ func (query *Query1[A]) Count() int {
 // GetEntitiesIds returns a slice of all the EntityId fetched for Query1.
 func (query *Query1[A]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -92,8 +129,8 @@ func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[Qu
 	return func(yield func(QueryResult1[A]) bool) {
 		storageA := getStorage[A](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			var dataA *A
 			for i, entityId := range archetype.entities {
@@ -127,8 +164,8 @@ func (query *Query1[A]) Foreach(filterFn func(QueryResult1[A]) bool) iter.Seq[Qu
 func (query *Query1[A]) Task(workersCount int, filterFn func(QueryResult1[A]) bool, fn func(result QueryResult1[A])) {
 	storageA := getStorage[A](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 
 		task(workersCount, archetype.entities, func(i int, data EntityId) {
@@ -168,8 +205,8 @@ func (query *Query1[A]) ForeachChannel(chunkSize int, filterFn func(QueryResult1
 
 		storageA := getStorage[A](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 
 			for i := 0; i < len(archetype.entities); i += chunkSize {
@@ -213,6 +250,8 @@ type Query2[A, B ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query2.
@@ -232,10 +271,12 @@ type queryResultChunk2[A, B ComponentInterface] struct {
 func CreateQuery2[A, B ComponentInterface](world *World, queryConfiguration QueryConfiguration) Query2[A, B] {
 	var a A
 	var b B
+	componentsIds := world.getComponentsIds(a, b)
 	return Query2[A, B]{
 		World:              world,
-		componentsIds:      world.getComponentsIds(a, b),
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -243,27 +284,15 @@ func (query *Query2[A, B]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query2[A, B]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query2[A, B]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query2.
 func (query *Query2[A, B]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -274,9 +303,8 @@ func (query *Query2[A, B]) Count() int {
 func (query *Query2[A, B]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -290,8 +318,8 @@ func (query *Query2[A, B]) Foreach(filterFn func(QueryResult2[A, B]) bool) iter.
 		storageA := getStorage[A](query.World)
 		storageB := getStorage[B](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 
@@ -327,8 +355,8 @@ func (query *Query2[A, B]) Task(workersCount int, filterFn func(QueryResult2[A, 
 	storageA := getStorage[A](query.World)
 	storageB := getStorage[B](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 
@@ -373,8 +401,8 @@ func (query *Query2[A, B]) ForeachChannel(chunkSize int, filterFn func(QueryResu
 		storageA := getStorage[A](query.World)
 		storageB := getStorage[B](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 
@@ -425,6 +453,8 @@ type Query3[A, B, C ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query3.
@@ -447,10 +477,12 @@ func CreateQuery3[A, B, C ComponentInterface](world *World, queryConfiguration Q
 	var a A
 	var b B
 	var c C
+	componentsIds := world.getComponentsIds(a, b, c)
 	return Query3[A, B, C]{
 		World:              world,
-		componentsIds:      world.getComponentsIds(a, b, c),
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -458,27 +490,15 @@ func (query *Query3[A, B, C]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query3[A, B, C]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query3[A, B, C]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query3.
 func (query *Query3[A, B, C]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -489,9 +509,8 @@ func (query *Query3[A, B, C]) Count() int {
 func (query *Query3[A, B, C]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -506,8 +525,8 @@ func (query *Query3[A, B, C]) Foreach(filterFn func(QueryResult3[A, B, C]) bool)
 		storageB := getStorage[B](query.World)
 		storageC := getStorage[C](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -555,8 +574,8 @@ func (query *Query3[A, B, C]) Task(workersCount int, filterFn func(QueryResult3[
 	storageB := getStorage[B](query.World)
 	storageC := getStorage[C](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 		sliceC := storageC.getColumn(archetype.Id)
@@ -606,8 +625,8 @@ func (query *Query3[A, B, C]) ForeachChannel(chunkSize int, filterFn func(QueryR
 		storageB := getStorage[B](query.World)
 		storageC := getStorage[C](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -665,6 +684,8 @@ type Query4[A, B, C, D ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query4.
@@ -690,10 +711,12 @@ func CreateQuery4[A, B, C, D ComponentInterface](world *World, queryConfiguratio
 	var b B
 	var c C
 	var d D
+	componentsIds := world.getComponentsIds(a, b, c, d)
 	return Query4[A, B, C, D]{
 		World:              world,
-		componentsIds:      world.getComponentsIds(a, b, c, d),
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -701,27 +724,15 @@ func (query *Query4[A, B, C, D]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query4[A, B, C, D]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query4[A, B, C, D]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query4.
 func (query *Query4[A, B, C, D]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -732,9 +743,8 @@ func (query *Query4[A, B, C, D]) Count() int {
 func (query *Query4[A, B, C, D]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -750,8 +760,8 @@ func (query *Query4[A, B, C, D]) Foreach(filterFn func(QueryResult4[A, B, C, D])
 		storageC := getStorage[C](query.World)
 		storageD := getStorage[D](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -806,8 +816,8 @@ func (query *Query4[A, B, C, D]) Task(workersCount int, filterFn func(QueryResul
 	storageC := getStorage[C](query.World)
 	storageD := getStorage[D](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 		sliceC := storageC.getColumn(archetype.Id)
@@ -862,8 +872,8 @@ func (query *Query4[A, B, C, D]) ForeachChannel(chunkSize int, filterFn func(Que
 		storageC := getStorage[C](query.World)
 		storageD := getStorage[D](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -927,6 +937,8 @@ type Query5[A, B, C, D, E ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query5.
@@ -955,10 +967,12 @@ func CreateQuery5[A, B, C, D, E ComponentInterface](world *World, queryConfigura
 	var c C
 	var d D
 	var e E
+	componentsIds := world.getComponentsIds(a, b, c, d, e)
 	return Query5[A, B, C, D, E]{
 		World:              world,
-		componentsIds:      world.getComponentsIds(a, b, c, d, e),
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -966,27 +980,15 @@ func (query *Query5[A, B, C, D, E]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query5[A, B, C, D, E]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query5[A, B, C, D, E]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query5.
 func (query *Query5[A, B, C, D, E]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -997,9 +999,8 @@ func (query *Query5[A, B, C, D, E]) Count() int {
 func (query *Query5[A, B, C, D, E]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -1016,8 +1017,8 @@ func (query *Query5[A, B, C, D, E]) Foreach(filterFn func(QueryResult5[A, B, C, 
 		storageD := getStorage[D](query.World)
 		storageE := getStorage[E](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -1079,8 +1080,8 @@ func (query *Query5[A, B, C, D, E]) Task(workersCount int, filterFn func(QueryRe
 	storageD := getStorage[D](query.World)
 	storageE := getStorage[E](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 		sliceC := storageC.getColumn(archetype.Id)
@@ -1140,8 +1141,8 @@ func (query *Query5[A, B, C, D, E]) ForeachChannel(chunkSize int, filterFn func(
 		storageD := getStorage[D](query.World)
 		storageE := getStorage[E](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -1213,6 +1214,8 @@ type Query6[A, B, C, D, E, F ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query6.
@@ -1244,9 +1247,12 @@ func CreateQuery6[A, B, C, D, E, F ComponentInterface](world *World, queryConfig
 	var d D
 	var e E
 	var f F
-	return Query6[A, B, C, D, E, F]{World: world,
-		componentsIds:      world.getComponentsIds(a, b, c, d, e, f),
+	componentsIds := world.getComponentsIds(a, b, c, d, e, f)
+	return Query6[A, B, C, D, E, F]{
+		World:              world,
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -1254,27 +1260,15 @@ func (query *Query6[A, B, C, D, E, F]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query6[A, B, C, D, E, F]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query6[A, B, C, D, E, F]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query6.
 func (query *Query6[A, B, C, D, E, F]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -1285,9 +1279,8 @@ func (query *Query6[A, B, C, D, E, F]) Count() int {
 func (query *Query6[A, B, C, D, E, F]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -1305,8 +1298,8 @@ func (query *Query6[A, B, C, D, E, F]) Foreach(filterFn func(QueryResult6[A, B, 
 		storageE := getStorage[E](query.World)
 		storageF := getStorage[F](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -1375,8 +1368,8 @@ func (query *Query6[A, B, C, D, E, F]) Task(workersCount int, filterFn func(Quer
 	storageE := getStorage[E](query.World)
 	storageF := getStorage[F](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 		sliceC := storageC.getColumn(archetype.Id)
@@ -1441,8 +1434,8 @@ func (query *Query6[A, B, C, D, E, F]) ForeachChannel(chunkSize int, filterFn fu
 		storageE := getStorage[E](query.World)
 		storageF := getStorage[F](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -1521,6 +1514,8 @@ type Query7[A, B, C, D, E, F, G ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query7.
@@ -1555,9 +1550,12 @@ func CreateQuery7[A, B, C, D, E, F, G ComponentInterface](world *World, queryCon
 	var e E
 	var f F
 	var g G
-	return Query7[A, B, C, D, E, F, G]{World: world,
-		componentsIds:      world.getComponentsIds(a, b, c, d, e, f, g),
+	componentsIds := world.getComponentsIds(a, b, c, d, e, f, g)
+	return Query7[A, B, C, D, E, F, G]{
+		World:              world,
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -1565,27 +1563,15 @@ func (query *Query7[A, B, C, D, E, F, G]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query7[A, B, C, D, E, F, G]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query7[A, B, C, D, E, F, G]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query7.
 func (query *Query7[A, B, C, D, E, F, G]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -1596,9 +1582,8 @@ func (query *Query7[A, B, C, D, E, F, G]) Count() int {
 func (query *Query7[A, B, C, D, E, F, G]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -1617,8 +1602,8 @@ func (query *Query7[A, B, C, D, E, F, G]) Foreach(filterFn func(QueryResult7[A, 
 		storageF := getStorage[F](query.World)
 		storageG := getStorage[G](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -1694,8 +1679,8 @@ func (query *Query7[A, B, C, D, E, F, G]) Task(workersCount int, filterFn func(Q
 	storageF := getStorage[F](query.World)
 	storageG := getStorage[G](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 		sliceC := storageC.getColumn(archetype.Id)
@@ -1765,8 +1750,8 @@ func (query *Query7[A, B, C, D, E, F, G]) ForeachChannel(chunkSize int, filterFn
 		storageF := getStorage[F](query.World)
 		storageG := getStorage[G](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -1852,6 +1837,8 @@ type Query8[A, B, C, D, E, F, G, H ComponentInterface] struct {
 	World              *World
 	componentsIds      []ComponentId
 	queryConfiguration QueryConfiguration
+
+	cache filterCache
 }
 
 // Result returned for Query8.
@@ -1889,9 +1876,12 @@ func CreateQuery8[A, B, C, D, E, F, G, H ComponentInterface](world *World, query
 	var f F
 	var g G
 	var h H
-	return Query8[A, B, C, D, E, F, G, H]{World: world,
-		componentsIds:      world.getComponentsIds(a, b, c, d, e, f, g, h),
+	componentsIds := world.getComponentsIds(a, b, c, d, e, f, g, h)
+	return Query8[A, B, C, D, E, F, G, H]{
+		World:              world,
+		componentsIds:      componentsIds,
 		queryConfiguration: queryConfiguration,
+		cache:              newFilterCache(componentsIds, queryConfiguration),
 	}
 }
 
@@ -1899,27 +1889,15 @@ func (query *Query8[A, B, C, D, E, F, G, H]) GetComponentsIds() []ComponentId {
 	return query.componentsIds
 }
 
-func (query *Query8[A, B, C, D, E, F, G, H]) filter() []archetype {
-	var componentsIds []ComponentId
-
-	for _, componentId := range query.componentsIds {
-		if !slices.Contains(query.queryConfiguration.OptionalComponents, OptionalComponent(componentId)) {
-			componentsIds = append(componentsIds, componentId)
-		}
-	}
-	componentsIds = append(componentsIds, query.queryConfiguration.Tags...)
-
-	archetypes := query.World.getArchetypesForComponentsIds(componentsIds...)
-
-	return archetypes
+func (query *Query8[A, B, C, D, E, F, G, H]) filter() []archetypeId {
+	return query.cache.resolve(query.World)
 }
 
 // Count returns the total of entities fetched for Query8.
 func (query *Query8[A, B, C, D, E, F, G, H]) Count() int {
 	count := 0
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		count += len(archetype.entities)
 	}
 
@@ -1930,9 +1908,8 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Count() int {
 func (query *Query8[A, B, C, D, E, F, G, H]) GetEntitiesIds() []EntityId {
 	var entities []EntityId
 
-	archetypes := query.filter()
-
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		entities = append(entities, archetype.entities...)
 	}
 
@@ -1952,8 +1929,8 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Foreach(filterFn func(QueryResult8[
 		storageG := getStorage[G](query.World)
 		storageH := getStorage[H](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)
@@ -2035,8 +2012,8 @@ func (query *Query8[A, B, C, D, E, F, G, H]) Task(workersCount int, filterFn fun
 	storageG := getStorage[G](query.World)
 	storageH := getStorage[H](query.World)
 
-	archetypes := query.filter()
-	for _, archetype := range archetypes {
+	for _, archetypeId := range query.filter() {
+		archetype := query.World.archetypes[archetypeId]
 		sliceA := storageA.getColumn(archetype.Id)
 		sliceB := storageB.getColumn(archetype.Id)
 		sliceC := storageC.getColumn(archetype.Id)
@@ -2111,8 +2088,8 @@ func (query *Query8[A, B, C, D, E, F, G, H]) ForeachChannel(chunkSize int, filte
 		storageG := getStorage[G](query.World)
 		storageH := getStorage[H](query.World)
 
-		archetypes := query.filter()
-		for _, archetype := range archetypes {
+		for _, archetypeId := range query.filter() {
+			archetype := query.World.archetypes[archetypeId]
 			sliceA := storageA.getColumn(archetype.Id)
 			sliceB := storageB.getColumn(archetype.Id)
 			sliceC := storageC.getColumn(archetype.Id)

@@ -1583,3 +1583,50 @@ func TestQueryOptionalComponentAbsentFromHigherArchetype(t *testing.T) {
 	// Task path must not panic either.
 	q.Task(2, nil, func(r QueryResult4[testComponent1, testComponent2, testComponent3, testComponent4]) {})
 }
+
+// TestQueryCacheInvalidation verifies the per-query archetype cache stays correct:
+// it must pick up newly created archetypes (version invalidation) and always read
+// each archetype's entities fresh (entities moving between existing archetypes).
+func TestQueryCacheInvalidation(t *testing.T) {
+	world := CreateWorld(64)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+
+	q := CreateQuery1[testComponent1](world, QueryConfiguration{})
+
+	if got := q.Count(); got != 0 {
+		t.Fatalf("empty world: expected 0, got %d", got)
+	}
+
+	// New archetype {c1} -> cache must refresh.
+	e1 := world.CreateEntity()
+	if err := AddComponent(world, e1, testComponent1{}); err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+	if got := q.Count(); got != 1 {
+		t.Fatalf("after first entity: expected 1, got %d", got)
+	}
+
+	// New archetype {c1,c2} -> query on c1 must match it too.
+	if _, err := CreateEntityWithComponents2(world, testComponent1{}, testComponent2{}); err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+	if got := q.Count(); got != 2 {
+		t.Fatalf("after new {c1,c2} archetype: expected 2, got %d", got)
+	}
+
+	// Move e1 from {c1} to the existing {c1,c2}: no new archetype (cache stays
+	// valid), but the count must stay 2 because entities are read fresh.
+	if err := AddComponent(world, e1, testComponent2{}); err != nil {
+		t.Fatalf("%s", err.Error())
+	}
+	if got := q.Count(); got != 2 {
+		t.Fatalf("after moving e1 between existing archetypes: expected 2, got %d", got)
+	}
+
+	// Removal must be reflected too.
+	world.RemoveEntity(e1)
+	if got := q.Count(); got != 1 {
+		t.Fatalf("after removal: expected 1, got %d", got)
+	}
+}
