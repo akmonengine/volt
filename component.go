@@ -56,7 +56,7 @@ func AddComponent[T ComponentInterface](world *World, entityId EntityId, compone
 		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
 	}
 
-	archetype := world.getNextArchetype(entityRecord, world.getComponentsIds(component)...)
+	archetype := world.archetypeAfterAdd(entityRecord.archetypeId, componentId)
 	err := addComponentsToArchetype1(world, entityRecord, archetype, component)
 	if err != nil {
 		return fmt.Errorf("the component %d cannot be added to entity %d: %w", componentId, entityId, err)

@@ -27,7 +27,7 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 	}
 
 	entityRecord := world.entities[entityId.Index()]
-	archetype := world.getNextArchetype(entityRecord, tagId)
+	archetype := world.archetypeAfterAdd(entityRecord.archetypeId, tagId)
 
 	oldArchetype := world.getArchetype(entityRecord)
 	if archetype.Id != oldArchetype.Id {
