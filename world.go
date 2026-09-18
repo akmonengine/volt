@@ -95,6 +95,7 @@ type World struct {
 	entities           entities
 	archetypes         []archetype
 	archetypesByKey    map[uint64]archetypeId // archetype of a set of components, by archetypeKey
+	transitions        [transitionCacheSize]transition
 	storage            []storage
 
 	entityAddedFn      func(entityId EntityId)

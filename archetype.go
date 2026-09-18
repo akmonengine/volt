@@ -15,6 +15,36 @@ const (
 // ids before looking its archetype up. Larger sets fall back to a heap copy.
 const maxInlineComponents = 16
 
+// maxTransitionComponents is the largest number of components added in one
+// call (AddComponents8): the ids of a transition fit inline in its cache entry.
+const maxTransitionComponents = 8
+
+// transitionCacheSize is the number of slots of the transition cache, a power
+// of two so that a slot is a mask of the key.
+const transitionCacheSize = 64
+
+// transition remembers where adding a list of components to an archetype leads.
+// The ids are kept as given by the caller, so a hit needs no sorting: two orders
+// of the same set are two entries pointing at the same archetype. Archetypes are
+// never destroyed, so an entry never goes stale.
+type transition struct {
+	from archetypeId
+	ids  [maxTransitionComponents]ComponentId
+	n    uint8
+	dest archetypeId
+}
+
+// transitionSlot maps a transition to its slot in the cache.
+func transitionSlot(fromId archetypeId, componentsIds []ComponentId) int {
+	hash := (fnv64Offset ^ uint64(fromId)) * fnv64Prime
+	for _, componentId := range componentsIds {
+		hash ^= uint64(componentId)
+		hash *= fnv64Prime
+	}
+
+	return int(hash & (transitionCacheSize - 1))
+}
+
 // archetypeKey hashes a sorted set of component ids. Two different sets may
 // share a key: a lookup always confirms the archetype Type before trusting it.
 func archetypeKey(sorted []ComponentId) uint64 {
@@ -103,11 +133,40 @@ func (world *World) getNextArchetype(entityRecord entityRecord, componentsIds ..
 	if len(componentsIds) == 1 {
 		return world.archetypeAfterAdd(entityRecord.archetypeId, componentsIds[0])
 	}
+	if len(componentsIds) <= maxTransitionComponents {
+		return world.archetypeAfterAddN(entityRecord.archetypeId, componentsIds)
+	}
 
+	return world.archetypeAfterAddSet(entityRecord.archetypeId, componentsIds)
+}
+
+// archetypeAfterAddN resolves a multi-component transition through the
+// transition cache. A hit costs one key comparison; a miss resolves the set and
+// fills the slot, which the next transition hashing to it overwrites. The whole
+// key is compared, so a slot collision is a miss, never a wrong archetype.
+func (world *World) archetypeAfterAddN(fromId archetypeId, componentsIds []ComponentId) *archetype {
+	var key [maxTransitionComponents]ComponentId
+	copy(key[:], componentsIds)
+	n := uint8(len(componentsIds))
+
+	t := &world.transitions[transitionSlot(fromId, componentsIds)]
+	if t.from == fromId && t.n == n && t.ids == key {
+		return &world.archetypes[t.dest]
+	}
+
+	dest := world.archetypeAfterAddSet(fromId, componentsIds)
+	*t = transition{from: fromId, ids: key, n: n, dest: dest.Id}
+
+	return dest
+}
+
+// archetypeAfterAddSet resolves the archetype holding the components of the
+// archetype fromId plus componentsIds, through the canonical key.
+func (world *World) archetypeAfterAddSet(fromId archetypeId, componentsIds []ComponentId) *archetype {
 	var scratch [maxInlineComponents]ComponentId
 	set := append(scratch[:0], componentsIds...)
-	if from := world.getArchetype(entityRecord); from != nil {
-		set = append(set, from.Type...)
+	if int(fromId) < len(world.archetypes) {
+		set = append(set, world.archetypes[fromId].Type...)
 	}
 
 	return world.archetypeForSet(set)

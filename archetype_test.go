@@ -211,3 +211,78 @@ func TestArchetypeKeyCollisionFallsBackToScan(t *testing.T) {
 		t.Fatal("a component was lost across the collision")
 	}
 }
+
+// TestTransitionCache: a multi-component transition is cached after its first
+// resolution; a slot whose key differs is never trusted and gets refilled; the
+// same set in another order is another entry, but the same archetype.
+func TestTransitionCache(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+	archetypeOf := func(e EntityId) archetypeId { return world.entities[e.Index()].archetypeId }
+
+	e1, err := CreateEntityWithComponents2(world, testComponent1{}, testComponent2{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	slot := transitionSlot(0, []ComponentId{testComponent1Id, testComponent2Id})
+	if entry := world.transitions[slot]; entry.from != 0 || entry.n != 2 || entry.dest != archetypeOf(e1) {
+		t.Fatalf("the transition should be cached after its first resolution, got %+v", entry)
+	}
+
+	// Corrupt the key of the slot and point it at the wrong archetype: the
+	// lookup must miss, resolve correctly, and refill the slot.
+	world.transitions[slot].ids[0] = testComponent2Id
+	world.transitions[slot].dest = 0
+	e2, err := CreateEntityWithComponents2(world, testComponent1{}, testComponent2{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if archetypeOf(e2) != archetypeOf(e1) {
+		t.Fatalf("a slot whose key differs must not be trusted: got archetype %d, want %d", archetypeOf(e2), archetypeOf(e1))
+	}
+	if world.transitions[slot].dest != archetypeOf(e1) {
+		t.Fatal("the miss should have refilled the slot")
+	}
+
+	e3, err := CreateEntityWithComponents2(world, testComponent2{}, testComponent1{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if archetypeOf(e3) != archetypeOf(e1) {
+		t.Fatal("the same set in another order should reach the same archetype")
+	}
+	if got := len(world.archetypes); got != 2 {
+		t.Fatalf("expected the empty archetype and {c1,c2} only, got %d", got)
+	}
+}
+
+// TestTransitionCacheFromNonEmptyArchetype: the transition is keyed by the
+// archetype the entity starts from, so adding the same components to entities
+// living in different archetypes leads to different, correct archetypes.
+func TestTransitionCacheFromNonEmptyArchetype(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+	RegisterComponent[testComponent2](world, &ComponentConfig[testComponent2]{})
+
+	bare := world.CreateEntity()
+	tagged := world.CreateEntity()
+	if err := world.AddTag(TAGS_INDICES, tagged); err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range []EntityId{bare, tagged} {
+		if err := AddComponents2(world, e, testComponent1{}, testComponent2{}); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if world.entities[bare.Index()].archetypeId == world.entities[tagged.Index()].archetypeId {
+		t.Fatal("entities starting from different archetypes must not share the destination")
+	}
+	if !world.HasComponents(bare, testComponent1Id, testComponent2Id) || world.HasTag(TAGS_INDICES, bare) {
+		t.Fatal("the bare entity should own the two components and no tag")
+	}
+	if !world.HasComponents(tagged, testComponent1Id, testComponent2Id) || !world.HasTag(TAGS_INDICES, tagged) {
+		t.Fatal("the tagged entity should own the two components and keep its tag")
+	}
+}
