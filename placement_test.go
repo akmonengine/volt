@@ -29,3 +29,34 @@ func TestEmptyArchetypeReleasesEntityOnAddComponent(t *testing.T) {
 		t.Fatalf("optional-only query counted %d results for a single entity (stale entry in the empty archetype)", n)
 	}
 }
+
+// TestStaleEntryCorruptsLiveEntity: the stale entry is worse than a leak. When
+// the empty archetype later swap-removes one of its entities, the stale entry
+// may be the one moved, and the swap rewrites the key of the entity it names —
+// an entity that now lives in another archetype, whose row then aliases a
+// neighbour's.
+func TestStaleEntryCorruptsLiveEntity(t *testing.T) {
+	world := CreateWorld(16)
+	RegisterComponent[testComponent1](world, &ComponentConfig[testComponent1]{})
+
+	a := world.CreateEntity()
+	b := world.CreateEntity()
+	if err := AddComponent[testComponent1](world, b, testComponent1{}); err != nil {
+		t.Fatal(err)
+	}
+	c := world.CreateEntity()
+	if err := AddComponent[testComponent1](world, c, testComponent1{}); err != nil {
+		t.Fatal(err)
+	}
+	// {C1}: [b, c]. With a stale entry, the empty archetype would still list b and c
+	// behind a, and removing a would move the stale c onto a's row, rewriting c's key.
+	world.RemoveEntity(a)
+
+	if got := world.entities[c.Index()].key; got != 1 {
+		t.Fatalf("live entity c should still be at key 1 in its archetype, got key %d", got)
+	}
+	GetComponent[testComponent1](world, c).x = 42
+	if GetComponent[testComponent1](world, b).x == 42 {
+		t.Fatal("writing c's component wrote into b's: rows are aliased")
+	}
+}
