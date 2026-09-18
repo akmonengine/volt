@@ -29,6 +29,31 @@ func (t testTag) GetComponentId() volt.ComponentId {
 	return testTagId
 }
 
+// Six more small components, to build "large" entities (8 components) like the
+// create-large-entities scenario of go-ecs-benchmarks.
+const (
+	testC3Id = iota + 2
+	testC4Id
+	testC5Id
+	testC6Id
+	testC7Id
+	testC8Id
+)
+
+type testC3 struct{ v float64 }
+type testC4 struct{ v float64 }
+type testC5 struct{ v float64 }
+type testC6 struct{ v float64 }
+type testC7 struct{ v float64 }
+type testC8 struct{ v float64 }
+
+func (testC3) GetComponentId() volt.ComponentId { return testC3Id }
+func (testC4) GetComponentId() volt.ComponentId { return testC4Id }
+func (testC5) GetComponentId() volt.ComponentId { return testC5Id }
+func (testC6) GetComponentId() volt.ComponentId { return testC6Id }
+func (testC7) GetComponentId() volt.ComponentId { return testC7Id }
+func (testC8) GetComponentId() volt.ComponentId { return testC8Id }
+
 func transformData(tr *testTransform) {
 	tr.x += 1.0
 	tr.y += 2.0

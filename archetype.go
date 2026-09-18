@@ -4,15 +4,76 @@ import (
 	"slices"
 )
 
-func (world *World) createArchetype(componentsIds ...ComponentId) *archetype {
-	archetypeKey := archetypeId(len(world.archetypes))
-	archetype := archetype{
-		Id:   archetypeKey,
-		Type: componentsIds,
-	}
-	world.archetypes = append(world.archetypes, archetype)
+// FNV-1a 64-bit parameters, used to hash a set of component ids into an
+// archetype key.
+const (
+	fnv64Offset uint64 = 14695981039346656037
+	fnv64Prime  uint64 = 1099511628211
+)
 
-	return &world.archetypes[archetypeKey]
+// maxInlineComponents bounds the stack scratch used to sort a set of component
+// ids before looking its archetype up. Larger sets fall back to a heap copy.
+const maxInlineComponents = 16
+
+// maxTransitionComponents is the largest number of components added in one
+// call (AddComponents8): the ids of a transition fit inline in its cache entry.
+const maxTransitionComponents = 8
+
+// transitionCacheSize is the number of slots of the transition cache, a power
+// of two so that a slot is a mask of the key.
+const transitionCacheSize = 64
+
+// transition remembers where adding a list of components to an archetype leads.
+// The ids are kept as given by the caller, so a hit needs no sorting: two orders
+// of the same set are two entries pointing at the same archetype. Archetypes are
+// never destroyed, so an entry never goes stale.
+type transition struct {
+	from archetypeId
+	ids  [maxTransitionComponents]ComponentId
+	n    uint8
+	dest archetypeId
+}
+
+// transitionSlot maps a transition to its slot in the cache.
+func transitionSlot(fromId archetypeId, componentsIds []ComponentId) int {
+	hash := (fnv64Offset ^ uint64(fromId)) * fnv64Prime
+	for _, componentId := range componentsIds {
+		hash ^= uint64(componentId)
+		hash *= fnv64Prime
+	}
+
+	return int(hash & (transitionCacheSize - 1))
+}
+
+// archetypeKey hashes a sorted set of component ids. Two different sets may
+// share a key: a lookup always confirms the archetype Type before trusting it.
+func archetypeKey(sorted []ComponentId) uint64 {
+	hash := fnv64Offset
+	for _, componentId := range sorted {
+		hash ^= uint64(componentId)
+		hash *= fnv64Prime
+	}
+
+	return hash
+}
+
+// createArchetype registers a new archetype holding exactly the given set of
+// components. The slice must be sorted; the archetype owns it from now on.
+func (world *World) createArchetype(componentsIds componentsIds) *archetype {
+	id := archetypeId(len(world.archetypes))
+	world.archetypes = append(world.archetypes, archetype{
+		Id:   id,
+		Type: componentsIds,
+	})
+
+	// The first archetype registered under a key owns it; a later archetype
+	// whose set collides on the same key is found by scan instead.
+	key := archetypeKey(componentsIds)
+	if _, taken := world.archetypesByKey[key]; !taken {
+		world.archetypesByKey[key] = id
+	}
+
+	return &world.archetypes[id]
 }
 
 func (world *World) getArchetype(entityRecord entityRecord) *archetype {
@@ -33,50 +94,82 @@ func (world *World) setArchetype(entityRecord entityRecord, archetype *archetype
 	world.entities[entityRecord.Id.Index()] = entityRecord
 }
 
+// getArchetypeForComponentsIds returns the archetype holding exactly the given
+// set of components, whatever their order, creating it if needed.
 func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *archetype {
-	for i, archetype := range world.archetypes {
-		if len(archetype.Type) != len(componentsIds) {
-			continue
-		}
+	var scratch [maxInlineComponents]ComponentId
 
-		count := 0
-		for _, componentId := range componentsIds {
-			if slices.Contains(archetype.Type, componentId) {
-				count++
-			} else {
-				break
-			}
-		}
+	return world.archetypeForSet(append(scratch[:0], componentsIds...))
+}
 
-		if count == len(archetype.Type) {
+// archetypeForSet resolves the archetype holding exactly the given set of
+// components, creating it if needed. The set is a scratch copy: it is sorted in
+// place and never retained, the archetype created on a miss owns its own copy.
+func (world *World) archetypeForSet(set []ComponentId) *archetype {
+	slices.Sort(set)
+
+	id, found := world.archetypesByKey[archetypeKey(set)]
+	if !found {
+		return world.createArchetype(slices.Clone(set))
+	}
+	if slices.Equal(world.archetypes[id].Type, set) {
+		return &world.archetypes[id]
+	}
+
+	// Key collision: another set owns the key, scan for this one.
+	for i := range world.archetypes {
+		if slices.Equal(world.archetypes[i].Type, set) {
 			return &world.archetypes[i]
 		}
 	}
 
-	return world.createArchetype(componentsIds...)
+	return world.createArchetype(slices.Clone(set))
 }
 
+// getNextArchetype returns the archetype reached by adding componentsIds to the
+// archetype the entity lives in.
 func (world *World) getNextArchetype(entityRecord entityRecord, componentsIds ...ComponentId) *archetype {
-	// Fast path: a single-component transition (AddComponent, AddTag, ...) is
-	// resolved through the archetype graph, avoiding both the linear scan over
-	// all archetypes and the slice rebuild done below.
+	// A single-component transition is resolved through the archetype graph.
 	if len(componentsIds) == 1 {
 		return world.archetypeAfterAdd(entityRecord.archetypeId, componentsIds[0])
 	}
-
-	var archetype *archetype
-	if entityRecord.archetypeId == 0 {
-		archetype = world.getArchetypeForComponentsIds(componentsIds...)
-	} else {
-		oldArchetype := world.getArchetype(entityRecord)
-		if oldArchetype != nil {
-			archetype = world.getArchetypeForComponentsIds(append(componentsIds, oldArchetype.Type...)...)
-		} else {
-			archetype = world.getArchetypeForComponentsIds(componentsIds...)
-		}
+	if len(componentsIds) <= maxTransitionComponents {
+		return world.archetypeAfterAddN(entityRecord.archetypeId, componentsIds)
 	}
 
-	return archetype
+	return world.archetypeAfterAddSet(entityRecord.archetypeId, componentsIds)
+}
+
+// archetypeAfterAddN resolves a multi-component transition through the
+// transition cache. A hit costs one key comparison; a miss resolves the set and
+// fills the slot, which the next transition hashing to it overwrites. The whole
+// key is compared, so a slot collision is a miss, never a wrong archetype.
+func (world *World) archetypeAfterAddN(fromId archetypeId, componentsIds []ComponentId) *archetype {
+	var key [maxTransitionComponents]ComponentId
+	copy(key[:], componentsIds)
+	n := uint8(len(componentsIds))
+
+	t := &world.transitions[transitionSlot(fromId, componentsIds)]
+	if t.from == fromId && t.n == n && t.ids == key {
+		return &world.archetypes[t.dest]
+	}
+
+	dest := world.archetypeAfterAddSet(fromId, componentsIds)
+	*t = transition{from: fromId, ids: key, n: n, dest: dest.Id}
+
+	return dest
+}
+
+// archetypeAfterAddSet resolves the archetype holding the components of the
+// archetype fromId plus componentsIds, through the canonical key.
+func (world *World) archetypeAfterAddSet(fromId archetypeId, componentsIds []ComponentId) *archetype {
+	var scratch [maxInlineComponents]ComponentId
+	set := append(scratch[:0], componentsIds...)
+	if int(fromId) < len(world.archetypes) {
+		set = append(set, world.archetypes[fromId].Type...)
+	}
+
+	return world.archetypeForSet(set)
 }
 
 // archetypeAfterAdd returns the archetype obtained by adding componentId to the
@@ -86,11 +179,11 @@ func (world *World) archetypeAfterAdd(fromId archetypeId, componentId ComponentI
 		return &world.archetypes[destId]
 	}
 
-	// Cache miss: compute the destination once. getArchetypeForComponentsIds may
-	// create a new archetype and reallocate world.archetypes, so we resolve every
-	// archetype by index afterwards rather than holding a stale pointer.
+	// Cache miss: compute the destination once. archetypeForSet may create a new
+	// archetype and reallocate world.archetypes, so we resolve every archetype
+	// by index afterwards rather than holding a stale pointer.
 	newType := append(slices.Clone(world.archetypes[fromId].Type), componentId)
-	destId := world.getArchetypeForComponentsIds(newType...).Id
+	destId := world.archetypeForSet(newType).Id
 	world.linkArchetypes(fromId, destId, componentId)
 
 	return &world.archetypes[destId]
@@ -110,7 +203,7 @@ func (world *World) archetypeAfterRemove(fromId archetypeId, componentId Compone
 			newType = append(newType, c)
 		}
 	}
-	destId := world.getArchetypeForComponentsIds(newType...).Id
+	destId := world.archetypeForSet(newType).Id
 	// dest --add componentId--> from, and from --remove componentId--> dest.
 	world.linkArchetypes(destId, fromId, componentId)
 
