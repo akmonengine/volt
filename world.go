@@ -64,7 +64,7 @@ type componentsIds []ComponentId
 // Implementation of an archetype with its identifier, componentsIds, and entitiesIds
 type archetype struct {
 	Id       archetypeId
-	Type     componentsIds
+	Type     componentsIds // sorted set of the components (and tags) held
 	entities []EntityId
 
 	// Archetype graph: cached transitions to neighbour archetypes.
@@ -94,6 +94,7 @@ type World struct {
 	pool               pool
 	entities           entities
 	archetypes         []archetype
+	archetypesByKey    map[uint64]archetypeId // archetype of a set of components, by archetypeKey
 	storage            []storage
 
 	entityAddedFn      func(entityId EntityId)
@@ -110,6 +111,7 @@ func CreateWorld(initialCapacity int) *World {
 		pool:               pool{},
 		entities:           make(entities, 0, initialCapacity),
 		archetypes:         make([]archetype, 0, 1024),
+		archetypesByKey:    make(map[uint64]archetypeId, 1024),
 		storage:            make([]storage, TAGS_INDICES),
 		entityAddedFn:      func(entityId EntityId) {},
 		entityRemovedFn:    func(entityId EntityId) {},
@@ -117,7 +119,7 @@ func CreateWorld(initialCapacity int) *World {
 		componentRemovedFn: func(entityId EntityId, componentId ComponentId) {},
 	}
 
-	world.createArchetype()
+	world.createArchetype(nil)
 
 	return world
 }
