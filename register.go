@@ -35,7 +35,7 @@ func (componentConfig *ComponentConfig[T]) addComponent(world *World, entityId E
 	var t T
 	componentConfig.builderFn(&t, configuration)
 
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 	archetype := world.getNextArchetype(entityRecord, componentConfig.id)
 	err := addComponentsToArchetype1[T](world, entityRecord, archetype, t)
 

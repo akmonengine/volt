@@ -49,7 +49,7 @@ func AddComponent[T ComponentInterface](world *World, entityId EntityId, compone
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	componentId := component.GetComponentId()
 	if world.hasComponents(entityRecord, componentId) {
@@ -79,7 +79,7 @@ func AddComponents2[A, B ComponentInterface](world *World, entityId EntityId, a 
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents2(world, entityRecord, a, b)
 }
@@ -115,7 +115,7 @@ func AddComponents3[A, B, C ComponentInterface](world *World, entityId EntityId,
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents3(world, entityRecord, a, b, c)
 }
@@ -153,7 +153,7 @@ func AddComponents4[A, B, C, D ComponentInterface](world *World, entityId Entity
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents4(world, entityRecord, a, b, c, d)
 }
@@ -192,7 +192,7 @@ func AddComponents5[A, B, C, D, E ComponentInterface](world *World, entityId Ent
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents5(world, entityRecord, a, b, c, d, e)
 }
@@ -232,7 +232,7 @@ func AddComponents6[A, B, C, D, E, F ComponentInterface](world *World, entityId 
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents6(world, entityRecord, a, b, c, d, e, f)
 }
@@ -273,7 +273,7 @@ func AddComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, entity
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents7(world, entityRecord, a, b, c, d, e, f, g)
 }
@@ -315,7 +315,7 @@ func AddComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, ent
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return addComponents8(world, entityRecord, a, b, c, d, e, f, g, h)
 }
@@ -357,7 +357,7 @@ func (world *World) AddComponent(entityId EntityId, componentId ComponentId, con
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	if world.hasComponents(entityRecord, componentId) {
 		return fmt.Errorf("the entity %d already owns the component %d", entityId, componentId)
@@ -388,7 +388,7 @@ func (world *World) AddComponents(entityId EntityId, componentsIdsConfs ...Compo
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	var componentsIds []ComponentId
 	for _, componentIdConf := range componentsIdsConfs {
@@ -426,7 +426,7 @@ func RemoveComponent[T ComponentInterface](world *World, entityId EntityId) erro
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	if !world.hasComponents(entityRecord, componentId) {
 		return fmt.Errorf("the entity %d doesn't own the component %d", entityId, componentId)
@@ -449,7 +449,7 @@ func (world *World) RemoveComponent(entityId EntityId, componentId ComponentId) 
 	if !world.Exists(entityId) {
 		return fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	if !world.hasComponents(entityRecord, componentId) {
 		return fmt.Errorf("the entity %d doesn't own the component %d", entityId, componentId)
@@ -489,7 +489,7 @@ func (world *World) HasComponents(entityId EntityId, componentsIds ...ComponentI
 	if !world.Exists(entityId) {
 		return false
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return world.hasComponents(entityRecord, componentsIds...)
 }
@@ -517,7 +517,7 @@ func GetComponent[T ComponentInterface](world *World, entityId EntityId) *T {
 	if s == nil {
 		return nil
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	if !s.hasArchetype(entityRecord.archetypeId) {
 		return nil
@@ -537,7 +537,7 @@ func (world *World) GetComponent(entityId EntityId, componentId ComponentId) (an
 	if !world.Exists(entityId) {
 		return nil, fmt.Errorf("entity %v does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 	s, err := world.getStorageForComponentId(componentId)
 	if err != nil {
 		return nil, err
@@ -558,8 +558,8 @@ func addComponentsToArchetype1[A ComponentInterface](world *World, entityRecord 
 		return fmt.Errorf("no storage found for component %d", componentId)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -582,8 +582,8 @@ func addComponentsToArchetype2[A, B ComponentInterface](world *World, entityReco
 		return fmt.Errorf("no storage found for component %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -609,8 +609,8 @@ func addComponentsToArchetype3[A, B, C ComponentInterface](world *World, entityR
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -638,8 +638,8 @@ func addComponentsToArchetype4[A, B, C, D ComponentInterface](world *World, enti
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -669,8 +669,8 @@ func addComponentsToArchetype5[A, B, C, D, E ComponentInterface](world *World, e
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -702,8 +702,8 @@ func addComponentsToArchetype6[A, B, C, D, E, F ComponentInterface](world *World
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -737,8 +737,8 @@ func addComponentsToArchetype7[A, B, C, D, E, F, G ComponentInterface](world *Wo
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -774,8 +774,8 @@ func addComponentsToArchetype8[A, B, C, D, E, F, G, H ComponentInterface](world 
 		return fmt.Errorf("no storage found for components %v", componentsIds)
 	}
 
-	// If the entity has no component, simply add it the archetype
-	if entityRecord.archetypeId == 0 {
+	// An unplaced entity (fresh slot) is listed in no archetype yet: just place it.
+	if entityRecord.key < 0 {
 		world.setArchetype(entityRecord, archetype)
 	} else {
 		oldArchetype := world.getArchetype(entityRecord)
@@ -820,9 +820,9 @@ func moveComponentsToArchetype(world *World, entityRecord entityRecord, oldArche
 	lastEntityKey = len(oldArchetype.entities) - 1
 
 	lastEntityId := oldArchetype.entities[lastEntityKey]
-	lastEntity := world.entities[lastEntityId]
+	lastEntity := world.entities[lastEntityId.Index()]
 	lastEntity.key = entityRecord.key
-	world.entities[lastEntityId] = lastEntity
+	world.entities[lastEntityId.Index()] = lastEntity
 
 	oldArchetype.entities[entityRecord.key] = lastEntityId
 	oldArchetype.entities = oldArchetype.entities[:lastEntityKey]

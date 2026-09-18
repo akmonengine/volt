@@ -30,7 +30,7 @@ func (world *World) setArchetype(entityRecord entityRecord, archetype *archetype
 
 	entityRecord.key = len(archetype.entities) - 1
 	entityRecord.archetypeId = archetype.Id
-	world.entities[entityRecord.Id] = entityRecord
+	world.entities[entityRecord.Id.Index()] = entityRecord
 }
 
 func (world *World) getArchetypeForComponentsIds(componentsIds ...ComponentId) *archetype {

@@ -7,8 +7,50 @@ type smallId uint16
 // uint64 identifier, for big scoped data.
 type id uint64
 
-// Entity identifier in the world.
+// Entity identifier in the world: a handle packing the entity's slot (index,
+// low 32 bits) and the generation of that slot (high 32 bits). Generations
+// start at 1 and are bumped every time the slot is freed by RemoveEntity, so a
+// handle kept after its entity was removed never aliases the slot's next
+// occupant: it is simply dead. The zero value is the null handle, which never
+// refers to a live entity.
 type EntityId id
+
+const (
+	entityIndexBits = 32
+	entityIndexMask = EntityId(1)<<entityIndexBits - 1
+)
+
+// Index returns the slot of the entity in the World.
+func (entityId EntityId) Index() uint32 {
+	return uint32(entityId & entityIndexMask)
+}
+
+// Generation returns the generation of the handle. Live handles have a
+// generation of at least 1; the null handle has generation 0.
+func (entityId EntityId) Generation() uint32 {
+	return uint32(entityId >> entityIndexBits)
+}
+
+// IsNull reports whether entityId is the null handle, which never refers to a
+// live entity. It is the zero value of EntityId, so an unset field is null.
+func (entityId EntityId) IsNull() bool {
+	return entityId == 0
+}
+
+func newEntityId(index uint32, generation uint32) EntityId {
+	return EntityId(generation)<<entityIndexBits | EntityId(index)
+}
+
+// nextGeneration bumps a slot generation, skipping 0 on wrap-around so that the
+// null handle can never be minted.
+func nextGeneration(generation uint32) uint32 {
+	generation++
+	if generation == 0 {
+		generation = 1
+	}
+
+	return generation
+}
 
 // Component identifier in the register.
 type ComponentId smallId
@@ -34,7 +76,10 @@ type archetype struct {
 	removeEdges map[ComponentId]archetypeId
 }
 
-// Container of archetype and key position in storage, for a given EntityId
+// Record of an entity slot: the handle currently bound to the slot (its
+// generation tells recycled slots apart), the archetype the entity lives in
+// and its key (row) in that archetype. A negative key means the slot holds no
+// live entity: either freed, or allocated but not yet placed in an archetype.
 type entityRecord struct {
 	Id          EntityId
 	archetypeId archetypeId
@@ -100,34 +145,50 @@ func (world *World) SetComponentRemovedFn(componentRemovedFn func(entityId Entit
 // CreateEntity creates a new Entity in World;
 // It is linked to no Component.
 func (world *World) CreateEntity() EntityId {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 	archetype := world.getArchetypeForComponentsIds()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-	world.setArchetype(entityRecord, archetype)
+	world.setArchetype(world.entities[entityId.Index()], archetype)
 
 	return entityId
 }
 
-func (world *World) addEntity(entityRecord entityRecord) {
-	if int(entityRecord.Id) < len(world.entities) {
-		world.entities[entityRecord.Id] = entityRecord
-	} else {
-		world.entities = append(world.entities, entityRecord)
+// newEntity allocates a slot and returns its live handle. A brand new slot
+// starts at generation 1; a recycled slot carries the generation bumped when it
+// was freed. The record is reset and left unplaced (key -1) until setArchetype
+// puts the entity in an archetype.
+func (world *World) newEntity() EntityId {
+	index, recycled := world.pool.Get()
+
+	if recycled {
+		entityId := world.entities[index].Id
+		world.entities[index] = entityRecord{Id: entityId, key: -1}
+
+		return entityId
 	}
+
+	entityId := newEntityId(index, 1)
+	world.entities = append(world.entities, entityRecord{Id: entityId, key: -1})
+
+	return entityId
+}
+
+// discardEntity gives back a slot allocated by newEntity whose entity could not
+// be placed (creation failed). The handle was never handed out, so the
+// generation is kept as is.
+func (world *World) discardEntity(entityId EntityId) {
+	world.pool.Recycle(entityId.Index())
 }
 
 // CreateEntityWithComponents2 creates an entity in World;
 // It sets the components A, B to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents2[A, B ComponentInterface](world *World, a A, b B) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents2(world, entityRecord, a, b)
+	err := addComponents2(world, world.entities[entityId.Index()], a, b)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -138,13 +199,12 @@ func CreateEntityWithComponents2[A, B ComponentInterface](world *World, a A, b B
 //
 // It sets the components A, B, C to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, a A, b B, c C) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents3(world, entityRecord, a, b, c)
+	err := addComponents3(world, world.entities[entityId.Index()], a, b, c)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -155,13 +215,12 @@ func CreateEntityWithComponents3[A, B, C ComponentInterface](world *World, a A, 
 //
 // It sets the components A, B, C, D to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, a A, b B, c C, d D) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents4(world, entityRecord, a, b, c, d)
+	err := addComponents4(world, world.entities[entityId.Index()], a, b, c, d)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -172,13 +231,12 @@ func CreateEntityWithComponents4[A, B, C, D ComponentInterface](world *World, a 
 //
 // It sets the components A, B, C, D, E to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World, a A, b B, c C, d D, e E) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents5(world, entityRecord, a, b, c, d, e)
+	err := addComponents5(world, world.entities[entityId.Index()], a, b, c, d, e)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -189,13 +247,12 @@ func CreateEntityWithComponents5[A, B, C, D, E ComponentInterface](world *World,
 //
 // It sets the components A, B, C, D, E, F to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *World, a A, b B, c C, d D, e E, f F) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents6(world, entityRecord, a, b, c, d, e, f)
+	err := addComponents6(world, world.entities[entityId.Index()], a, b, c, d, e, f)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -206,13 +263,12 @@ func CreateEntityWithComponents6[A, B, C, D, E, F ComponentInterface](world *Wor
 //
 // It sets the components A, B, C, D, E, F, G to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *World, a A, b B, c C, d D, e E, f F, g G) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents7(world, entityRecord, a, b, c, d, e, f, g)
+	err := addComponents7(world, world.entities[entityId.Index()], a, b, c, d, e, f, g)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -223,13 +279,12 @@ func CreateEntityWithComponents7[A, B, C, D, E, F, G ComponentInterface](world *
 //
 // It sets the components A, B, C, D, E, F, G, H to the entity, for faster performances than the atomic version.
 func CreateEntityWithComponents8[A, B, C, D, E, F, G, H ComponentInterface](world *World, a A, b B, c C, d D, e E, f F, g G, h H) (EntityId, error) {
-	entityId := world.pool.Get()
+	entityId := world.newEntity()
 
-	entityRecord := entityRecord{Id: entityId}
-	world.addEntity(entityRecord)
-
-	err := addComponents8(world, entityRecord, a, b, c, d, e, f, g, h)
+	err := addComponents8(world, world.entities[entityId.Index()], a, b, c, d, e, f, g, h)
 	if err != nil {
+		world.discardEntity(entityId)
+
 		return 0, err
 	}
 
@@ -244,17 +299,20 @@ func (world *World) PublishEntity(entityId EntityId) {
 // RemoveEntity removes all the data related to an Entity.
 //
 // It calls the callback setted in SetEntityRemovedFn beforehand, so that the callback still has access to the data.
+//
+// The slot is freed for reuse and its generation bumped: every handle to the
+// removed entity is dead from now on (Exists reports false), even once the slot
+// is recycled by a new entity. Removing a dead handle is a no-op.
 func (world *World) RemoveEntity(entityId EntityId) {
-	// Reject unknown or already-removed entities, which also prevents a
-	// double-remove from corrupting an archetype (negative key indexing).
 	if !world.Exists(entityId) {
 		return
 	}
 
 	world.entityRemovedFn(entityId)
 
-	entityRecord := world.entities[entityId]
-	archetype := world.archetypes[entityRecord.archetypeId]
+	index := entityId.Index()
+	record := world.entities[index]
+	archetype := world.archetypes[record.archetypeId]
 
 	lastEntityKey := len(archetype.entities) - 1
 	for _, componentId := range archetype.Type {
@@ -265,36 +323,47 @@ func (world *World) RemoveEntity(entityId EntityId) {
 		}
 		s := world.storage[componentId]
 		if s != nil {
-			s.moveLastToKey(archetype.Id, entityRecord.key)
+			s.moveLastToKey(archetype.Id, record.key)
 		}
 	}
 
 	if lastEntityKey >= 0 {
 		lastEntityId := world.archetypes[archetype.Id].entities[lastEntityKey]
-		lastEntity := world.entities[lastEntityId]
-		if lastEntity.key > entityRecord.key {
-			lastEntity.key = entityRecord.key
-			world.entities[lastEntityId] = lastEntity
-			archetype.entities[entityRecord.key] = lastEntityId
+		lastEntity := world.entities[lastEntityId.Index()]
+		if lastEntity.key > record.key {
+			lastEntity.key = record.key
+			world.entities[lastEntityId.Index()] = lastEntity
+			archetype.entities[record.key] = lastEntityId
 		}
 
 		archetype.entities = archetype.entities[:lastEntityKey]
 		world.archetypes[archetype.Id] = archetype
 	}
 
-	// Tombstone the slot: a negative key marks the id as free until it is
-	// recycled, so Has/Get/Exists no longer report stale data for it.
-	world.entities[entityId].key = -1
-	world.pool.Recycle(entityId)
+	// Free the slot: the tombstone (negative key) and the bumped generation
+	// together guarantee that no handle, kept or forged, resolves to it until a
+	// new entity is created there with the new generation.
+	world.entities[index] = entityRecord{
+		Id:  newEntityId(index, nextGeneration(entityId.Generation())),
+		key: -1,
+	}
+	world.pool.Recycle(index)
 }
 
 // Exists reports whether entityId refers to a live entity of the World.
 //
-// It returns false for ids that were never created, or that have been removed
-// and not yet recycled into a new entity. A negative key is the tombstone left
-// behind by RemoveEntity.
+// It returns false for the null handle, for slots never opened, and for dead
+// handles: entities removed, whether or not their slot has since been recycled
+// by a new entity (the generation tells them apart).
 func (world *World) Exists(entityId EntityId) bool {
-	return int(entityId) < len(world.entities) && world.entities[entityId].key >= 0
+	index := entityId.Index()
+	if int(index) >= len(world.entities) {
+		return false
+	}
+
+	record := &world.entities[index]
+
+	return record.Id == entityId && record.key >= 0
 }
 
 // Count returns the number of entities in World.

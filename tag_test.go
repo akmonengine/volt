@@ -142,12 +142,12 @@ func TestRemoveTag(t *testing.T) {
 		t.Errorf("entities should not have the tag %d", TAG_1)
 	}
 
-	err := world.RemoveTag(TAG_1, 0)
-	if err == nil {
-		t.Errorf("we should not be able to remove the tag %d from an unexisting entity %d", TAG_1, entities[0])
+	// EntityId(0) is the null handle: it never refers to a live entity.
+	if err := world.RemoveTag(TAG_1, 0); err == nil {
+		t.Fatalf("we should not be able to remove the tag %d from the null handle", TAG_1)
 	}
 
-	err = world.RemoveTag(TAG_1, entities[0])
+	err := world.RemoveTag(TAG_1, entities[0])
 	if err == nil {
 		t.Errorf("we should not be able to remove the tag %d from the entity %d that does not own it", TAG_1, entities[0])
 	}
