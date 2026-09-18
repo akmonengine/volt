@@ -17,8 +17,14 @@ There is many ways to write an ECS, and Volt is based on the Archetype paradigm.
 ## Knowledge
 ### Entity
 An entity is the end object in a game (e.g. a character). It is only defined by
-its identifier called EntityId. This identifier is generated, its type uint64 avoiding to generate twice the same id.
-When an entity is removed, this identifier can be used again for a new one.
+its identifier called EntityId: a uint64 handle packing the entity's slot (index, low 32 bits)
+and the generation of that slot (high 32 bits, starting at 1).
+
+When an entity is removed, its slot can be used again for a new one, but the generation of the slot is bumped:
+a handle kept after its entity was removed is dead, and never refers to the slot's new occupant
+(`Exists` reports false, `GetComponent` returns nil, `AddComponent` returns an error).
+The zero value `EntityId(0)` is the null handle, which never refers to a live entity: an unset field is null.
+`Index()`, `Generation()` and `IsNull()` expose the parts of a handle.
 
 Looking at the benchmark, a scene can handle between 100.000 to 1.000.000 depending on your machine and the complexity of the project.
 But of course, the lower the better, as it will allow the project to run on slower computers.

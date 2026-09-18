@@ -1,27 +1,34 @@
 package volt
 
+// pool hands out entity slots. A slot is the index part of an EntityId; the
+// generation that keeps a recycled slot's handle unique lives in the entity
+// record, not here. Freed slots are reused LIFO before any new slot is opened.
 type pool struct {
-	ids  []EntityId
-	next EntityId
+	free []uint32
+	next uint32
 }
 
-func (pool *pool) Get() EntityId {
-	var entityId EntityId
-	if len(pool.ids) > 0 {
-		entityId = pool.ids[len(pool.ids)-1]
-		pool.ids = pool.ids[:len(pool.ids)-1]
-	} else {
-		entityId = pool.next
-		pool.next++
+// Get returns a slot, and whether it is recycled (previously freed) or brand new.
+func (pool *pool) Get() (index uint32, recycled bool) {
+	if n := len(pool.free); n > 0 {
+		index = pool.free[n-1]
+		pool.free = pool.free[:n-1]
+
+		return index, true
 	}
 
-	return entityId
+	index = pool.next
+	pool.next++
+
+	return index, false
 }
 
-func (pool *pool) Recycle(id EntityId) {
-	pool.ids = append(pool.ids, id)
+// Recycle gives a slot back, to be reused by the next Get.
+func (pool *pool) Recycle(index uint32) {
+	pool.free = append(pool.free, index)
 }
 
+// Count returns the number of freed slots waiting to be recycled.
 func (pool *pool) Count() int {
-	return len(pool.ids)
+	return len(pool.free)
 }

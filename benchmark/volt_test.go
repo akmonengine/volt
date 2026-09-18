@@ -154,3 +154,26 @@ func BenchmarkRemoveVolt(b *testing.B) {
 
 	b.ReportAllocs()
 }
+
+// BenchmarkCreateRemoveVolt measures a full recycle cycle: every entity is
+// removed then recreated with the same components, so the id pool is exercised
+// on both sides (free then reuse) on every iteration.
+func BenchmarkCreateRemoveVolt(b *testing.B) {
+	world := volt.CreateWorld(ENTITIES_COUNT)
+	volt.RegisterComponent[testTransform](world, &volt.ComponentConfig[testTransform]{})
+	volt.RegisterComponent[testTag](world, &volt.ComponentConfig[testTag]{})
+
+	entities := make([]volt.EntityId, ENTITIES_COUNT)
+	for i := range entities {
+		entities[i], _ = volt.CreateEntityWithComponents2(world, testTransform{}, testTag{})
+	}
+
+	for b.Loop() {
+		for i, entityId := range entities {
+			world.RemoveEntity(entityId)
+			entities[i], _ = volt.CreateEntityWithComponents2(world, testTransform{}, testTag{})
+		}
+	}
+
+	b.ReportAllocs()
+}

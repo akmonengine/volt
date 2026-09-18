@@ -26,7 +26,7 @@ func (world *World) AddTag(tagId TagId, entityId EntityId) error {
 		return fmt.Errorf("the entity %d already owns the tag %d", entityId, tagId)
 	}
 
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 	archetype := world.getNextArchetype(entityRecord, tagId)
 
 	oldArchetype := world.getArchetype(entityRecord)
@@ -43,7 +43,7 @@ func (world *World) HasTag(tagId TagId, entityId EntityId) bool {
 	if !world.Exists(entityId) {
 		return false
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	return world.hasComponents(entityRecord, tagId)
 }
@@ -56,7 +56,7 @@ func (world *World) RemoveTag(tagId TagId, entityId EntityId) error {
 	if !world.Exists(entityId) {
 		return fmt.Errorf("the entity %d does not exist", entityId)
 	}
-	entityRecord := world.entities[entityId]
+	entityRecord := world.entities[entityId.Index()]
 
 	if !world.HasTag(tagId, entityId) {
 		return fmt.Errorf("the entity %d doesn't own the tag %d", entityId, tagId)

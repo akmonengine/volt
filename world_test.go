@@ -256,10 +256,10 @@ func TestWorld_RemoveEntity(t *testing.T) {
 	world.RemoveEntity(entities[TEST_ENTITY_NUMBER/2])
 	world.RemoveEntity(entities[TEST_ENTITY_NUMBER-1])
 
-	// Check if the entities are correctly removed of the world
-	for _, id := range []EntityId{0, TEST_ENTITY_NUMBER / 2, TEST_ENTITY_NUMBER - 1} {
-		if !slices.Contains(world.pool.ids, id) {
-			t.Errorf("Entity %d was not removed", entities[id])
+	// Check if the entities are correctly removed of the world: their slots are back in the pool.
+	for _, i := range []int{0, TEST_ENTITY_NUMBER / 2, TEST_ENTITY_NUMBER - 1} {
+		if !slices.Contains(world.pool.free, entities[i].Index()) {
+			t.Errorf("Entity %d was not removed", entities[i])
 		}
 	}
 }
@@ -305,13 +305,13 @@ func TestEntityLiveness(t *testing.T) {
 		t.Fatal("removed entity should not report owning a component")
 	}
 	if GetComponent[testComponent1](world, e) != nil {
-		t.Fatal("removed entity should not return a component pointer")
+		t.Fatal("GetComponent through a dead handle should return nil")
 	}
 	if err := AddComponent[testComponent1](world, e, testComponent1{}); err == nil {
-		t.Fatal("adding a component to a removed entity should error")
+		t.Fatal("AddComponent through a dead handle should return an error")
 	}
 	if err := RemoveComponent[testComponent1](world, e); err == nil {
-		t.Fatal("removing a component from a removed entity should error")
+		t.Fatal("RemoveComponent through a dead handle should return an error")
 	}
 
 	// Never-created ids (within and beyond the preallocated capacity) don't exist.

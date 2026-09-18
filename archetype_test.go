@@ -71,14 +71,14 @@ func TestArchetypeGraph_EdgesAreReused(t *testing.T) {
 	if err := AddComponent(world, e, testComponent2{}); err != nil {
 		t.Fatalf("%s", err.Error())
 	}
-	base := world.entities[e].archetypeId
+	base := world.entities[e.Index()].archetypeId
 	var withC1 archetypeId
 
 	for i := 0; i < 5; i++ {
 		if err := AddComponent(world, e, testComponent1{}); err != nil {
 			t.Fatalf("add iteration %d: %s", i, err.Error())
 		}
-		with := world.entities[e].archetypeId
+		with := world.entities[e.Index()].archetypeId
 		if i == 0 {
 			withC1 = with
 		} else if with != withC1 {
@@ -88,7 +88,7 @@ func TestArchetypeGraph_EdgesAreReused(t *testing.T) {
 		if err := RemoveComponent[testComponent1](world, e); err != nil {
 			t.Fatalf("remove iteration %d: %s", i, err.Error())
 		}
-		if back := world.entities[e].archetypeId; back != base {
+		if back := world.entities[e.Index()].archetypeId; back != base {
 			t.Fatalf("iteration %d: entity did not return to base archetype (%d != %d)", i, back, base)
 		}
 	}
